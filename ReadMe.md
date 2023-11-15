@@ -1,1 +1,1 @@
-#GitHub repo for Orbital Mechanics project
+GitHub repo for Orbital Mechanics project
