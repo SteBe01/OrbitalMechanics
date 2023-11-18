@@ -1,9 +1,12 @@
-function [rr, vv] = parorb2rv(a, e, i, OM, om, theta, mu)
+function [rr, vv] = car2kep(varargin)
 
 % Transformation from orbital elements to Cartesian state 
 % given n theta angles
 %
 % [rr, vv] = parorb2rv(a, e, i, OM, om, theta, mu)
+% [rr, vv] = parorb2rv([a, e, i, OM, om, theta, mu])
+%
+% This function accepts both array of elements and elements
 %
 % Input arguments:
 % ----------------------------------------------------------------
@@ -19,6 +22,16 @@ function [rr, vv] = parorb2rv(a, e, i, OM, om, theta, mu)
 % -----------------------------------------------------------------
 % rr            [3xn]   position vector                 [km]
 % vv            [3xn]   velocity vector                 [km/s]
+
+
+if nargin == 1 && length(varargin{1}) == 7
+    t = num2cell(varargin{1});
+    [a, e, i, OM, om, theta, mu] = deal(t{:});
+elseif nargin == 7
+    [a, e, i, OM, om, theta, mu] = varargin{1:end};
+else
+    error('Incorrect data input, type "help car2kep"')
+end
 
 if size(theta, 1) < size(theta, 2)
     theta = theta';

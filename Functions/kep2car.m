@@ -1,4 +1,4 @@
-function [a, e, i, OM, om, theta] = rv2parorb(rr, vv, mu)
+function [a, e, i, OM, om, theta] = kep2car(rr, vv, mu)
 
 % Transformation from Cartesian state to orbital elements
 %
@@ -33,7 +33,7 @@ a = -mu/(2*E);                                      % Semi-major axis
 
 h = cross(rr,vv);                                   % Specific angular momentum
 
-i = wrapTo2Pi(acos(h(3)/norm(h)));                      % Inclination
+i = wrapTo2Pi(acos(h(3)/norm(h)));                  % Inclination
 
 N = cross(K, h);                                    % Nodes line
 
@@ -42,7 +42,7 @@ while OM_check > pi
     OM_check = OM_check - pi;
 end
 
-if OM_check - pi < 0.0001 
+if OM_check== 0 
     OM = 0;
 else
     if (N(2) < 0)
@@ -55,13 +55,17 @@ end
 ee = cross(vv, h)/mu - rr/r;
 e = norm(ee);
 
-if OM_check - pi < 0.0001 
+if OM_check == 0 && e < 1e-10       % APPROXIMATION HEEEEEEELP
     om = 0;
 else
-    if (ee(3) < 0)
-        om = wrapTo2Pi(2*pi - acos(dot(N,ee)/(norm(N)*e)));
+    if e < 1e-10
+        om = 0;
     else
-        om = wrapTo2Pi(acos(dot(N,ee)/(norm(N)*e)));
+        if (ee(3) < 0)
+            om = wrapTo2Pi(2*pi - acos(dot(N,ee)/(norm(N)*e)));
+        else
+            om = wrapTo2Pi(acos(dot(N,ee)/(norm(N)*e)));
+        end
     end
 end
 
