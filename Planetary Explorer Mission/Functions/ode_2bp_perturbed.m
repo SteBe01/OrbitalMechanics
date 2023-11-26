@@ -68,7 +68,7 @@ h0 = h0_vect(i);
 H = H_vect(i);
 
 rho = rho0 * exp(-(h-h0)/H);
-v_rel = v + cross([0 0 om_E], r)';
+v_rel = v - cross([0 0 om_E], r)';
 
 v_rel = v_rel*1000;
 a_drag = -0.5 * A_M * rho * cD * norm(v_rel)^2 * (v_rel ./ norm(v_rel)) * 1e-3;

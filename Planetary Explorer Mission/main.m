@@ -76,7 +76,7 @@ J2 = astroConstants(9);
 cD = 2.1;
 
 T = 2*pi*sqrt( orbit.a^3/mu );
-tspan= linspace( 0, T*20, 10000 );
+tspan= linspace( 0, T*23, 10000 );
 
 [r0, v0] = kep2car(orbit.a, orbit.e, orbit.i, orbit.OM, orbit.om, 0, mu);
 y0 = [ r0'; v0' ];
