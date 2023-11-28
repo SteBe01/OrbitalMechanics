@@ -76,7 +76,7 @@ J2 = astroConstants(9);
 cD = 2.1;
 
 T = 2*pi*sqrt( orbit.a^3/mu );
-tspan= linspace( 0, T*23, 10000 );
+tspan= linspace( 0, T*200, 10000 );
 
 [r0, v0] = kep2car(orbit.a, orbit.e, orbit.i, orbit.OM, orbit.om, 0, mu);
 y0 = [ r0'; v0' ];
@@ -94,12 +94,10 @@ earthPlot;
 plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
 plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
 
-a_vect = [];
-e_vect = [];
+a_vect = zeros(length(Y), 1);
+e_vect = zeros(length(Y), 1);
 for i = 1:length(Y)
-    [a, e, ~, ~, ~, ~] = car2kep(Y(i,1:3), Y(i,4:6), mu);
-    a_vect = [a_vect a];
-    e_vect = [e_vect e];
+    [a_vect(i), e_vect(i), ~, ~, ~, ~] = car2kep(Y(i,1:3), Y(i,4:6), mu);
 end
 
 figure
