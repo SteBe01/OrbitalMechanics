@@ -136,3 +136,14 @@ tspan= linspace( 0, T, tspan_dim );
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart_perturbed(y0, tspan*orbit_number, earth.mu, theta_g, om_E, earth.r, earth.J2, spacecraft.AM, spacecraft.cD);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
+
+
+%% other celestial body
+
+clear, clc
+close all
+
+A = importdata("test.csv");
+e_vect = A.data(:, 1);
+plot(movmean(e_vect, 50))
+grid on
