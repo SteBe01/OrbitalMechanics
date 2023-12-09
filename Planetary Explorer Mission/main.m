@@ -147,3 +147,77 @@ A = importdata("test.csv");
 e_vect = A.data(:, 1);
 plot(movmean(e_vect, 50))
 grid on
+
+
+%% perturbations of new body
+
+clc
+close all
+
+A = importdata("test.csv");
+kep_body = [A.data(1,10), A.data(1,1), deg2rad(A.data(1,3)), deg2rad(A.data(1,4)), deg2rad(A.data(1,5)), deg2rad(A.data(1,9)), earth.mu];
+[r0, v0] = kep2car(kep_body);
+
+n_orbits = 30;
+n_points = length(A.data);
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan= linspace( 0, T*n_orbits, n_points );
+
+y0 = [ r0'; v0' ];
+
+options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
+[ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
+
+figure()
+plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
+xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+title('Two-body problem orbit, with J2 and air drag');
+axis equal, grid on, hold on
+earthPlot;
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
+
+a_vect = zeros(length(Y), 1);
+e_vect = zeros(length(Y), 1);
+for i = 1:length(Y)
+    [a_vect(i), e_vect(i), ~, ~, ~, ~] = car2kep(Y(i,1:3), Y(i,4:6), earth.mu);
+end
+
+figure
+plot(a_vect)
+grid on
+title('a');
+xlabel('time [s]'); ylabel('a [km]');
+
+figure
+plot(e_vect)
+grid on
+title('e');
+xlabel('time [s]'); ylabel('e [-]');
+
+figure
+plot(movmean(A.data(:,1), 50))
+hold on
+plot(movmean(e_vect, 65))
+
+
+%% movmean finder
+
+data = A.data(:,1);
+
+figure
+hold on
+
+for i = 1:1:100
+    a = plot(movmean(data, i));
+    drawnow
+    i
+    pause(1)
+    delete(a)
+end
+legend
+
+% 33, 65, 98
+% 19, 25, 31, 37, 50
+
