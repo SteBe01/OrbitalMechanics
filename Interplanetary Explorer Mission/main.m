@@ -228,18 +228,19 @@ departure.planetId = 6;
 flyby.plnetId = 5;
 arrival.bodyId = 79;
 
-
+%first lambert arc
 depplanet.dep_time_vect = linspace(date2mjd2000(depplanet.dep_time), date2mjd2000(flyby.arr_time), 300);
 flyby.arr_time_vect = linspace(date2mjd2000(depplanet.dep_time), date2mjd2000(flyby.arr_time), 300);
+
+%second lambert arc
 flyby.dep_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrplanet.arr_time), 300);
 arrplanet.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrplanet.arr_time), 300);
 
-% dep_time_vect = linspace(1.35e4, 1.48e4, 100);
-% arr_time_vect = linspace(1.535e4, 1.565e4, 100);
 
 orbitType = 0;
 dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
 dv_2 = dv_1;
+dv_3 = dv_2;
 tof_vect = dv_1;
 
 
