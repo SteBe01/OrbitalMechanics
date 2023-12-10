@@ -20,6 +20,7 @@ addpath("Functions_custom\")
 clc
 close all
 
+
 time_instant = [2028 01 01 0 0 0];
 departure.planetId = 6;
 flyby.plnetId = 5;
@@ -208,4 +209,39 @@ ylabel("Arrival")
 plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
+
+
+
+%% Grid Search
+
+
+
+%% Synodic Periods
+
+time_instant = [2028 01 01 0 0 0];
+departure.planetId = 6;
+flyby.plnetId = 5;
+arrival.bodyId = 79;
+
+time_instant_mjd200 = date2mjd2000(time_instant);
+
+[departure.kep, ksun] = uplanet(time_instant_mjd200, departure.planetId);
+[flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.plnetId);
+[arrival.kep, ~, ~] = ephNEO(time_instant_mjd200, arrival.bodyId);
+
+
+departure.T_orb = 2*pi*sqrt( departure.kep(1)^3/ksun ); % Orbital period [1/s]
+
+flyby.T_orb = 2*pi*sqrt( flyby.kep(1)^3/ksun ); % Orbital period [1/s]
+
+arrival.T_orb = 2*pi*sqrt( arrival.kep(1)^3/ksun ); % Orbital period [1/s]
+
+%Synodic Period between departure planet and flyby
+T_syn_dep_flyby=(departure.T_orb*flyby.T_orb)/(abs(departure.T_orb-flyby.T_orb)); %[s]
+
+%Synodic Period between flyby planet and arrival
+T_syn_flyby_arr=(arrival.T_orb*flyby.T_orb)/(abs(arrival.T_orb-flyby.T_orb)); %[s]
+
+
+
 
