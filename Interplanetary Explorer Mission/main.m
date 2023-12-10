@@ -8,11 +8,11 @@ addpath("Functions\time\")
 addpath("Functions_custom\")
 
 % data - goup 2346
-%Departure: Saturn
-%Flyby: Jupiter
-%Arrival: Asteriod N.79
-%Earliest Departure: 00:00:00 01/01/2028
-%Latest Arrival: 00:00:00 01/01/2058
+% Departure: Saturn
+% Flyby: Jupiter
+% Arrival: Asteriod N.79
+% Earliest Departure: 00:00:00 01/01/2028
+% Latest Arrival: 00:00:00 01/01/2058
 
 
 %% orbit plot
