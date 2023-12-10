@@ -212,11 +212,51 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 
 
 
-%% Grid Search
+%% Grid Search for departure-flyby-arrival
+
+clc, clear
+close all
+
+-----%Define well this values with Tsyn and ToF!!!!!!
+depplanet.dep_time = [2028 01 01 0 0 0];
+flyby.arr_time = [2043 01 01 0 0 0];
+flyby.dep_time = [2044 01 01 0 0 0];
+arrplanet.arr_time = [2058 01 01 0 0 0];
+%-----------------------------------------------------
+
+departure.planetId = 6;
+flyby.plnetId = 5;
+arrival.bodyId = 79;
+
+
+depplanet.dep_time_vect = linspace(date2mjd2000(depplanet.dep_time), date2mjd2000(flyby.arr_time), 300);
+flyby.arr_time_vect = linspace(date2mjd2000(depplanet.dep_time), date2mjd2000(flyby.arr_time), 300);
+flyby.dep_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrplanet.arr_time), 300);
+arrplanet.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrplanet.arr_time), 300);
+
+% dep_time_vect = linspace(1.35e4, 1.48e4, 100);
+% arr_time_vect = linspace(1.535e4, 1.565e4, 100);
+
+orbitType = 0;
+dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
+dv_2 = dv_1;
+tof_vect = dv_1;
+
+
+
+
+
+
+
+
+
 
 
 
 %% Synodic Periods
+
+clc, clear
+close all
 
 time_instant = [2028 01 01 0 0 0];
 departure.planetId = 6;
