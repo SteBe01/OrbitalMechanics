@@ -217,37 +217,87 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 clc, clear
 close all
 
------%Define well this values with Tsyn and ToF!!!!!!
-depplanet.dep_time = [2028 01 01 0 0 0];
+%--------Define well this values with Tsyn and ToF!!!!!!
+departure.dep_time = [2028 01 01 0 0 0];
 flyby.arr_time = [2043 01 01 0 0 0];
 flyby.dep_time = [2044 01 01 0 0 0];
-arrplanet.arr_time = [2058 01 01 0 0 0];
+arrival.arr_time = [2058 01 01 0 0 0];
 %-----------------------------------------------------
 
 departure.planetId = 6;
-flyby.plnetId = 5;
+flyby.planetId = 5;
 arrival.bodyId = 79;
 
 %first lambert arc
-depplanet.dep_time_vect = linspace(date2mjd2000(depplanet.dep_time), date2mjd2000(flyby.arr_time), 300);
-flyby.arr_time_vect = linspace(date2mjd2000(depplanet.dep_time), date2mjd2000(flyby.arr_time), 300);
+departure.dep_time_vect = linspace(date2mjd2000(departure.dep_time), date2mjd2000(flyby.arr_time), 300);
 
-%second lambert arc
-flyby.dep_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrplanet.arr_time), 300);
-arrplanet.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrplanet.arr_time), 300);
+flyby.time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(flyby.arr_time), 300);
+
+arrival.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrival.arr_time), 300);
 
 
 orbitType = 0;
-dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
+dv_1 = zeros(length(departure.dep_time_vect), length(flyby.time_vect),length(arrival.arr_time_vect));
 dv_2 = dv_1;
 dv_3 = dv_2;
-tof_vect = dv_1;
+tof_vect_1 = dv_1;
+tof_vect_2 = dv_3;
 
 
+for i = 1:length(departure.dep_time_vect)
+    for j = 1:length(flyby.time_vect)
+        for k = 1:length(arrival.arr_time_vect)
+
+            tof_1 = (flyby.time_vect(j) - departure.dep_time_vect(i)) * 24 * 60 * 60; % seconds
+            tof_2 = (arrival.arr_time_vect(k) - flyby.time_vect(j)) * 24 * 60 * 60; % seconds
+    
+            if (tof_1 <= 1e5) && (tof_2 <= 1e5)
+                dv_1(i, j, k) = NaN;
+                dv_2(i, j, k) = NaN;
+                continue
+            end
+            tof_vect__1(i, j, k) = tof_1;
+            tof_vect__2(i, j, k) = tof_2;
+    
+            [departure.kep, ksun] = uplanet(departure.dep_time_vect(i), departure.planetId);
+            [flyby.kep, ~] = uplanet(flyby.time_vect(j), flyby.planetId);
+            [arrival.kep, ~] = ephNEO(arrival.arr_time_vect(k), arrival.bodyId);
+    
+            [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
+            [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
+            [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
+    
+            [A_1, P_1, E_1, ERROR_1, VI_1, VF_1, TPAR_1, THETA_1] = lambertMR(departure.r0, flyby.r0, tof_1, ksun, orbitType, 0);
+            if A_1 < 0
+                dv_1(i, j, k) = NaN;
+                dv_2(i, j, k) = NaN;
+                continue
+            end
+
+            [A_2, P_2, E_2, ERROR_2, VI_2, VF_2, TPAR_2, THETA_2] = lambertMR(flyby.r0, arrival.r0, tof_2, ksun, orbitType, 0);
+            if A_2 < 0
+                dv_1(i, j, k) = NaN;
+                dv_2(i, j, k) = NaN;
+                continue
+            end
+    
+            dv_1(i, j, k) = norm(VI_1 - departure.v0);
+            dv_2(i, j, k) = norm(VF_1 - VF_2);
+            dv_3(i, j, k) = norm(arrival.v0 - VF_2);
+        end
+    end
+end
 
 
+dv = dv_1 + dv_2 + dv_3;
 
+contour3(departure.dep_time_vect, arrival.arr_time_vect, dv', 12:0.5:25) % 12:35
+colorbar, grid on, hold on, axis equal
+xlabel("Departure")
+ylabel("Arrival")
 
+[pos1, pos2, pos3] = find(dv == min(min(dv)));
+plot3(departure.dep_time_vect(pos1),flyby.time_vect(pos2), arr_time_vect(pos3), 'xr', LineWidth=1)
 
 
 
@@ -261,13 +311,13 @@ close all
 
 time_instant = [2028 01 01 0 0 0];
 departure.planetId = 6;
-flyby.plnetId = 5;
+flyby.planetId = 5;
 arrival.bodyId = 79;
 
 time_instant_mjd200 = date2mjd2000(time_instant);
 
 [departure.kep, ksun] = uplanet(time_instant_mjd200, departure.planetId);
-[flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.plnetId);
+[flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.planetId);
 [arrival.kep, ~, ~] = ephNEO(time_instant_mjd200, arrival.bodyId);
 
 
