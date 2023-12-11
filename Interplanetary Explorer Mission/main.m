@@ -229,11 +229,11 @@ flyby.planetId = 5;
 arrival.bodyId = 79;
 
 %first lambert arc
-departure.dep_time_vect = linspace(date2mjd2000(departure.dep_time), date2mjd2000(flyby.arr_time), 300);
+departure.dep_time_vect = linspace(date2mjd2000(departure.dep_time), date2mjd2000(flyby.arr_time), 100);
 
-flyby.time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(flyby.arr_time), 300);
+flyby.time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(flyby.arr_time), 100);
 
-arrival.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrival.arr_time), 300);
+arrival.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrival.arr_time), 100);
 
 
 orbitType = 0;
@@ -291,7 +291,7 @@ end
 
 dv = dv_1 + dv_2 + dv_3;
 
-contour3(departure.dep_time_vect, arrival.arr_time_vect, dv', 12:0.5:25) % 12:35
+scatter3(departure.dep_time_vect, arrival.arr_time_vect, dv, 12:0.5:25) % 12:35
 colorbar, grid on, hold on, axis equal
 xlabel("Departure")
 ylabel("Arrival")
@@ -332,6 +332,9 @@ T_syn_dep_flyby=(departure.T_orb*flyby.T_orb)/(abs(departure.T_orb-flyby.T_orb))
 
 %Synodic Period between flyby planet and arrival
 T_syn_flyby_arr=(arrival.T_orb*flyby.T_orb)/(abs(arrival.T_orb-flyby.T_orb)); %[s]
+
+%Synodic Period between departure planet and arrival
+T_syn_dep_arr=(arrival.T_orb*departure.T_orb)/(abs(arrival.T_orb-departure.T_orb)); %[s]
 
 
 
