@@ -212,7 +212,7 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 
 
 
-%% Grid Search for departure-flyby-arrival
+%% Grid Search for departure-flyby-arrival REALLY WRONG RN
 
 clc, clear
 close all
