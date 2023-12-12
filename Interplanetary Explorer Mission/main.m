@@ -72,6 +72,7 @@ scatter3(departure.r0(1), departure.r0(2), departure.r0(3), "blu", "filled")
 scatter3(flyby.r0(1), flyby.r0(2), flyby.r0(3), "green", "filled")
 scatter3(arrival.r0(1), arrival.r0(2), arrival.r0(3), "red", "filled")
 
+
 legend("Departure (Saturn)", "Fly-By (Jupiter)", "Arrival (Asteroid N.79)", Location="best")
 
 xlim([min(min(min(departure.Y(:,1)), min(flyby.Y(:,1))), min(arrival.Y(:,1))) max(max(max(departure.Y(:,1)), max(flyby.Y(:,1))), max(arrival.Y(:,1)))])
@@ -229,11 +230,11 @@ flyby.planetId = 5;
 arrival.bodyId = 79;
 
 %first lambert arc
-departure.dep_time_vect = linspace(date2mjd2000(departure.dep_time), date2mjd2000(flyby.arr_time), 100);
+departure.dep_time_vect = linspace(date2mjd2000(departure.dep_time), date2mjd2000(flyby.arr_time), 50);
 
-flyby.time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(flyby.arr_time), 100);
+flyby.time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(flyby.arr_time), 50);
 
-arrival.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrival.arr_time), 100);
+arrival.arr_time_vect = linspace(date2mjd2000(flyby.dep_time), date2mjd2000(arrival.arr_time), 50);
 
 
 orbitType = 0;
@@ -291,15 +292,13 @@ end
 
 dv = dv_1 + dv_2 + dv_3;
 
-scatter3(departure.dep_time_vect, arrival.arr_time_vect, dv, 12:0.5:25) % 12:35
-colorbar, grid on, hold on, axis equal
-xlabel("Departure")
-ylabel("Arrival")
-
-[pos1, pos2, pos3] = find(dv == min(min(dv)));
-plot3(departure.dep_time_vect(pos1),flyby.time_vect(pos2), arr_time_vect(pos3), 'xr', LineWidth=1)
-
-
+% scatter3(departure.dep_time_vect, arrival.arr_time_vect, dv, 12:0.5:25) % 12:35
+% colorbar, grid on, hold on, axis equal
+% xlabel("Departure")
+% ylabel("Arrival")
+% 
+% [pos1, pos2, pos3] = find(dv == min(min(dv)));
+% plot3(departure.dep_time_vect(pos1),flyby.time_vect(pos2), arr_time_vect(pos3), 'xr', LineWidth=1)
 
 
 
