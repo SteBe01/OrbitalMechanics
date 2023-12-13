@@ -148,9 +148,198 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
-% ----------Larmbert arc departure flyby
 
-%Define actual Transfer Mission Parameters
+
+%% porkchop plots - fly by, arrival
+
+clc, clear
+close all
+
+dep_time = [2028 01 01 0 0 0];
+arr_time = [2058 01 01 0 0 0];
+
+flyby.planetId = 5;
+arrival.bodyId = 79;
+
+dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
+arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
+
+% dep_time_vect = linspace(1.35e4, 1.48e4, 100);
+% arr_time_vect = linspace(1.535e4, 1.565e4, 100);
+
+orbitType = 0;
+dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
+dv_2 = dv_1;
+tof_vect = dv_1;
+for i = 1:length(dep_time_vect)
+    for j = 1:length(arr_time_vect)
+        tof = (arr_time_vect(j) - dep_time_vect(i)) * 24 * 60 * 60; % seconds
+
+        if tof <= 1e5
+            dv_1(i, j) = NaN;
+            dv_2(i, j) = NaN;
+            continue
+        end
+        tof_vect(i, j) = tof;
+
+        [flyby.kep, ksun] = uplanet(dep_time_vect(i), flyby.planetId);
+        [arrival.kep, ~] = ephNEO(arr_time_vect(j), arrival.bodyId);
+
+        [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
+        [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
+
+        [A, P, E, ERROR, VI, VF, TPAR, THETA] = lambertMR(flyby.r0, arrival.r0, tof, ksun, orbitType, 0);
+        if A < 0
+            dv_1(i, j) = NaN;
+            dv_2(i, j) = NaN;
+            continue
+        end
+
+        dv_1(i, j) = norm(VI - flyby.v0);
+        dv_2(i, j) = norm(arrival.v0 - VF);
+    end
+end
+
+dv = dv_1 + dv_2;
+
+contour(dep_time_vect, arr_time_vect, dv', 12:0.5:25) % 12:35
+colorbar, grid on, hold on, axis equal
+xlabel("Departure")
+ylabel("Arrival")
+
+[pos1, pos2] = find(dv == min(min(dv)));
+plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
+
+% surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
+
+
+
+%% Grid Search for departure-flyby-arrival 
+
+clc, clear
+close all
+
+%--------Define well this values with Tsyn and ToF!!!!!!
+departure.dep_time = [2028 01 01 0 0 0];
+departure.arr_time = [2058 01 01 0 0 0];
+flyby.arr_time = [2028 01 01 0 0 0];
+flyby.dep_time = [2058 01 01 0 0 0];
+arrival.dep_time = [2028 01 01 0 0 0];
+arrival.arr_time = [2058 01 01 0 0 0];
+rp=1000; %[km]
+%-----------------------------------------------------
+
+departure.planetId = 6;
+flyby.planetId = 5;
+arrival.bodyId = 79;
+
+time1=date2mjd2000(departure.dep_time);
+time2=date2mjd2000(departure.arr_time);
+time3=date2mjd2000(flyby.dep_time);
+time4=date2mjd2000(flyby.arr_time);
+time5=date2mjd2000(arrival.dep_time);
+time6=date2mjd2000(arrival.arr_time);
+
+%first lambert arc
+departure.time_vect = linspace(time1,time2, 20);
+
+flyby.time_vect = linspace(time3,time4, 20);
+
+arrival.time_vect = linspace(time5,time6, 20);
+
+
+orbitType = 0;
+dv_1 = zeros(length(departure.time_vect), length(flyby.time_vect),length(arrival.time_vect));
+dv_2 = dv_1;
+dv_3 = dv_2;
+tof_vect_1 = dv_1;
+tof_vect_2 = dv_3;
+fixedtol=1;
+tol=departure.time_vect(end)-departure.time_vect(1);
+
+while fixedtol<tol
+    for i = 1:length(departure.time_vect)
+        for j = 1:length(flyby.time_vect)
+            for k = 1:length(arrival.time_vect)
+    
+                tof_1 = (flyby.time_vect(j) - departure.time_vect(i)) * 24 * 60 * 60; % seconds
+                tof_2 = (arrival.time_vect(k) - flyby.time_vect(j)) * 24 * 60 * 60; % seconds
+        
+                if (tof_1 <= 1e5) && (tof_2 <= 1e5)
+                    dv_1(i, j, k) = NaN;
+                    dv_2(i, j, k) = NaN;
+                    dv_3(i, j, k) = NaN;
+                    continue
+                end
+                tof_vect_1(i, j, k) = tof_1;
+                tof_vect_2(i, j, k) = tof_2;
+        
+                [departure.kep, ksun] = uplanet(departure.time_vect(i), departure.planetId);
+                [flyby.kep, ~] = uplanet(flyby.time_vect(j), flyby.planetId);
+                [arrival.kep, ~] = ephNEO(arrival.time_vect(k), arrival.bodyId);
+        
+                [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
+                [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
+                [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
+        
+                [A_1, P_1, E_1, ERROR_1, VI_1, VF_1, TPAR_1, THETA_1] = lambertMR(departure.r0, flyby.r0, tof_1, ksun, orbitType, 0);
+                if A_1 < 0
+                    dv_1(i, j, k) = NaN;
+                    dv_2(i, j, k) = NaN;
+                    dv_3(i, j, k) = NaN;
+                    continue
+                end
+    
+                [A_2, P_2, E_2, ERROR_2, VI_2, VF_2, TPAR_2, THETA_2] = lambertMR(flyby.r0, arrival.r0, tof_2, ksun, orbitType, 0);
+                if A_2 < 0
+                    dv_1(i, j, k) = NaN;
+                    dv_2(i, j, k) = NaN;
+                    dv_3(i, j, k) = NaN;
+                    continue
+                end
+        
+                dv_1(i, j, k) = norm(VI_1 - departure.v0);
+                dv_2(i, j, k) = abs(sqrt((2*astroConstants(13)/rp)+norm(VF_1+flyby.v0)^2)-sqrt((2*astroConstants(13)/rp)+norm(VI_2+flyby.v0)^2));
+                dv_3(i, j, k) = norm(arrival.v0 - VF_2);
+                
+            end
+        end
+    end
+
+
+dv = dv_1 + dv_2 + dv_3;
+
+[min, pos1, pos2, pos3] = findMin(dv);
+
+
+
+if pos1==1
+    departure.time_vect=linspace(departure.time_vect(pos1),departure.time_vect(pos1+1),20);
+    tol=departure.time_vect(pos1+1)-departure.time_vect(pos1);
+else
+    departure.time_vect=linspace(departure.time_vect(pos1-1),departure.time_vect(pos1+1),20);
+    tol=departure.time_vect(pos1+1)-departure.time_vect(pos1-1);
+end
+
+if pos2==1
+    flyby.time_vect=linspace(flyby.time_vect(pos2),flyby.time_vect(pos2+1),20);
+else
+    flyby.time_vect=linspace(flyby.time_vect(pos2-1),flyby.time_vect(pos2+1),20);
+end
+
+if pos3==1
+    arrival.time_vect=linspace(arrival.time_vect(pos3),arrival.time_vect(pos3+1),20);
+else
+    arrival.time_vect=linspace(arrival.time_vect(pos3-1),arrival.time_vect(pos3+1),20);
+
+end
+
+disp ("Iteration done!")
+end
+
+% ----------PLOT
+
+%Define Actual Parameters for first transfer
 
 departure.Departure_Date = mjd20002date(ep_time_vect(pos1));
 flyby.ArrivalDate = mjd20002date(arr_time_vect(pos2));
@@ -251,200 +440,6 @@ tspan= linspace( 0, flyby.T_orb, 200 );
 % hold off
 % 
 
-
-
-
-
-
-%% porkchop plots - fly by, arrival
-
-clc, clear
-close all
-
-dep_time = [2028 01 01 0 0 0];
-arr_time = [2058 01 01 0 0 0];
-
-flyby.planetId = 5;
-arrival.bodyId = 79;
-
-dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
-arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
-
-% dep_time_vect = linspace(1.35e4, 1.48e4, 100);
-% arr_time_vect = linspace(1.535e4, 1.565e4, 100);
-
-orbitType = 0;
-dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
-dv_2 = dv_1;
-tof_vect = dv_1;
-for i = 1:length(dep_time_vect)
-    for j = 1:length(arr_time_vect)
-        tof = (arr_time_vect(j) - dep_time_vect(i)) * 24 * 60 * 60; % seconds
-
-        if tof <= 1e5
-            dv_1(i, j) = NaN;
-            dv_2(i, j) = NaN;
-            continue
-        end
-        tof_vect(i, j) = tof;
-
-        [flyby.kep, ksun] = uplanet(dep_time_vect(i), flyby.planetId);
-        [arrival.kep, ~] = ephNEO(arr_time_vect(j), arrival.bodyId);
-
-        [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
-        [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
-
-        [A, P, E, ERROR, VI, VF, TPAR, THETA] = lambertMR(flyby.r0, arrival.r0, tof, ksun, orbitType, 0);
-        if A < 0
-            dv_1(i, j) = NaN;
-            dv_2(i, j) = NaN;
-            continue
-        end
-
-        dv_1(i, j) = norm(VI - flyby.v0);
-        dv_2(i, j) = norm(arrival.v0 - VF);
-    end
-end
-
-dv = dv_1 + dv_2;
-
-contour(dep_time_vect, arr_time_vect, dv', 12:0.5:25) % 12:35
-colorbar, grid on, hold on, axis equal
-xlabel("Departure")
-ylabel("Arrival")
-
-[pos1, pos2] = find(dv == min(min(dv)));
-plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
-
-% surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
-
-
-
-%% Grid Search for departure-flyby-arrival 
-
-clc, clear
-close all
-
-%--------Define well this values with Tsyn and ToF!!!!!!
-departure.dep_time = [2028 01 01 0 0 0];
-departure.arr_time = [2058 01 01 0 0 0];
-flyby.arr_time = [2028 01 01 0 0 0];
-flyby.dep_time = [2058 01 01 0 0 0];
-arrival.dep_time = [2028 01 01 0 0 0];
-arrival.arr_time = [2058 01 01 0 0 0];
-rp=1000; %[km]
-%-----------------------------------------------------
-
-departure.planetId = 6;
-flyby.planetId = 5;
-arrival.bodyId = 79;
-[flyby.kep, ksun] = uplanet(date2mjd2000(flyby.arr_time), flyby.planetId);
-[flyby.r0, flyby.v0] = kep2car([flyby.kep, ksun]);
-
-time1=date2mjd2000(departure.dep_time);
-time2=date2mjd2000(departure.arr_time);
-time3=date2mjd2000(flyby.dep_time);
-time4=date2mjd2000(flyby.arr_time);
-time5=date2mjd2000(arrival.dep_time);
-time6=date2mjd2000(arrival.arr_time);
-
-%first lambert arc
-departure.time_vect = linspace(time1,time2, 20);
-
-flyby.time_vect = linspace(time3,time4, 20);
-
-arrival.time_vect = linspace(time5,time6, 20);
-
-
-orbitType = 0;
-dv_1 = zeros(length(departure.time_vect), length(flyby.time_vect),length(arrival.time_vect));
-dv_2 = dv_1;
-dv_3 = dv_2;
-tof_vect_1 = dv_1;
-tof_vect_2 = dv_3;
-fixedtol=1;
-tol=departure.time_vect(end)-departure.time_vect(1);
-
-while fixedtol<tol
-    for i = 1:length(departure.time_vect)
-        for j = 1:length(flyby.time_vect)
-            for k = 1:length(arrival.time_vect)
-    
-                tof_1 = (flyby.time_vect(j) - departure.time_vect(i)) * 24 * 60 * 60; % seconds
-                tof_2 = (arrival.time_vect(k) - flyby.time_vect(j)) * 24 * 60 * 60; % seconds
-        
-                if (tof_1 <= 1e5) && (tof_2 <= 1e5)
-                    dv_1(i, j, k) = NaN;
-                    dv_2(i, j, k) = NaN;
-                    dv_3(i, j, k) = NaN;
-                    continue
-                end
-                tof_vect_1(i, j, k) = tof_1;
-                tof_vect_2(i, j, k) = tof_2;
-        
-                [departure.kep, ksun] = uplanet(departure.time_vect(i), departure.planetId);
-                [flyby.kep, ~] = uplanet(flyby.time_vect(j), flyby.planetId);
-                [arrival.kep, ~] = ephNEO(arrival.time_vect(k), arrival.bodyId);
-        
-                [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
-                [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
-                [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
-        
-                [A_1, P_1, E_1, ERROR_1, VI_1, VF_1, TPAR_1, THETA_1] = lambertMR(departure.r0, flyby.r0, tof_1, ksun, orbitType, 0);
-                if A_1 < 0
-                    dv_1(i, j, k) = NaN;
-                    dv_2(i, j, k) = NaN;
-                    dv_3(i, j, k) = NaN;
-                    continue
-                end
-    
-                [A_2, P_2, E_2, ERROR_2, VI_2, VF_2, TPAR_2, THETA_2] = lambertMR(flyby.r0, arrival.r0, tof_2, ksun, orbitType, 0);
-                if A_2 < 0
-                    dv_1(i, j, k) = NaN;
-                    dv_2(i, j, k) = NaN;
-                    dv_3(i, j, k) = NaN;
-                    continue
-                end
-        
-                dv_1(i, j, k) = norm(VI_1 - departure.v0);
-                dv_2(i, j, k) = abs(sqrt((2*astroConstants(13)/rp)+norm(VF_1+flyby.v0)^2)-sqrt((2*astroConstants(13)/rp)+norm(VI_2+flyby.v0)^2));
-                dv_3(i, j, k) = norm(arrival.v0 - VF_2);
-                
-            end
-        end
-    end
-
-
-dv = dv_1 + dv_2 + dv_3;
-
-[min, pos1, pos2, pos3] = findMin(dv);
-
-
-
-
-if pos1==1
-    departure.time_vect=linspace(departure.time_vect(pos1),departure.time_vect(pos1+1),20);
-    tol=departure.time_vect(pos1+1)-departure.time_vect(pos1);
-else
-    departure.time_vect=linspace(departure.time_vect(pos1-1),departure.time_vect(pos1+1),20);
-    tol=departure.time_vect(pos1+1)-departure.time_vect(pos1-1);
-end
-
-if pos2==1
-    flyby.time_vect=linspace(flyby.time_vect(pos2),flyby.time_vect(pos2+1),20);
-else
-    flyby.time_vect=linspace(flyby.time_vect(pos2-1),flyby.time_vect(pos2+1),20);
-end
-
-if pos3==1
-    arrival.time_vect=linspace(arrival.time_vect(pos3),arrival.time_vect(pos3+1),20);
-else
-    arrival.time_vect=linspace(arrival.time_vect(pos3-1),arrival.time_vect(pos3+1),20);
-
-end
-
-disp ("Iteration done!")
-end
 
 %% Synodic Periods
 
