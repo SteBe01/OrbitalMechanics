@@ -220,33 +220,24 @@ clc, clear
 close all
 
 %--------Define well this values with Tsyn and ToF!!!!!!
-departure.dep_time = [2028 01 01 0 0 0];
-departure.arr_time = [2058 01 01 0 0 0];
-flyby.arr_time = [2028 01 01 0 0 0];
-flyby.dep_time = [2058 01 01 0 0 0];
-arrival.dep_time = [2028 01 01 0 0 0];
-arrival.arr_time = [2058 01 01 0 0 0];
-rp=1000; %[km]
+mission.dep_time = [2028 01 01 0 0 0];
+mission.arr_time = [2058 01 01 0 0 0];
 %-----------------------------------------------------
 
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
+rp = 1000; %[km]
+fixedtol = 1;
+window_size = 20;
 
-time1=date2mjd2000(departure.dep_time);
-time2=date2mjd2000(departure.arr_time);
-time3=date2mjd2000(flyby.dep_time);
-time4=date2mjd2000(flyby.arr_time);
-time5=date2mjd2000(arrival.dep_time);
-time6=date2mjd2000(arrival.arr_time);
+time1=date2mjd2000(mission.dep_time);
+time2=date2mjd2000(mission.arr_time);
 
 %first lambert arc
-departure.time_vect = linspace(time1,time2, 20);
-
-flyby.time_vect = linspace(time3,time4, 20);
-
-arrival.time_vect = linspace(time5,time6, 20);
-
+departure.time_vect = linspace(time1, time2, window_size);
+flyby.time_vect = linspace(time1, time2, window_size);
+arrival.time_vect = linspace(time1, time2, window_size);
 
 orbitType = 0;
 dv_1 = zeros(length(departure.time_vect), length(flyby.time_vect),length(arrival.time_vect));
@@ -254,8 +245,8 @@ dv_2 = dv_1;
 dv_3 = dv_2;
 tof_vect_1 = dv_1;
 tof_vect_2 = dv_3;
-fixedtol=1;
-tol=departure.time_vect(end)-departure.time_vect(1);
+
+tol = departure.time_vect(end)-departure.time_vect(1);
 
 while fixedtol<tol
     for i = 1:length(departure.time_vect)
@@ -301,45 +292,58 @@ while fixedtol<tol
                 dv_1(i, j, k) = norm(VI_1 - departure.v0);
                 dv_2(i, j, k) = abs(sqrt((2*astroConstants(13)/rp)+norm(VF_1+flyby.v0)^2)-sqrt((2*astroConstants(13)/rp)+norm(VI_2+flyby.v0)^2));
                 dv_3(i, j, k) = norm(arrival.v0 - VF_2);
-                
             end
         end
     end
 
+    dv = dv_1 + dv_2 + dv_3;
+    [min, pos1, pos2, pos3] = findMin(dv);
 
-dv = dv_1 + dv_2 + dv_3;
+    if pos1 == 1
+        pos1_bnd_1 = 1;
+        pos1_bnd_2 = 1 + 1;
+    elseif pos1 == length(departure.time_vect)
+        pos1_bnd_2 = length(departure.time_vect);
+        pos1_bnd_1 = length(departure.time_vect) - 1;
+    else
+        pos1_bnd_1 = pos1 - 1;
+        pos1_bnd_2 = pos1 + 1;
+    end
 
-[min, pos1, pos2, pos3] = findMin(dv);
+    if pos2 == 1
+        pos2_bnd_1 = 1;
+        pos2_bnd_2 = 1 + 1;
+    elseif pos2 == length(flyby.time_vect)
+        pos2_bnd_2 = length(flyby.time_vect);
+        pos2_bnd_1 = length(flyby.time_vect) - 1;
+    else
+        pos2_bnd_1 = pos2 - 1;
+        pos2_bnd_2 = pos2 + 1;
+    end
 
+    if pos3 == 1
+        pos3_bnd_1 = 1;
+        pos3_bnd_2 = 1 + 1;
+    elseif pos3 == length(arrival.time_vect)
+        pos3_bnd_2 = length(arrival.time_vect);
+        pos3_bnd_1 = length(arrival.time_vect) - 1;
+    else
+        pos3_bnd_1 = pos3 - 1;
+        pos3_bnd_2 = pos3 + 1;
+    end
 
+    departure.time_vect = linspace(departure.time_vect(pos1_bnd_1), departure.time_vect(pos1_bnd_2), window_size);
+    flyby.time_vect = linspace(flyby.time_vect(pos2_bnd_1), flyby.time_vect(pos2_bnd_2), window_size);
+    arrival.time_vect = linspace(arrival.time_vect(pos3_bnd_1), arrival.time_vect(pos3_bnd_2), window_size);
 
-if pos1==1
-    departure.time_vect=linspace(departure.time_vect(pos1),departure.time_vect(pos1+1),20);
-    tol=departure.time_vect(pos1+1)-departure.time_vect(pos1);
-else
-    departure.time_vect=linspace(departure.time_vect(pos1-1),departure.time_vect(pos1+1),20);
-    tol=departure.time_vect(pos1+1)-departure.time_vect(pos1-1);
+    tol = departure.time_vect(pos1_bnd_2) - departure.time_vect(pos1_bnd_1);
+
+    disp ("Iteration done, dv = " + min + " km/s")
 end
 
-if pos2==1
-    flyby.time_vect=linspace(flyby.time_vect(pos2),flyby.time_vect(pos2+1),20);
-else
-    flyby.time_vect=linspace(flyby.time_vect(pos2-1),flyby.time_vect(pos2+1),20);
-end
+%% ----------PLOT
 
-if pos3==1
-    arrival.time_vect=linspace(arrival.time_vect(pos3),arrival.time_vect(pos3+1),20);
-else
-    arrival.time_vect=linspace(arrival.time_vect(pos3-1),arrival.time_vect(pos3+1),20);
-
-end
-
-disp ("Iteration done!")
-end
-
-% ----------PLOT
-
-%Define Actual Parameters for first transfer
+% Define Actual Parameters for first transfer
 
 departure.Departure_Date = mjd20002date(ep_time_vect(pos1));
 flyby.ArrivalDate = mjd20002date(arr_time_vect(pos2));
@@ -473,6 +477,8 @@ T_syn_flyby_arr=(arrival.T_orb*flyby.T_orb)/(abs(arrival.T_orb-flyby.T_orb)); %[
 %Synodic Period between departure planet and arrival
 T_syn_dep_arr=(arrival.T_orb*departure.T_orb)/(abs(arrival.T_orb-departure.T_orb)); %[s]
 
+
+
 %% function find dvmin
 
 function [min, pos1, pos2, pos3] = findMin(dv)
@@ -487,7 +493,7 @@ function [min, pos1, pos2, pos3] = findMin(dv)
                     min = dv(i, j, k);
                     pos1 = i;
                     pos2 = j;
-                    pos3=k;
+                    pos3 = k;
                 end
             end
         end
