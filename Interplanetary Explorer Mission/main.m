@@ -212,7 +212,7 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
-%% Find Departure and Arrival Dates
+%% Find Departure and Arrival Dates Ranges
 
 % ---Synodic Periods-----------
 
