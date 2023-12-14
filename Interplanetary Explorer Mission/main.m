@@ -472,7 +472,79 @@ legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Transfer Arc 1','Tr
 hold off
 
 
-%% GA on Jupiter
+% ---------GA on Jupiter
+
+%Heliocentric Velocities
+V_minus=VF_1_actual+flyby.v0_actual; %[km/s]
+V_plus=VI_2_actual+flyby.v0_actual; %[km/s]
+
+%Planet Velocity
+V_Planet=flyby.v0_actual;
+
+%Planetocentric velocites
+v_minus_inf=VF_1_actual;
+v_plus_inf=VI_2_actual;
+
+
+%Turning Angle
+delta = acos(dot(v_plus_inf,v_minus_inf)/(norm(v_plus_inf)*norm(v_minus_inf)));
+delta_deg=rad2deg(delta);
+
+h_atmosphere=50000;
+rp_guess=astroConstants(25)+h_atmosphere;
+%delta function
+delta_eq= @(rp) (asin(1/(1+(rp*norm(v_minus_inf)^2/astroConstants(15)))))+(asin(1/(1+(rp*norm(v_plus_inf)^2/astroConstants(15)))))-delta;
+rp = fzero(@(rp) delta_eq(rp), rp_guess);
+
+% GA altitude
+h_GA=rp-astroConstants(25);
+
+%velocities of hiperbolic arcs at pericentre
+vp_minus=sqrt((2*astroConstants(15)/rp)+norm(v_minus_inf)^2);
+vp_plus=sqrt((2*astroConstants(15)/rp)+norm(v_plus_inf)^2);
+delta_vp=abs(vp_minus-vp_plus);
+
+%characterize entry leg hiperbola
+e_minus=((rp*+norm(v_minus_inf)^2)/astroConstants(15))+1;
+a_minus=-rp/(e_minus-1);
+
+
+%characterize exit leg hiperbola
+e_plus=((rp*+norm(v_plus_inf)^2)/astroConstants(15))+1;
+a_plus=-rp/(e_plus-1);
+
+u=[0 0 1];
+totalV_vector = v_plus_inf+v_minus_inf;
+rp_vector = -rp*(cross(u,totalV_vector))/norm(cross(u,totalV_vector));
+
+%Propagation of orbit minus leg
+% Set time span
+tspan_minus = linspace( 0, 3*60*60, 5000 );
+% Set initial conditions
+v_0_minus = sqrt(astroConstants(15)*(2/rp - 1/a_minus));
+y0_minus = [rp_vector -v_0_minus.*(totalV_vector./norm(totalV_vector))];
+% Perform the integration
+[ t_minus, Y_minus ] = ode113( @(t_minus,y_minus) ode_2bp(t_minus,y_minus,astroConstants(15)), tspan_minus, y0_minus, options );
+
+
+%Propagation of orbit plus leg
+% Set time span
+tspan_plus = linspace( 0, 3*60*60, 5000 );
+% Set initial conditions
+v_0_plus = sqrt(astroConstants(15)*(2/rp - 1/a_plus));
+y0_plus = [rp_vector v_0_plus.*(totalV_vector./norm(totalV_vector))];
+% Perform the integration
+[ t_plus, Y_plus ] = ode113( @(t_plus,y_plus) ode_2bp(t_plus,y_plus,astroConstants(15)), tspan_plus, y0_plus, options );
+
+
+figure()
+opts.Units = 'km';
+jupiterPlot;
+hold on;
+plot3( Y_minus(:,1), Y_minus(:,2), Y_minus(:,3),Y_plus(:,1), Y_plus(:,2), Y_plus(:,3));
+hold off
+xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+grid on
 
 
 
