@@ -212,6 +212,36 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
+%% Find Departure and Arrival Dates
+
+% ---Synodic Periods-----------
+
+time_instant = [2028 01 01 0 0 0];
+departure.planetId = 6;
+flyby.planetId = 5;
+arrival.bodyId = 79;
+
+time_instant_mjd200 = date2mjd2000(time_instant);
+
+[departure.kep, ksun] = uplanet(time_instant_mjd200, departure.planetId);
+[flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.planetId);
+[arrival.kep, ~, ~] = ephNEO(time_instant_mjd200, arrival.bodyId);
+
+
+departure.T_orb = 2*pi*sqrt( departure.kep(1)^3/ksun ); % Orbital period [1/s]
+
+flyby.T_orb = 2*pi*sqrt( flyby.kep(1)^3/ksun ); % Orbital period [1/s]
+
+arrival.T_orb = 2*pi*sqrt( arrival.kep(1)^3/ksun ); % Orbital period [1/s]
+
+%Synodic Period between departure planet and flyby
+T_syn_dep_flyby=(departure.T_orb*flyby.T_orb)/(abs(departure.T_orb-flyby.T_orb)); %[s]
+
+%Synodic Period between flyby planet and arrival
+T_syn_flyby_arr=(arrival.T_orb*flyby.T_orb)/(abs(arrival.T_orb-flyby.T_orb)); %[s]
+
+%Synodic Period between departure planet and arrival
+T_syn_dep_arr=(arrival.T_orb*departure.T_orb)/(abs(arrival.T_orb-departure.T_orb)); %[s]
 
 
 %% Grid Search for departure-flyby-arrival 
@@ -341,141 +371,92 @@ while fixedtol<tol
     disp ("Iteration done, dv = " + min + " km/s")
 end
 
-%% ----------PLOT
+% ---PLOT-----------
 
-% Define Actual Parameters for first transfer
+% Define Actual Parameters
 
-departure.Departure_Date = mjd20002date(ep_time_vect(pos1));
-flyby.ArrivalDate = mjd20002date(arr_time_vect(pos2));
-ToF_dep_flyby=(ArrTd(arrmin)-DepTd(depmin))*24*60*60;
+departure.Date = mjd20002date(departure.time_vect(pos1));
+flyby.Date = mjd20002date(flyby.time_vect(pos2));
+ToF_dep_flyby=(flyby.time_vect(pos2)-departure.time_vect(pos1))*24*60*60;
 
-[departure.kep, ksun] = uplanet(departure.Departure_Date, departure.planetId);
-[flyby.kep, ~] = uplanet(flyby.ArrivalDate, flyby.plnetId);
+arrival.Date = mjd20002date(arrival.time_vect(pos3));
+ToF_flyby_arr=(arrival.time_vect(pos3)-flyby.time_vect(pos2))*24*60*60;
 
+[departure.kep_actual, ksun_actual] = uplanet(departure.time_vect(pos1), departure.planetId);
+[flyby.kep_actual, ~] = uplanet(flyby.time_vect(pos2), flyby.planetId);
+[arrival.kep_actual, ~] = ephNEO(arrival.time_vect(pos3), arrival.bodyId);
 
 % Set options for the ODE solver
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 
 % orbit propagation - departure
-[departure.r0, departure.v0] = kep2car([departure.kep, ksun]);
-departure.y0 = [departure.r0 departure.v0];
+[departure.r0_actual, departure.v0_actual] = kep2car([departure.kep_actual, ksun_actual]);
+departure.y0_actual = [departure.r0_actual departure.v0_actual];
 
-departure.T_orb = 2*pi*sqrt( departure.kep(1)^3/ksun ); % Orbital period [1/s]
-tspan= linspace( 0, departure.T_orb, 200 );
-[ ~, departure.Y ] = ode113( @(t,y) ode_2bp(t,y,ksun), tspan, departure.y0, options );
+departure.T_orb_actual = 2*pi*sqrt( departure.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
+departure.tspan= linspace( 0, departure.T_orb_actual, 200 );
+[ ~, departure.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), departure.tspan, departure.y0_actual, options );
+
 
 % orbit propagation - flyby
-[flyby.r0, flyby.v0] = kep2car([flyby.kep, ksun]);
-flyby.y0 = [flyby.r0 flyby.v0];
+[flyby.r0_actual, flyby.v0_actual] = kep2car([flyby.kep_actual, ksun_actual]);
+flyby.y0_actual = [flyby.r0_actual flyby.v0_actual];
 
-flyby.T_orb = 2*pi*sqrt( flyby.kep(1)^3/ksun ); % Orbital period [1/s]
-tspan= linspace( 0, flyby.T_orb, 200 );
-[ ~, flyby.Y ] = ode113( @(t,y) ode_2bp(t,y,ksun), tspan, flyby.y0, options );
-    
-
-% %Propagation transfer ARC
-% y0 = [ rEreal VIreal ];
-% % Set time span
-% Tt = 2*pi*sqrt( Areal^3/muSun ); % Orbital period [s]
-% tspan0 = linspace( 0,ToFreal, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% % Set options for the ODE solver
-% options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-% % Perform the integration
-% [   t, Y ] = ode113( @(t,y) ode_2bp(t,y,muSun), tspan0, y0, options );
-% 
-% 
-% % %Propagation Derparture Range
-% y0ED = [ rE vE ];
-% % Set time span
-% tspanED = linspace( 0,(-dep2d+dep1d)*24*60*60 , 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% % Set options for the ODE solver
-% options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-% % Perform the integration
-% [   t, YED ] = ode113( @(t,y) ode_2bp(t,y,ksunE), tspanED, y0ED, options );
-% 
-% % %Propagation Arrival Range
-% y0MA = [ rM vM ];
-% % Set time span
-% tspanMA = linspace( 0,(-arr2d+arr1d)*24*60*60 , 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% % Set options for the ODE solver
-% options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-% % Perform the integration
-% [   t, YMA ] = ode113( @(t,y) ode_2bp(t,y,ksunM), tspanMA, y0MA, options );
-% 
-% % %Propagation EARTH Motion During Transfer
-% y0Emot = [ rEreal vEreal ];
-% % Set time span
-% tspanEmot = linspace( 0, ToFreal, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% % Set options for the ODE solver
-% options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-% % Perform the integration
-% [   t, YEmot ] = ode113( @(t,y) ode_2bp(t,y,ksunEreal), tspanEmot, y0Emot, options );
-% 
-% % %Propagation MARS orbit
-% y0Mmot = [ rMrealfinal vMrealfinal ];
-% % Set time span
-% TMmot = 2*pi*sqrt( aMreal^3/ksunMreal ); % Orbital period [s]
-% tspanMmot = linspace( 0,ToFreal, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% % Set options for the ODE solver
-% options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-% % Perform the integration
-% [   t, YMmot ] = ode113( @(t,y) ode_2bp(t,y,ksunMreal), tspanMmot, y0Mmot, options );
-% 
-% 
-% % Plot the results
-% figure(2)
-% plot3( YE(:,1), YE(:,2), YE(:,3), '--','color', 'b' )
-% xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
-% title('orbits');
-% axis equal;
-% grid on;
-% hold on
-% plot3( YM(:,1), YM(:,2), YM(:,3), '--' ,'color', 'r')
-% plot3( Y(:,1), Y(:,2), Y(:,3), '-','color', 'g')
-% plot3( YED(:,1), YED(:,2), YED(:,3), '-' )
-% plot3( YMA(:,1), YMA(:,2), YMA(:,3), '-' )
-% plot3( YEmot(:,1), YEmot(:,2), YEmot(:,3), '-','color', 'b' )
-% plot3( YMmot(:,1), YMmot(:,2), YMmot(:,3), '-','color', 'r' )
-% plot3(rEreal(1),rEreal(2),rEreal(3),'o')
-% plot3(rMreal(1),rMreal(2),rMreal(3),'o')
-% plot3(0,0,0,'o','color', 'y')
-% legend('Earth Orbit','Mars Orbit','Trasnfer Arc','Departure Range','Arrival Range' ...
-%     ,'Earth Motion During Transfer','Mars Motion During Transfer')
-% hold off
-% 
+flyby.T_orb_actual = 2*pi*sqrt( flyby.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
+flyby.tspan= linspace( 0, flyby.T_orb_actual, 200 );
+[ ~, flyby.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), flyby.tspan, flyby.y0_actual, options );
 
 
-%% Synodic Periods
+% orbit propagation - arrival
+[arrival.r0_actual, arrival.v0_actual] = kep2car([arrival.kep_actual, ksun_actual]);
+arrival.y0_actual = [arrival.r0_actual arrival.v0_actual];
 
-clc, clear
-close all
-
-time_instant = [2028 01 01 0 0 0];
-departure.planetId = 6;
-flyby.planetId = 5;
-arrival.bodyId = 79;
-
-time_instant_mjd200 = date2mjd2000(time_instant);
-
-[departure.kep, ksun] = uplanet(time_instant_mjd200, departure.planetId);
-[flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.planetId);
-[arrival.kep, ~, ~] = ephNEO(time_instant_mjd200, arrival.bodyId);
+arrival.T_orb_actual = 2*pi*sqrt( arrival.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
+arrival.tspan= linspace( 0, arrival.T_orb_actual, 200 );
+[ ~, arrival.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), arrival.tspan, arrival.y0_actual, options );
 
 
-departure.T_orb = 2*pi*sqrt( departure.kep(1)^3/ksun ); % Orbital period [1/s]
+%Propagation first transfer ARC
+[A_1_actual, P_1_actual, E_1_actual, ERROR_1_actual, VI_1_actual, VF_1_actual, TPAR_1_actual, THETA_1_actual] = lambertMR(departure.r0_actual, flyby.r0_actual, ToF_dep_flyby, ksun_actual, orbitType, 0);
+y0_1 = [ departure.r0_actual VI_1_actual ];
+% Set time span
+T_1 = 2*pi*sqrt( A_1_actual^3/ksun_actual ); % Orbital period [s]
+tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
+% Perform the integration
+[   t, Y_1 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_1, y0_1, options );
 
-flyby.T_orb = 2*pi*sqrt( flyby.kep(1)^3/ksun ); % Orbital period [1/s]
 
-arrival.T_orb = 2*pi*sqrt( arrival.kep(1)^3/ksun ); % Orbital period [1/s]
+%Propagation second transfer ARC
+[A_2_actual, P_2_actual, E_2_actual, ERROR_2_actual, VI_2_actual, VF_2_actual, TPAR_2_actual, THETA_2_actual] = lambertMR(flyby.r0_actual, arrival.r0_actual, ToF_flyby_arr, ksun_actual, orbitType, 0);
+y0_2 = [ flyby.r0_actual VI_2_actual ];
+% Set time span
+T_2 = 2*pi*sqrt( A_2_actual^3/ksun_actual ); % Orbital period [s]
+tspan_2 = linspace( 0,ToF_flyby_arr, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
+% Perform the integration
+[   t, Y_2 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_2, y0_2, options );
 
-%Synodic Period between departure planet and flyby
-T_syn_dep_flyby=(departure.T_orb*flyby.T_orb)/(abs(departure.T_orb-flyby.T_orb)); %[s]
 
-%Synodic Period between flyby planet and arrival
-T_syn_flyby_arr=(arrival.T_orb*flyby.T_orb)/(abs(arrival.T_orb-flyby.T_orb)); %[s]
+% Plot the results
+figure()
+plot3( departure.Y_actual(:,1), departure.Y_actual(:,2), departure.Y_actual(:,3), '-','color', 'b' )
+xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+title('orbits');
+axis equal;
+grid on;
+hold on
+plot3( flyby.Y_actual(:,1),flyby.Y_actual(:,2), flyby.Y_actual(:,3), '-' ,'color', 'r')
+plot3( arrival.Y_actual(:,1), arrival.Y_actual(:,2), arrival.Y_actual(:,3), '-','color', 'g')
+plot3( Y_1(:,1), Y_1(:,2), Y_1(:,3), '--','color', 'm' )
+plot3( Y_2(:,1), Y_2(:,2), Y_2(:,3), '--','color', 'm' )
+plot3(departure.r0_actual(1),departure.r0_actual(2),departure.r0_actual(3),'o','Color','b','MarkerFaceColor','b')
+plot3(flyby.r0_actual(1),flyby.r0_actual(2),flyby.r0_actual(3),'o','Color','r','MarkerFaceColor','r')
+plot3(arrival.r0_actual(1),arrival.r0_actual(2),arrival.r0_actual(3),'o','Color','g','MarkerFaceColor','g')
+plot3(0,0,0,'o','Color','y','MarkerFaceColor','y')
+legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Trasnfer Arc 1','Trasnfer Arc 2', ...
+    'Saturn','Jupiter','Asteroid N.79','Sun')
+hold off
 
-%Synodic Period between departure planet and arrival
-T_syn_dep_arr=(arrival.T_orb*departure.T_orb)/(abs(arrival.T_orb-departure.T_orb)); %[s]
+%% GA on Jupiter
 
 
 
