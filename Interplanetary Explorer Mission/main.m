@@ -522,7 +522,7 @@ rp_vector = -rp*(cross(u,totalV_vector))/norm(cross(u,totalV_vector));
 
 %Propagation of orbit minus leg
 % Set time span
-tspan_minus = linspace( 0, 3*60*60, 5000 );
+tspan_minus = linspace( 0, 100*60*60, 5000 );
 % Set initial conditions
 v_0_minus = sqrt(astroConstants(15)*(2/rp - 1/a_minus));
 y0_minus = [rp_vector -v_0_minus.*(totalV_vector./norm(totalV_vector))];
@@ -532,7 +532,7 @@ y0_minus = [rp_vector -v_0_minus.*(totalV_vector./norm(totalV_vector))];
 
 %Propagation of orbit plus leg
 % Set time span
-tspan_plus = linspace( 0, 3*60*60, 5000 );
+tspan_plus = linspace( 0, 100*60*60, 5000 );
 % Set initial conditions
 v_0_plus = sqrt(astroConstants(15)*(2/rp - 1/a_plus));
 y0_plus = [rp_vector v_0_plus.*(totalV_vector./norm(totalV_vector))];
