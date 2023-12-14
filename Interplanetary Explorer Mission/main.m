@@ -272,6 +272,7 @@ orbitType = 0;
 dv_1 = zeros(length(departure.time_vect), length(flyby.time_vect), length(arrival.time_vect));
 dv_2 = dv_1;
 dv_3 = dv_1;
+dv_flyby_tot = dv_1;
 tof_vect_1 = dv_1;
 tof_vect_2 = dv_1;
 num_iter = 0;
@@ -323,8 +324,8 @@ while fixedtol < tol
                     continue
                 end
         
-                v_inf_minus = VI_2+flyby.v0;
-                v_inf_plus = VF_1+flyby.v0;
+                v_inf_minus = VI_2 + flyby.v0;
+                v_inf_plus = VF_1 + flyby.v0;
                 dv_1(i, j, k) = norm(VI_1 - departure.v0);
                 [rp, flag] = rpsolver(v_inf_minus, v_inf_plus, flyby.planetId);
                 if flag == 0
@@ -335,6 +336,7 @@ while fixedtol < tol
                 end
                 dv_2(i, j, k) = abs(sqrt((2*astroConstants(flyby.planetId + 10)/rp)+norm(v_inf_plus)^2)-sqrt((2*astroConstants(flyby.planetId + 10)/rp)+norm(v_inf_minus)^2));
                 dv_3(i, j, k) = norm(arrival.v0 - VF_2);
+                dv_flyby_tot(i, j, k) = norm(VF_1 - VF_2);
             end
         end
     end
@@ -388,6 +390,7 @@ while fixedtol < tol
     iteration.dv3{num_iter} = dv_3;
     iteration.dv{num_iter} = dv;
     iteration.dv_min{num_iter} = dVmin;
+    iteration.dv_2_min{num_iter} = min(min(min(dv_2)));
     disp ("Iteration " + num_iter + " done in " + toc + " s, dv = " + dVmin + " km/s")
 end
 
@@ -472,6 +475,7 @@ legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Transfer Arc 1','Tr
 hold off
 
 
+%%
 % ---------GA on Jupiter
 
 %Heliocentric Velocities
