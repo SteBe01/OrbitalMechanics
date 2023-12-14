@@ -494,12 +494,11 @@ v_plus_inf=VI_2_actual;
 delta = acos(dot(v_plus_inf,v_minus_inf)/(norm(v_plus_inf)*norm(v_minus_inf)));
 delta_deg=rad2deg(delta);
 
-h_atmosphere=50000;
-rp_guess=astroConstants(25)+h_atmosphere;
-%delta function
-delta_eq= @(rp) (asin(1/(1+(rp*norm(v_minus_inf)^2/astroConstants(15)))))+(asin(1/(1+(rp*norm(v_plus_inf)^2/astroConstants(15)))))-delta;
-rp = fzero(@(rp) delta_eq(rp), rp_guess);
+[rp, flag] = rpsolver(v_minus_inf, v_plus_inf, flyby.planetId);
 
+
+% GA altitude
+h_GA=rp-astroConstants(25);
 % GA altitude
 h_GA=rp-astroConstants(25);
 
