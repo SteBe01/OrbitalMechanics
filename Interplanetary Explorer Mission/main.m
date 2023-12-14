@@ -257,12 +257,11 @@ mission.arr_time = [2058 01 01 0 0 0];
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
-rp = 1000; %[km]
-fixedtol = 1;
+fixedtol = 1e3;
 window_size = 20;
 
-time1=date2mjd2000(mission.dep_time);
-time2=date2mjd2000(mission.arr_time);
+time1 = date2mjd2000(mission.dep_time);
+time2 = date2mjd2000(mission.arr_time);
 
 %first lambert arc
 departure.time_vect = linspace(time1, time2, window_size);
@@ -270,15 +269,20 @@ flyby.time_vect = linspace(time1, time2, window_size);
 arrival.time_vect = linspace(time1, time2, window_size);
 
 orbitType = 0;
-dv_1 = zeros(length(departure.time_vect), length(flyby.time_vect),length(arrival.time_vect));
+dv_1 = zeros(length(departure.time_vect), length(flyby.time_vect), length(arrival.time_vect));
 dv_2 = dv_1;
-dv_3 = dv_2;
+dv_3 = dv_1;
 tof_vect_1 = dv_1;
-tof_vect_2 = dv_3;
+tof_vect_2 = dv_1;
+num_iter = 0;
 
-tol = departure.time_vect(end)-departure.time_vect(1);
+tol = (departure.time_vect(end)-departure.time_vect(1)) * 24 * 60 * 60;
 
-while fixedtol<tol
+while fixedtol < tol
+    tic
+    num_iter = num_iter + 1;
+    iteration.number{num_iter} = num_iter;
+
     for i = 1:length(departure.time_vect)
         for j = 1:length(flyby.time_vect)
             for k = 1:length(arrival.time_vect)
@@ -296,7 +300,7 @@ while fixedtol<tol
                 tof_vect_2(i, j, k) = tof_2;
         
                 [departure.kep, ksun] = uplanet(departure.time_vect(i), departure.planetId);
-                [flyby.kep, ~] = uplanet(flyby.time_vect(j), flyby.planetId);
+                [flyby.kep, flyby.mu] = uplanet(flyby.time_vect(j), flyby.planetId);
                 [arrival.kep, ~] = ephNEO(arrival.time_vect(k), arrival.bodyId);
         
                 [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
@@ -319,15 +323,24 @@ while fixedtol<tol
                     continue
                 end
         
+                v_inf_minus = VI_2+flyby.v0;
+                v_inf_plus = VF_1+flyby.v0;
                 dv_1(i, j, k) = norm(VI_1 - departure.v0);
-                dv_2(i, j, k) = abs(sqrt((2*astroConstants(13)/rp)+norm(VF_1+flyby.v0)^2)-sqrt((2*astroConstants(13)/rp)+norm(VI_2+flyby.v0)^2));
+                [rp, flag] = rpsolver(v_inf_minus, v_inf_plus, flyby.planetId);
+                if flag == 0
+                    dv_1(i, j, k) = NaN;
+                    dv_2(i, j, k) = NaN;
+                    dv_3(i, j, k) = NaN;
+                    continue
+                end
+                dv_2(i, j, k) = abs(sqrt((2*astroConstants(flyby.planetId + 10)/rp)+norm(v_inf_plus)^2)-sqrt((2*astroConstants(flyby.planetId + 10)/rp)+norm(v_inf_minus)^2));
                 dv_3(i, j, k) = norm(arrival.v0 - VF_2);
             end
         end
     end
 
     dv = dv_1 + dv_2 + dv_3;
-    [min, pos1, pos2, pos3] = findMin(dv);
+    [dVmin, pos1, pos2, pos3] = findMin(dv);
 
     if pos1 == 1
         pos1_bnd_1 = 1;
@@ -361,14 +374,21 @@ while fixedtol<tol
         pos3_bnd_1 = pos3 - 1;
         pos3_bnd_2 = pos3 + 1;
     end
+    tol = (departure.time_vect(pos1_bnd_2) - departure.time_vect(pos1_bnd_1)) * 24 * 60 * 60;
 
-    departure.time_vect = linspace(departure.time_vect(pos1_bnd_1), departure.time_vect(pos1_bnd_2), window_size);
-    flyby.time_vect = linspace(flyby.time_vect(pos2_bnd_1), flyby.time_vect(pos2_bnd_2), window_size);
-    arrival.time_vect = linspace(arrival.time_vect(pos3_bnd_1), arrival.time_vect(pos3_bnd_2), window_size);
+    if tol > fixedtol
+        departure.time_vect = linspace(departure.time_vect(pos1_bnd_1), departure.time_vect(pos1_bnd_2), window_size);
+        flyby.time_vect = linspace(flyby.time_vect(pos2_bnd_1), flyby.time_vect(pos2_bnd_2), window_size);
+        arrival.time_vect = linspace(arrival.time_vect(pos3_bnd_1), arrival.time_vect(pos3_bnd_2), window_size);
+    end
 
-    tol = departure.time_vect(pos1_bnd_2) - departure.time_vect(pos1_bnd_1);
-
-    disp ("Iteration done, dv = " + min + " km/s")
+    iteration.time{num_iter} = toc;
+    iteration.dv1{num_iter} = dv_1;
+    iteration.dv2{num_iter} = dv_2;
+    iteration.dv3{num_iter} = dv_3;
+    iteration.dv{num_iter} = dv;
+    iteration.dv_min{num_iter} = dVmin;
+    disp ("Iteration " + num_iter + " done in " + toc + " s, dv = " + dVmin + " km/s")
 end
 
 % ---PLOT-----------
@@ -397,7 +417,6 @@ departure.T_orb_actual = 2*pi*sqrt( departure.kep_actual(1)^3/ksun_actual ); % O
 departure.tspan= linspace( 0, departure.T_orb_actual, 200 );
 [ ~, departure.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), departure.tspan, departure.y0_actual, options );
 
-
 % orbit propagation - flyby
 [flyby.r0_actual, flyby.v0_actual] = kep2car([flyby.kep_actual, ksun_actual]);
 flyby.y0_actual = [flyby.r0_actual flyby.v0_actual];
@@ -406,7 +425,6 @@ flyby.T_orb_actual = 2*pi*sqrt( flyby.kep_actual(1)^3/ksun_actual ); % Orbital p
 flyby.tspan= linspace( 0, flyby.T_orb_actual, 200 );
 [ ~, flyby.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), flyby.tspan, flyby.y0_actual, options );
 
-
 % orbit propagation - arrival
 [arrival.r0_actual, arrival.v0_actual] = kep2car([arrival.kep_actual, ksun_actual]);
 arrival.y0_actual = [arrival.r0_actual arrival.v0_actual];
@@ -414,7 +432,6 @@ arrival.y0_actual = [arrival.r0_actual arrival.v0_actual];
 arrival.T_orb_actual = 2*pi*sqrt( arrival.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
 arrival.tspan= linspace( 0, arrival.T_orb_actual, 200 );
 [ ~, arrival.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), arrival.tspan, arrival.y0_actual, options );
-
 
 %Propagation first transfer ARC
 [A_1_actual, P_1_actual, E_1_actual, ERROR_1_actual, VI_1_actual, VF_1_actual, TPAR_1_actual, THETA_1_actual] = lambertMR(departure.r0_actual, flyby.r0_actual, ToF_dep_flyby, ksun_actual, orbitType, 0);
@@ -425,7 +442,6 @@ tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbit
 % Perform the integration
 [   t, Y_1 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_1, y0_1, options );
 
-
 %Propagation second transfer ARC
 [A_2_actual, P_2_actual, E_2_actual, ERROR_2_actual, VI_2_actual, VF_2_actual, TPAR_2_actual, THETA_2_actual] = lambertMR(flyby.r0_actual, arrival.r0_actual, ToF_flyby_arr, ksun_actual, orbitType, 0);
 y0_2 = [ flyby.r0_actual VI_2_actual ];
@@ -434,7 +450,6 @@ T_2 = 2*pi*sqrt( A_2_actual^3/ksun_actual ); % Orbital period [s]
 tspan_2 = linspace( 0,ToF_flyby_arr, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
 % Perform the integration
 [   t, Y_2 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_2, y0_2, options );
-
 
 % Plot the results
 figure()
@@ -452,9 +467,10 @@ plot3(departure.r0_actual(1),departure.r0_actual(2),departure.r0_actual(3),'o','
 plot3(flyby.r0_actual(1),flyby.r0_actual(2),flyby.r0_actual(3),'o','Color','r','MarkerFaceColor','r')
 plot3(arrival.r0_actual(1),arrival.r0_actual(2),arrival.r0_actual(3),'o','Color','g','MarkerFaceColor','g')
 plot3(0,0,0,'o','Color','y','MarkerFaceColor','y')
-legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Trasnfer Arc 1','Trasnfer Arc 2', ...
+legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Transfer Arc 1','Transfer Arc 2', ...
     'Saturn','Jupiter','Asteroid N.79','Sun')
 hold off
+
 
 %% GA on Jupiter
 
