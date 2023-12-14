@@ -496,6 +496,9 @@ delta_deg=rad2deg(delta);
 
 [rp, flag] = rpsolver(v_minus_inf, v_plus_inf, flyby.planetId);
 
+% GA altitude
+h_GA=rp-astroConstants(25);
+
 %velocities of hiperbolic arcs at pericentre
 vp_minus=sqrt((2*astroConstants(15)/rp)+norm(v_minus_inf)^2);
 vp_plus=sqrt((2*astroConstants(15)/rp)+norm(v_plus_inf)^2);
