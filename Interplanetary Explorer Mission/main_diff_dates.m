@@ -276,9 +276,9 @@ time2=date2mjd2000(mission_flyby_time);
 time3 = date2mjd2000(mission_arr_time);
 
 
-departure.time_vect = linspace(time1, time2, window_size);
-flyby.time_vect = linspace(time2-5, time2+5, window_size); %time required for flyby basically
-arrival.time_vect = linspace(time2, time3, window_size);
+departure.time_vect = linspace(time1, time3, window_size);
+flyby.time_vect = linspace(time1, time3, window_size); %time required for flyby basically
+arrival.time_vect = linspace(time1, time3, window_size);
 
 orbitType = 0;
 dv_1 = zeros(length(departure.time_vect), length(flyby.time_vect), length(arrival.time_vect));
@@ -427,7 +427,7 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 % orbit propagation - departure
 [departure.r0_actual, departure.v0_actual] = kep2car([departure.kep_actual, ksun_actual]);
 departure.y0_actual = [departure.r0_actual departure.v0_actual];
-
+% Set time span
 departure.T_orb_actual = 2*pi*sqrt( departure.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
 departure.tspan= linspace( 0, departure.T_orb_actual, 200 );
 [ ~, departure.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), departure.tspan, departure.y0_actual, options );
@@ -435,7 +435,7 @@ departure.tspan= linspace( 0, departure.T_orb_actual, 200 );
 % orbit propagation - flyby
 [flyby.r0_actual, flyby.v0_actual] = kep2car([flyby.kep_actual, ksun_actual]);
 flyby.y0_actual = [flyby.r0_actual flyby.v0_actual];
-
+% Set time span
 flyby.T_orb_actual = 2*pi*sqrt( flyby.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
 flyby.tspan= linspace( 0, flyby.T_orb_actual, 200 );
 [ ~, flyby.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), flyby.tspan, flyby.y0_actual, options );
@@ -443,12 +443,12 @@ flyby.tspan= linspace( 0, flyby.T_orb_actual, 200 );
 % orbit propagation - arrival
 [arrival.r0_actual, arrival.v0_actual] = kep2car([arrival.kep_actual, ksun_actual]);
 arrival.y0_actual = [arrival.r0_actual arrival.v0_actual];
-
+% Set time span
 arrival.T_orb_actual = 2*pi*sqrt( arrival.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
 arrival.tspan= linspace( 0, arrival.T_orb_actual, 200 );
 [ ~, arrival.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), arrival.tspan, arrival.y0_actual, options );
 
-%Propagation first transfer ARC
+% orbit propagation - first lambert arc
 [A_1_actual, P_1_actual, E_1_actual, ERROR_1_actual, VI_1_actual, VF_1_actual, TPAR_1_actual, THETA_1_actual] = lambertMR(departure.r0_actual, flyby.r0_actual, ToF_dep_flyby, ksun_actual, orbitType, 0);
 y0_1 = [ departure.r0_actual VI_1_actual ];
 % Set time span
@@ -457,7 +457,7 @@ tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbit
 % Perform the integration
 [   t, Y_1 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_1, y0_1, options );
 
-%Propagation second transfer ARC
+% orbit propagation - second lambert arc
 [A_2_actual, P_2_actual, E_2_actual, ERROR_2_actual, VI_2_actual, VF_2_actual, TPAR_2_actual, THETA_2_actual] = lambertMR(flyby.r0_actual, arrival.r0_actual, ToF_flyby_arr, ksun_actual, orbitType, 0);
 y0_2 = [ flyby.r0_actual VI_2_actual ];
 % Set time span
@@ -466,24 +466,48 @@ tspan_2 = linspace( 0,ToF_flyby_arr, 5000 ); %% change 2*T to 5*T to get 5 orbit
 % Perform the integration
 [   t, Y_2 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_2, y0_2, options );
 
+% orbit propagation - departure range
+y0_departure_range = [departure.r0_actual departure.v0_actual];
+% Set time span
+tspan_departure_range = linspace( 0,(time2-time1)*60*60*24, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
+% Perform the integration
+[   t, Y_departure_range ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_departure_range, y0_departure_range, options );
+
+% orbit propagation - flyby range
+y0_flyby_range = [flyby.r0_actual flyby.v0_actual];
+% Set time span
+tspan_flyby_range = linspace( 0,(time3-time1)*60*60*24, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
+% Perform the integration
+[   t, Y_flyby_range ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_flyby_range, y0_flyby_range, options );
+
+% orbit propagation - arrival range
+y0_arrival_range = [arrival.r0_actual arrival.v0_actual];
+% Set time span
+tspan_arrival_range = linspace( 0,(time3-time2)*60*60*24, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
+% Perform the integration
+[   t, Y_arrival_range ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_arrival_range, y0_arrival_range, options );
+
 % Plot the results
 figure()
-plot3( departure.Y_actual(:,1), departure.Y_actual(:,2), departure.Y_actual(:,3), '-','color', 'b' )
+plot3( departure.Y_actual(:,1), departure.Y_actual(:,2), departure.Y_actual(:,3), '--','color', 'b' )
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('orbits');
 axis equal;
 grid on;
 hold on
-plot3( flyby.Y_actual(:,1),flyby.Y_actual(:,2), flyby.Y_actual(:,3), '-' ,'color', 'r')
-plot3( arrival.Y_actual(:,1), arrival.Y_actual(:,2), arrival.Y_actual(:,3), '-','color', 'g')
+plot3( Y_departure_range(:,1), Y_departure_range(:,2), Y_departure_range(:,3), '-','color', 'b' )
+plot3( flyby.Y_actual(:,1),flyby.Y_actual(:,2), flyby.Y_actual(:,3), '--' ,'color', 'r')
+plot3( Y_flyby_range(:,1),Y_flyby_range(:,2), Y_flyby_range(:,3), '-' ,'color', 'r')
+plot3( arrival.Y_actual(:,1), arrival.Y_actual(:,2), arrival.Y_actual(:,3), '--','color', 'g')
+plot3( Y_arrival_range(:,1), Y_arrival_range(:,2), Y_arrival_range(:,3), '-','color', 'g')
 plot3( Y_1(:,1), Y_1(:,2), Y_1(:,3), '--','color', 'm' )
 plot3( Y_2(:,1), Y_2(:,2), Y_2(:,3), '--','color', 'c' )
 plot3(departure.r0_actual(1),departure.r0_actual(2),departure.r0_actual(3),'o','Color','b','MarkerFaceColor','b')
 plot3(flyby.r0_actual(1),flyby.r0_actual(2),flyby.r0_actual(3),'o','Color','r','MarkerFaceColor','r')
 plot3(arrival.r0_actual(1),arrival.r0_actual(2),arrival.r0_actual(3),'o','Color','g','MarkerFaceColor','g')
 plot3(0,0,0,'o','Color','y','MarkerFaceColor','y')
-legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Transfer Arc 1','Transfer Arc 2', ...
-    'Saturn','Jupiter','Asteroid N.79','Sun')
+legend('Saturn Orbit','Departure Range','Jupiter Orbit','Flyby Range','Asteroid N.79 Orbit', ...
+    'Arrival Range','Transfer Arc 1','Transfer Arc 2','Saturn','Jupiter','Asteroid N.79','Sun')
 hold off
 
 
