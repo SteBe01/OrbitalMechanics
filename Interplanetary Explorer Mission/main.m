@@ -452,7 +452,7 @@ arrival.tspan= linspace( 0, arrival.T_orb_actual, 200 );
 y0_1 = [ departure.r0_actual VI_1_actual ];
 % Set time span
 T_1 = 2*pi*sqrt( A_1_actual^3/ksun_actual ); % Orbital period [s]
-tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
+tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); 
 % Perform the integration
 [   t, Y_1 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_1, y0_1, options );
 
@@ -461,9 +461,10 @@ tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbit
 y0_2 = [ flyby.r0_actual VI_2_actual ];
 % Set time span
 T_2 = 2*pi*sqrt( A_2_actual^3/ksun_actual ); % Orbital period [s]
-tspan_2 = linspace( 0,ToF_flyby_arr, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
+tspan_2 = linspace( 0,ToF_flyby_arr, 5000 );
 % Perform the integration
 [   t, Y_2 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_2, y0_2, options );
+
 
 % Plot the results
 figure()
@@ -481,7 +482,7 @@ plot3(departure.r0_actual(1),departure.r0_actual(2),departure.r0_actual(3),'o','
 plot3(flyby.r0_actual(1),flyby.r0_actual(2),flyby.r0_actual(3),'o','Color','r','MarkerFaceColor','r')
 plot3(arrival.r0_actual(1),arrival.r0_actual(2),arrival.r0_actual(3),'o','Color','g','MarkerFaceColor','g')
 plot3(0,0,0,'o','Color','y','MarkerFaceColor','y')
-legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Transfer Arc 1','Transfer Arc 2', ...
+legend('Saturn Orbit','Departure Range','Jupiter Orbit','Asteroid N.79 Orbit','Transfer Arc 1','Transfer Arc 2', ...
     'Saturn','Jupiter','Asteroid N.79','Sun')
 hold off
 
