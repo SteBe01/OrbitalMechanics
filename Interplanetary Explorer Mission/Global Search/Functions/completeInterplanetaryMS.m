@@ -1,4 +1,9 @@
-function [dv] = completeInterplanetaryGS(t1, t2, t3, code1, code2, code3)
+function [dv] = completeInterplanetaryMS(t1, t2, t3, code1, code2, code3)
+
+if t1 < 1.0226e4 || t3 > 2.1184e4
+    dv = 1e7;
+    return
+end
 
 tof1 = (t2 - t1) * 24 * 60 * 60;
 tof2 = (t3 - t2) * 24 * 60 * 60;
