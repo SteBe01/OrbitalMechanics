@@ -32,7 +32,7 @@ ub = date2mjd2000(mission.arr_time);
 opts = optimoptions(@fminunc, 'Algorithm', 'quasi-newton');
 newprob = createOptimProblem('fminunc', 'x0', x0, 'lb', lb, 'ub', ub, 'objective', f, 'options', opts);
 
-gs = GlobalSearch;
+gs = GlobalSearch("Display","iter");
 ms = MultiStart(gs);
 
 [xcust, fcust] = run(ms, newprob, startpts);
