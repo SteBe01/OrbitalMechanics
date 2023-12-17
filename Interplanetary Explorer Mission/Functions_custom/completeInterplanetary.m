@@ -1,11 +1,14 @@
-function [dv, exitValue] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
+function [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
 
 tof1 = (t2 - t1) * 24 * 60 * 60;
 tof2 = (t3 - t2) * 24 * 60 * 60;
 
 if tof1 <= 0 || tof2 <= 0
     exitValue = 0;
-    dv = NaN;
+    dv1 = NaN;
+    dv2 = NaN;
+    dv3 = NaN;
+    rp = NaN;
     return
 end
 
@@ -35,13 +38,15 @@ nOrbits = 0;
 [A_1, P_1, E_1, ERROR_1, VI_1, VF_1, TPAR_1, THETA_1] = lambertMR(departure.r0, flyby.r0, tof1, ksun, orbitType, nOrbits);
 [A_2, P_2, E_2, ERROR_2, VI_2, VF_2, TPAR_2, THETA_2] = lambertMR(flyby.r0, arrival.r0, tof2, ksun, orbitType, nOrbits);
 
-% SBAGLIATIIIII
-flyby.v_inf_minus = VI_2 + flyby.v0;
-flyby.v_inf_plus = VF_1 + flyby.v0;
+flyby.v_inf_minus = VF_1 - flyby.v0;
+flyby.v_inf_plus = VI_2 - flyby.v0;
 
 if code2 + 10 > 19
     exitValue = 0;
-    dv = NaN;
+    dv1 = NaN;
+    dv2 = NaN;
+    dv3 = NaN;
+    rp = NaN;
     return
 end
 flyby.mu = astroConstants(code2 + 10);
@@ -51,8 +56,6 @@ rp = rpsolver(flyby.v_inf_minus, flyby.v_inf_plus, code2); % posizione giusta?
 dv1 = norm(VI_1 - departure.v0);
 dv2 = abs(sqrt((2*flyby.mu/rp)+norm(flyby.v_inf_plus)^2)-sqrt((2*flyby.mu/rp)+norm(flyby.v_inf_minus)^2));
 dv3 = norm(arrival.v0 - VF_2);
-
-dv = dv1 + dv2 + dv3;
 
 
 
