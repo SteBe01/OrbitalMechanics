@@ -1,6 +1,6 @@
 function [dv] = completeInterplanetaryMS(t1, t2, t3, code1, code2, code3)
 
-if t1 < 1.0226e4 || t3 > 2.1184e4
+if t1 < date2mjd2000([2028 01 01 0 0 0]) || t3 > date2mjd2000([2058 01 01 0 0 0])
     dv = 1e7;
     return
 end
@@ -54,6 +54,10 @@ end
 flyby.mu = astroConstants(code2 + 10);
 % rp = 1e3;
 rp = rpsolver(flyby.v_inf_minus, flyby.v_inf_plus, code2); % posizione giusta?
+if rp < astroConstants(code2 + 20)
+    dv = 1e7;
+    return
+end
 
 if rp > 48.2e6
     dv = 1e7;

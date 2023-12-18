@@ -201,7 +201,7 @@ end
 
 dv = dv_1 + dv_2;
 
-contour(dep_time_vect, arr_time_vect, dv', 12:0.5:25) % 12:35
+contour(dep_time_vect, arr_time_vect, dv', 5:0.5:20) % 12:35
 colorbar, grid on, hold on, axis equal
 xlabel("Departure")
 ylabel("Arrival")

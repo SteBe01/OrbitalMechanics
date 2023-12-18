@@ -12,17 +12,15 @@ departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
 
-n_elements = 1e3;
+n_elements = 1e4;
 parallel = 1;
 
 mission.dep_time = [2028 01 01 0 0 0];
 mission.arr_time = [2058 01 01 0 0 0];
 
-f = @(vect) completeInterplanetaryMS(vect(1), vect(2), vect(3), departure.planetId, flyby.planetId, arrival.bodyId);
-x0 = date2mjd2000(mission.dep_time) + (date2mjd2000(mission.arr_time)-date2mjd2000(mission.dep_time)).*rand(3,1);
-
 tic
 
+% random vector of players
 r1 = zeros(n_elements, 1);
 r2 = r1;
 r3 = r1;
@@ -35,6 +33,12 @@ for i = 1:n_elements
     r3(i, :) = rand3;
 end
 stpts = [r1, r2, r3];
+
+f = @(vect) completeInterplanetaryMS(vect(1), vect(2), vect(3), departure.planetId, flyby.planetId, arrival.bodyId);
+% initial guess
+x0(1) = date2mjd2000(mission.dep_time) + (date2mjd2000(mission.arr_time)-date2mjd2000(mission.dep_time)).*rand(1,1);
+x0(2) = x0(1) + (date2mjd2000(mission.arr_time)-x0(1)).*rand(1,1);
+x0(3) = x0(2) + (date2mjd2000(mission.arr_time)-x0(2)).*rand(1,1);
 
 startpts = CustomStartPointSet(stpts);
 lb = date2mjd2000(mission.dep_time);
@@ -64,4 +68,7 @@ dvTot = dv1 + dv2 + dv3;
 
 time_elapsed = toc;
 disp("Time elapsed: " + time_elapsed + " s")
+disp("Data - departure Id: " + departure.planetId + ", flyBy Id: " + flyby.planetId + ", arrival Id: " + arrival.bodyId)
+disp("Solution: " + dvTot + " km/s, found at " + xcust(1) + " " + xcust(2) + " " + xcust(3))
+
 

@@ -50,7 +50,7 @@ if code2 + 10 > 19
     return
 end
 flyby.mu = astroConstants(code2 + 10);
-% rp = 1e3;
+
 rp = rpsolver(flyby.v_inf_minus, flyby.v_inf_plus, code2); % posizione giusta?
 
 dv1 = norm(VI_1 - departure.v0);
