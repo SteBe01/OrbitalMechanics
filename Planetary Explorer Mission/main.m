@@ -85,32 +85,32 @@ tspan= linspace( 0, T*n_orbits, n_points );
 y0 = [ r0'; v0' ];
 
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-[ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
-
-figure()
-plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
-xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
-title('Two-body problem orbit, with J2 and air drag');
-axis equal, grid on, hold on
-earthPlot;
-plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
-plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
+% [ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
+% 
+% figure()
+% plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
+% xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+% title('Two-body problem orbit, with J2 and air drag');
+% axis equal, grid on, hold on
+% earthPlot;
+% plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
+% plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
 
 %Perturbation over time
 
 kep0 = [orbit.a; orbit.e; orbit.i; orbit.OM; orbit.om; 0];
 [t, kep] = ode113(@(t,kep) Pert_guass_eq_tnh_frame(t, kep, @(t,kep) acc_pert_fun(t, kep, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), earth.mu), tspan, kep0, options);
 
-figure
+figure()
 plot(kep(:,1))
 grid on
-title('a');
+title('Semi major axis');
 xlabel('time [s]'); ylabel('a [km]');
 
-figure
+figure()
 plot(kep(:,2))
 grid on
-title('e');
+title('Eccentricity');
 xlabel('time [s]'); ylabel('e [-]');
 
 % a_vect = zeros(length(Y), 1);
@@ -119,13 +119,13 @@ xlabel('time [s]'); ylabel('e [-]');
 %     [a_vect(i), e_vect(i), ~, ~, ~, ~] = car2kep(Y(i,1:3), Y(i,4:6), earth.mu);
 % end
 % 
-% figure
+% figure()
 % plot(a_vect)
 % grid on
 % title('a');
 % xlabel('time [s]'); ylabel('a [km]');
 % 
-% figure
+% figure ()
 % plot(e_vect)
 % grid on
 % title('e');
@@ -134,9 +134,15 @@ xlabel('time [s]'); ylabel('e [-]');
 
 %% test for movmean
 
-test = movmean(a_vect, 500);
+% test = movmean(a_vect, 500);
+% 
+% figure()
+% plot(test)
+% grid on
 
-figure
+test = movmean(kep(:,1), 500);
+
+figure()
 plot(test)
 grid on
 
