@@ -96,23 +96,40 @@ earthPlot;
 plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
 plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
 
-a_vect = zeros(length(Y), 1);
-e_vect = zeros(length(Y), 1);
-for i = 1:length(Y)
-    [a_vect(i), e_vect(i), ~, ~, ~, ~] = car2kep(Y(i,1:3), Y(i,4:6), earth.mu);
-end
+%Perturbation over time
+
+kep0 = [orbit.a; orbit.e; orbit.i; orbit.OM; orbit.om; 0];
+[t, kep] = ode113(@(t,kep) Pert_guass_eq_tnh_frame(t, kep, @(t,kep) acc_pert_fun(t, kep, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), earth.mu), tspan, kep0, options);
 
 figure
-plot(a_vect)
+plot(kep(:,1))
 grid on
 title('a');
 xlabel('time [s]'); ylabel('a [km]');
 
 figure
-plot(e_vect)
+plot(kep(:,2))
 grid on
 title('e');
 xlabel('time [s]'); ylabel('e [-]');
+
+% a_vect = zeros(length(Y), 1);
+% e_vect = zeros(length(Y), 1);
+% for i = 1:length(Y)
+%     [a_vect(i), e_vect(i), ~, ~, ~, ~] = car2kep(Y(i,1:3), Y(i,4:6), earth.mu);
+% end
+% 
+% figure
+% plot(a_vect)
+% grid on
+% title('a');
+% xlabel('time [s]'); ylabel('a [km]');
+% 
+% figure
+% plot(e_vect)
+% grid on
+% title('e');
+% xlabel('time [s]'); ylabel('e [-]');
 
 
 %% test for movmean
