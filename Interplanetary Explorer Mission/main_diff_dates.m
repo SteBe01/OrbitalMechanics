@@ -261,8 +261,7 @@ clc
 
 %--------Define well this values with Tsyn and ToF!!!!!!
 mission_dep_time = date_departure;
-mission_flyby_time=date_flyby;
-mission_arr_time = date_arrival;
+mission_arr_time = [2030	2	16	23	28	6.19211465120313];
 %-----------------------------------------------------
 
 departure.planetId = 6;
@@ -272,7 +271,6 @@ fixedtol = 1e3;
 window_size = 20;
 
 time1 = date2mjd2000(mission_dep_time);
-time2=date2mjd2000(mission_flyby_time);
 time3 = date2mjd2000(mission_arr_time);
 
 
