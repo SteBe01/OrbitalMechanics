@@ -73,6 +73,8 @@ mission.dep_time = [2028 01 01 0 0 0];
 mission.arr_time = [2058 01 01 0 0 0];
 %-----------------------------------------------------
 
+warning("THIS CODE IS OUTDATED, FOR REFERENCE ONLY")
+
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
