@@ -49,13 +49,18 @@ T_syn_flyby_arr_years=T_syn_flyby_arr/(60*60*24*astroConstants(32)); %[years]
 T_syn_dep_arr=(arrival.T_orb*departure.T_orb)/(abs(arrival.T_orb-departure.T_orb)); %[s]
 T_syn_dep_arr_years=T_syn_dep_arr/(60*60*24*astroConstants(32)); %[years]
 
+%Global Period 
+T_Global=1/(abs((1/T_syn_dep_flyby)-(1/T_syn_flyby_arr)));
+
 
 %Set possible dates for departure and arrival
-jd_arrival_flyby_planet=mjd20002jd(time_instant_mjd200)+T_syn_dep_flyby/(60*60*24);
-date_flyby = jd2date(jd_arrival_flyby_planet);
-
-jd_arrival_arrival_planet=jd_arrival_flyby_planet+T_syn_flyby_arr/(60*60*24);
-date_arrival= jd2date(jd_arrival_arrival_planet);
+% jd_arrival_flyby_planet=mjd20002jd(time_instant_mjd200)+T_syn_dep_flyby/(60*60*24);
+% date_flyby = jd2date(jd_arrival_flyby_planet);
+% 
+% jd_arrival_arrival_planet=jd_arrival_flyby_planet+T_syn_flyby_arr/(60*60*24);
+% date_arrival= jd2date(jd_arrival_arrival_planet);
+jd_arrival=mjd20002jd(time_instant_mjd200)+T_Global/(60*60*24);
+date_arrival= jd2date(jd_arrival);
 
 
 %% Grid Search for departure-flyby-arrival 
