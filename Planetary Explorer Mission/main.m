@@ -1,6 +1,7 @@
 %% data - group 2346
 
 addpath("Functions\")
+addpath("Functions_custom\")
 
 clear, clc
 close all
