@@ -85,10 +85,15 @@ zlabel("z [km]")
 view(30,30)
 
 
+
 %% porkchop plots - departure, fly by
 
 clc, clear
 close all
+
+xcust(1) = 1.554407711683449e+04;
+xcust(2) = 1.878584012172524e+04;
+xcust(3) = 1.968280293314873e+04;
 
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
@@ -135,15 +140,19 @@ for i = 1:length(dep_time_vect)
     end
 end
 
-dv = dv_1 + dv_2;
+% dv = dv_1 + dv_2;
+dv = dv_1; % without flyby dv
 
-contour(dep_time_vect, arr_time_vect, dv', 2:0.2:8)
+contour(dep_time_vect, arr_time_vect, dv', 2:0.2:8, HandleVisibility="off")
 colorbar, grid on, hold on
 xlabel("Departure")
 ylabel("Arrival")
 
 [pos1, pos2] = find(dv == min(min(dv)));
 plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
+plot(xcust(1), xcust(2), 'or', LineWidth=1)
+
+legend("Local min", "Mission min", Location="best")
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
@@ -153,6 +162,10 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 
 clc, clear
 close all
+
+xcust(1) = 1.554407711683449e+04;
+xcust(2) = 1.878584012172524e+04;
+xcust(3) = 1.968280293314873e+04;
 
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
@@ -199,15 +212,19 @@ for i = 1:length(dep_time_vect)
     end
 end
 
-dv = dv_1 + dv_2;
+% dv = dv_1 + dv_2;
+dv = dv_2; % without flyby dv
 
-contour(dep_time_vect, arr_time_vect, dv', 5:0.5:20) % 12:35
+contour(dep_time_vect, arr_time_vect, dv', 5:1:30, HandleVisibility="off") % 12:35
 colorbar, grid on, hold on, axis equal
 xlabel("Departure")
 ylabel("Arrival")
 
 [pos1, pos2] = find(dv == min(min(dv)));
 plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
+plot(xcust(1), xcust(2), 'or', LineWidth=1)
+
+legend("Local min", "Mission min", Location="best")
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
@@ -286,6 +303,7 @@ plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
 
+
 %% function find dvmin
 
 function [min, pos1, pos2, pos3] = findMin3(dv)
@@ -312,7 +330,7 @@ function [min, pos1, pos2, pos3] = findMin3(dv)
 end
 
 
-function [min, pos1, pos2] = findMin2(dv)
+function [min, pos1, pos2, flag] = findMin2(dv)
     min = max(max(max(dv)));
     pos1 = 0;
     pos2 = 0;
@@ -326,8 +344,9 @@ function [min, pos1, pos2] = findMin2(dv)
         end
     end
 
+    flag = 1;
     if pos1 == 0 && pos2 == 0
-        error("Unable to find minimum")
+        flag = 0;
     end
 end
 
