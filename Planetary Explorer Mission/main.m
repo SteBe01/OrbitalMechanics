@@ -85,16 +85,16 @@ tspan= linspace( 0, T*n_orbits, n_points );
 y0 = [ r0'; v0' ];
 
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-% [ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
-% 
-% figure()
-% plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
-% xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
-% title('Two-body problem orbit, with J2 and air drag');
-% axis equal, grid on, hold on
-% earthPlot;
-% plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
-% plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
+[ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
+
+figure()
+plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
+xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+title('Two-body problem orbit, with J2 and air drag');
+axis equal, grid on, hold on
+earthPlot;
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
 
 %Perturbation over time
 
@@ -112,6 +112,24 @@ plot(kep(:,2))
 grid on
 title('Eccentricity');
 xlabel('time [s]'); ylabel('e [-]');
+
+figure()
+plot(kep(:,3))
+grid on
+title('Inclination');
+xlabel('time [s]'); ylabel('i [°]');
+
+figure()
+plot(kep(:,4))
+grid on
+title('RAAN');
+xlabel('time [s]'); ylabel('\Omega [°]');
+
+figure()
+plot(kep(:,5))
+grid on
+title('Pericentre Anomaly');
+xlabel('time [s]'); ylabel('\omega [°]');
 
 % a_vect = zeros(length(Y), 1);
 % e_vect = zeros(length(Y), 1);
@@ -140,19 +158,35 @@ xlabel('time [s]'); ylabel('e [-]');
 % plot(test)
 % grid on
 
-test = movmean(kep(:,1), 500);
-
+test_a = movmean(kep(:,1), 500);
 figure()
-plot(test)
+plot(test_a)
 grid on
 title('Semi major axis Movmean Test');
 
-test = movmean(kep(:,2), 500);
-
+test_e= movmean(kep(:,2), 500);
 figure()
-plot(test)
+plot(test_e)
 grid on
 title('Eccentricity Movmean Test');
+
+test_i = movmean(kep(:,3), 500);
+figure()
+plot(test_i)
+grid on
+title('Inclination Movmean Test');
+
+test_Om = movmean(kep(:,4), 500);
+figure()
+plot(test_Om)
+grid on
+title('RAAN Movmean Test');
+
+test_om = movmean(kep(:,5), 500);
+figure()
+plot(test_om)
+grid on
+title('Pericentre Anomaly Movmean Test');
 
 
 %% ground track plot (perturbed)
