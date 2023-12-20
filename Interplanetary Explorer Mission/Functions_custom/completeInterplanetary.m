@@ -1,5 +1,27 @@
 function [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
 
+% Function for interplanetary dv calculator
+%
+% [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% t1            [1x1]       time instant for departure      [mjd200]
+% t2            [1x1]       time instant for flyby          [mjd200]
+% t3            [1x1]       time instant for arrival        [mjd200]
+% code1         [1x1]       departure body Id               [-]
+% code2         [1x1]       flyby body Id                   [-]
+% code3         [1x1]       arrival body Id                 [-]
+%
+% -----------------------------------------------------------------
+% Output arguments:
+% 
+% dv1           [1x1]       first dv                        [km/s]
+% dv2           [1x1]       second dv                       [km/s]
+% dv3           [1x1]       third dv                        [km/s]
+% rp            [1x1]       perigee radius of hyperbola     [km]
+% exitValue     [1x1]       0 or 1, function success        [-]
+
 tof1 = (t2 - t1) * 24 * 60 * 60;
 tof2 = (t3 - t2) * 24 * 60 * 60;
 

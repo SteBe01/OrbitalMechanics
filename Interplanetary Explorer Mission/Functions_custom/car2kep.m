@@ -2,7 +2,7 @@ function [a, e, i, OM, om, theta] = car2kep(rr, vv, mu)
 
 % Transformation from Cartesian state to orbital elements
 %
-% [a, e, i, OM, om, theta] = rv2parorb (rr, vv, mu)
+% [a, e, i, OM, om, theta] = car2kep(rr, vv, mu)
 %
 % Input arguments:
 % ----------------------------------------------------------------

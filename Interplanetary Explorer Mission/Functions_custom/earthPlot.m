@@ -1,6 +1,6 @@
 function s = earthPlot
 
-% Generates a plot of the Earth and returns it's graphic handler
+% Generates a plot of Earth and returns it's graphic handler
 %
 % s = earthPlot
 %

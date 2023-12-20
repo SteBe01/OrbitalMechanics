@@ -1,5 +1,22 @@
 function [rp, flag] = rpsolver(v1, v2, planetId)
 
+% Perigee radius finder of hyperbola
+%
+% [rp, flag] = rpsolver(v1, v2, planetId)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% v1            [1x1]       velocity -inf           [km/s]
+% v2            [1x1]       velocity +inf           [km/s]
+% plnetId       [1x1]       planet Id               [-]
+%
+% -----------------------------------------------------------------
+% Output arguments:
+% 
+% rp            [1x1]       perigee radius          [km]
+% flag          [1x1]       exit flag               [km]
+
+
 mu = astroConstants(planetId + 10);
 
 a_minus = -mu/norm(v1)^2;
