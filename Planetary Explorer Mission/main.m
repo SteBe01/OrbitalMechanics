@@ -145,6 +145,14 @@ test = movmean(kep(:,1), 500);
 figure()
 plot(test)
 grid on
+title('Semi major axis Movmean Test');
+
+test = movmean(kep(:,2), 500);
+
+figure()
+plot(test)
+grid on
+title('Eccentricity Movmean Test');
 
 
 %% ground track plot (perturbed)
