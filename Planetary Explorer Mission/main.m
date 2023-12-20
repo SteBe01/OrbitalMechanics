@@ -10,9 +10,10 @@ close all
 orbit.a = 0.8016 * 1e4;
 orbit.e = 0.1678;
 orbit.i = deg2rad(50.3442);
-orbit.OM = deg2rad(0);
-orbit.om = deg2rad(0);
-orbit.kep = [orbit.a orbit.e orbit.i orbit.OM orbit.om];
+orbit.OM = deg2rad(27.2290); %Taken from similar object
+orbit.om = deg2rad(315.4032); %Taken from similar object
+orbit.theta=deg2rad(122.0796); %Taken from similar object
+orbit.kep = [orbit.a orbit.e orbit.i orbit.OM orbit.om orbit.theta];
 orbit.ratio_k = 12;
 orbit.ratio_m = 1;
 
@@ -32,7 +33,7 @@ spacecraft.AM = 0.0171;
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
 tspan= linspace( 0, T, 100 );
 
-[r0, v0] = kep2car([orbit.kep, 0, earth.mu]);
+[r0, v0] = kep2car([orbit.kep, earth.mu]);
 y0 = [ r0'; v0' ];
 
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
@@ -58,7 +59,7 @@ tspan_dim = 100000;
 
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
 tspan= linspace( 0, T, tspan_dim );
-[r0, v0] = kep2car([orbit.kep, 0, earth.mu]);
+[r0, v0] = kep2car([orbit.kep, earth.mu]);
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
@@ -199,7 +200,7 @@ tspan_dim = 100000;
 
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
 tspan= linspace( 0, T, tspan_dim );
-[r0, v0] = kep2car([orbit.kep, 0, earth.mu]);
+[r0, v0] = kep2car([orbit.kep, earth.mu]);
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart_perturbed(y0, tspan*orbit_number, earth.mu, theta_g, om_E, earth.r, earth.J2, spacecraft.AM, spacecraft.cD);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
@@ -207,7 +208,7 @@ groundTrackPlot(lon, lat, "EarthTexture.jpg")
 orbit.a_rep = aFinder(orbit.ratio_k, orbit.ratio_m, om_E, earth.mu);
 T = 2*pi*sqrt( orbit.a_rep^3/earth.mu );
 tspan= linspace( 0, T, tspan_dim );
-[r0, v0] = kep2car(orbit.a_rep, orbit.e, orbit.i, orbit.OM, orbit.om, 0, earth.mu);
+[r0, v0] = kep2car(orbit.a_rep, orbit.e, orbit.i, orbit.OM, orbit.om, orbit.theta, earth.mu);
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart_perturbed(y0, tspan*orbit_number, earth.mu, theta_g, om_E, earth.r, earth.J2, spacecraft.AM, spacecraft.cD);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
