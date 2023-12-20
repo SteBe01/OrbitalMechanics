@@ -39,7 +39,7 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [ ~, Y ] = ode113( @(t,y) ode_2bp(t,y,earth.mu), tspan, y0, options );
 
 figure()
-plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
+comet3( Y(:,1), Y(:,2), Y(:,3))
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 
 title('Two-body problem orbit');
@@ -88,15 +88,15 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
 
 figure()
-plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
+comet3( Y(:,1), Y(:,2), Y(:,3))
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('Two-body problem orbit, with J2 and air drag');
 axis equal, grid on, hold on
-earthPlot;
+earthPlotSimulation;
 plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
 plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
 
-%Perturbation over time
+%% Perturbation over time
 
 kep0 = [orbit.a; orbit.e; orbit.i; orbit.OM; orbit.om; 0];
 [t, kep] = ode113(@(t,kep) Pert_guass_eq_tnh_frame(t, kep, @(t,kep) acc_pert_fun(t, kep, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), earth.mu), tspan, kep0, options);
@@ -114,19 +114,19 @@ title('Eccentricity');
 xlabel('time [s]'); ylabel('e [-]');
 
 figure()
-plot(kep(:,3))
+plot(rad2deg(kep(:,3)))
 grid on
 title('Inclination');
 xlabel('time [s]'); ylabel('i [°]');
 
 figure()
-plot(kep(:,4))
+plot(rad2deg(kep(:,4)))
 grid on
 title('RAAN');
 xlabel('time [s]'); ylabel('\Omega [°]');
 
 figure()
-plot(kep(:,5))
+plot(rad2deg(kep(:,5)))
 grid on
 title('Pericentre Anomaly');
 xlabel('time [s]'); ylabel('\omega [°]');
