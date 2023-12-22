@@ -26,6 +26,10 @@ xcust(1) = 1.554407711683449e+04;
 xcust(2) = 1.878584012172524e+04;
 xcust(3) = 1.968280293314873e+04;
 
+xcust(1) = 1.289338494887906e+04;
+xcust(2) = 1.670686199971615e+04;
+xcust(3) = 1.754357184719549e+04;
+
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
 
@@ -141,6 +145,10 @@ xcust(1) = 1.554407711683449e+04;
 xcust(2) = 1.878584012172524e+04;
 xcust(3) = 1.968280293314873e+04;
 
+xcust(1) = 1.289338494887906e+04;
+xcust(2) = 1.670686199971615e+04;
+xcust(3) = 1.754357184719549e+04;
+
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
 
@@ -200,14 +208,18 @@ for i = 1:length(time_vect)
         [min, pos1, pos2, flag] = findMin2(dv_2);
         if flag && ~isnan(dv_1(i,j))
             % disp(pos2 + " " + i)
-            test1(i, pos1) = min + dv_1(i, j);
+            test1(i, pos1) = min + dv_1(i, j) + dv2;
 
         end
     end
 end
 %%
-contour(time_vect, time_vect, test1', 10:0.1:18, HandleVisibility="off") % 12:35
+
+% space1 = 2*time_vect(end) - time_vect(1);
+
+contour(time_vect, time_vect, test1') % 12:35
 colorbar, grid on, hold on, axis equal
+% plot(space1 - xcust(3), space1 - xcust(1), 'or', LineWidth=1)
 plot(xcust(1), xcust(3), 'or', LineWidth=1)
 xlabel("Departure")
 ylabel("Arrival")
