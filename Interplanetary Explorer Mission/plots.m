@@ -95,14 +95,18 @@ xcust(1) = 1.554407711683449e+04;
 xcust(2) = 1.878584012172524e+04;
 xcust(3) = 1.968280293314873e+04;
 
+xcust(1) = 1.289338494887906e+04;
+xcust(2) = 1.670686199971615e+04;
+xcust(3) = 1.754357184719549e+04;
+
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
 
 departure.planetId = 6;
 flyby.plnetId = 5;
 
-dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
-arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
+dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
+arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
 
 % dep_time_vect = linspace(date2mjd2000(dep_time), 1.45e4, 100);
 % arr_time_vect = linspace(1.47e4, 1.78e4, 100);
@@ -167,14 +171,18 @@ xcust(1) = 1.554407711683449e+04;
 xcust(2) = 1.878584012172524e+04;
 xcust(3) = 1.968280293314873e+04;
 
+xcust(1) = 1.289338494887906e+04;
+xcust(2) = 1.670686199971615e+04;
+xcust(3) = 1.754357184719549e+04;
+
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
 
 flyby.planetId = 5;
 arrival.bodyId = 79;
 
-dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
-arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
+dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
+arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
 
 % dep_time_vect = linspace(1.35e4, 1.48e4, 100);
 % arr_time_vect = linspace(1.535e4, 1.565e4, 100);
@@ -215,18 +223,20 @@ end
 % dv = dv_1 + dv_2;
 dv = dv_2; % without flyby dv
 
-contour(dep_time_vect, arr_time_vect, dv', 5:1:30, HandleVisibility="off") % 12:35
+contour(dep_time_vect, arr_time_vect, dv', 4:0.5:25, HandleVisibility="off") % 12:35
 colorbar, grid on, hold on, axis equal
 xlabel("Departure")
 ylabel("Arrival")
 
 [pos1, pos2] = find(dv == min(min(dv)));
 plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
-plot(xcust(1), xcust(2), 'or', LineWidth=1)
+plot(xcust(2), xcust(3), 'or', LineWidth=1)
 
 legend("Local min", "Mission min", Location="best")
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
+
+warning("To do: add same colorbar for the plots")
 
 
 
