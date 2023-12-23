@@ -158,28 +158,28 @@ grid on
 title('Eccentricity Movmean Test');
 xlabel('time [s]'); ylabel('e [-]');
 
-test_i = movmean(rad2deg(kep(:,3)), 500);
+test_i = movmean(rad2deg(wrapTo2Pi(kep(:,3))), 500);
 figure()
 plot(test_i)
 grid on
 title('Inclination Movmean Test');
 xlabel('time [s]'); ylabel('i [°]');
 
-test_Om = movmean(rad2deg(kep(:,4)), 500);
+test_Om = movmean(rad2deg(wrapTo2Pi(kep(:,4))), 500);
 figure()
 plot(test_Om)
 grid on
 title('RAAN Movmean Test');
 xlabel('time [s]'); ylabel('\Omega [°]');
 
-test_om = movmean(rad2deg(kep(:,5)), 500);
+test_om = movmean(rad2deg(wrapTo2Pi(kep(:,5))), 500);
 figure()
 plot(test_om)
 grid on
 title('Argument of Periapsis Movmean Test');
 xlabel('time [s]'); ylabel('\omega [°]');
 
-test_theta = movmean(rad2deg(kep(:,6)), 500);
+test_theta = movmean(rad2deg(wrapTo2Pi(kep(:,6))), 500);
 figure()
 plot(test_theta)
 grid on
@@ -189,76 +189,72 @@ xlabel('time [s]'); ylabel('\theta [°]');
 
 %% All plots together
 
-error("Implement secular")
 
 figure()
-plot(a_vect)
+plot(tspan./(60*60*24),a_vect)
 grid on
 hold on 
-plot(kep(:,1))
-plot(test_a)
+plot(tspan./(60*60*24),kep(:,1))
+plot(tspan./(60*60*24),test_a)
 hold off
 title('Semi major axis');
 legend('Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('a [km]');
+xlabel('time [days]'); ylabel('a [km]');
 
 figure()
-plot(e_vect)
+plot(tspan./(60*60*24),e_vect)
 grid on
 hold on 
-plot(kep(:,2))
-plot(test_e)
+plot(tspan./(60*60*24),kep(:,2))
+plot(tspan./(60*60*24),test_e)
 hold off
 title('Eccentricity');
 legend('Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('e [-]');
+xlabel('time [days]'); ylabel('e [-]');
 
 figure()
-plot(rad2deg(i_vect))
+plot(tspan./(60*60*24),rad2deg(i_vect))
 grid on
 hold on 
-plot(rad2deg(kep(:,3)))
-plot(test_i)
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,3))))
+plot(tspan./(60*60*24),test_i)
 hold off
 title('Inclination');
 legend('Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('i [°]');
+xlabel('time [days]'); ylabel('i [°]');
 
 figure()
-plot(rad2deg(Om_vect))
+plot(tspan./(60*60*24),rad2deg(Om_vect))
 grid on
 hold on
-plot(rad2deg(kep(:,4)))
-plot(test_Om)
-plot(rad2deg(Om_sec))
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,4))))
+plot(tspan./(60*60*24),test_Om)
 hold off
 title('RAAN');
-legend('Cartesian','Gauss','Filtered','Secular');
-xlabel('time [s]'); ylabel('\Omega [°]');
+legend('Cartesian','Gauss','Filtered');
+xlabel('time [days]'); ylabel('\Omega [°]');
 
 figure()
-plot(rad2deg(om_vect))
+plot(tspan./(60*60*24),rad2deg(om_vect))
 grid on
 hold on 
-plot(rad2deg(kep(:,5)))
-plot(test_om)
-plot(rad2deg(om_sec))
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,5))))
+plot(tspan./(60*60*24),test_om)
 hold off
 title('Argument of Periapsis');
-legend('Cartesian','Gauss','Filtered','Secular');
-xlabel('time [s]'); ylabel('\omega [°]');
+legend('Cartesian','Gauss','Filtered');
+xlabel('time [days]'); ylabel('\omega [°]');
 
 figure()
-plot(rad2deg(theta_vect))
+plot(tspan./(60*60*24),rad2deg(theta_vect))
 grid on
 hold on 
-plot(rad2deg(kep(:,6)))
-plot(test_theta)
-plot(rad2deg(theta_sec))
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,6))))
+plot(tspan./(60*60*24),test_theta)
 hold off
 title('True Anomaly');
-legend('Cartesian','Gauss','Filtered','Secular');
-xlabel('time [s]'); ylabel('\theta [°]');
+legend('Cartesian','Gauss','Filtered');
+xlabel('time [days]'); ylabel('\theta [°]');
 
 
 
@@ -522,7 +518,7 @@ plot(tspan./(60*60*24),test_a)
 hold off
 title('Semi major axis');
 legend('Real Data','Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('a [km]');
+xlabel('time [days]'); ylabel('a [km]');
 
 
 
@@ -536,7 +532,7 @@ plot(tspan./(60*60*24),test_e)
 hold off
 title('Eccentricity');
 legend('Real Data','Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('e [-]');
+xlabel('time [days]'); ylabel('e [-]');
 
 
 figure()
@@ -549,7 +545,7 @@ plot(tspan./(60*60*24),test_i)
 hold off
 title('Inclination');
 legend('Real Data','Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('i [°]');
+xlabel('time [days]'); ylabel('i [°]');
 
 
 figure()
@@ -562,7 +558,7 @@ plot(tspan./(60*60*24),test_Om)
 hold off
 title('RAAN');
 legend('Real Data','Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('\Omega [°]');
+xlabel('time [days]'); ylabel('\Omega [°]');
 
 
 figure()
@@ -575,7 +571,7 @@ plot(tspan./(60*60*24),test_om)
 hold off
 title('Argument of Periapsis');
 legend('Real Data','Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('\omega [°]');
+xlabel('time [days]'); ylabel('\omega [°]');
 
 
 figure()
@@ -588,7 +584,7 @@ plot(tspan./(60*60*24),test_theta)
 hold off
 title('True Anomaly');
 legend('Real Data','Cartesian','Gauss','Filtered');
-xlabel('time [s]'); ylabel('\theta [°]');
+xlabel('time [days]'); ylabel('\theta [°]');
 
 
 %% movmean finder
