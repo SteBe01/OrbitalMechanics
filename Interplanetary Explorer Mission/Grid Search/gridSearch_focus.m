@@ -8,160 +8,154 @@ addpath("Functions\")
 addpath("..\Functions_custom\")
 addpath(genpath("..\\Functions"))
 
-departure.timelookup = 1.0231e4;
-flyby.timelookup = 1.4369e4;
-arrival.timelookup = 1.5467e4;
+xcust(1) = 1.289338494887906e+04;
+xcust(2) = 1.670686199971615e+04;
+xcust(3) = 1.754357184719549e+04;
+
+dep_time = [2028 01 01 0 0 0];
+arr_time = [2058 01 01 0 0 0];
+
+% whole window
+% departure.lb = 1.15e4;
+% departure.ub = 1.42e4;
+% flyby.lb = 1.49e4;
+% flyby.ub = 1.74e4;
+% arrival.lb = 1.52e4;
+% arrival.ub = date2mjd2000(arr_time);
+
+[departureTime, flybyTime, arrivalTime] = loadWindows;
 
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
+
+window_size = 30;
 fixedtol = 1e3;                         % in seconds
-window_size = 100;
-fmincon_choice = 1;                     % 0 for no fmincon
-gap = 5e2;
-
-time1 = departure.timelookup - gap;
-time2 = departure.timelookup + gap;
-departure.time_vect = linspace(time1, time2, window_size);
-time1 = flyby.timelookup - gap;
-time2 = flyby.timelookup + gap;
-flyby.time_vect = linspace(time1, time2, window_size);
-time1 = arrival.timelookup - gap;
-time2 = arrival.timelookup + gap;
-arrival.time_vect = linspace(time1, time2, window_size);
-
+fmincon_choice = 3;                     % 0 for no fmincon
 orbitType = 0;
-dv_1 = NaN* ones(length(departure.time_vect), length(flyby.time_vect), length(arrival.time_vect));
-dv_2 = dv_1;
-dv_3 = dv_1;
-rp = dv_1;
-num_iter = 0;
 
-disc_val = gap / window_size;
-if disc_val > 1
-    disp("Discretization: " + disc_val + " days")
-else
-    disc_val = disc_val * 24;
-    disp("Discretization: " + disc_val + " hours")
-end
-
-tol = (departure.time_vect(end)-departure.time_vect(1)) * 24 * 60 * 60;
-
-while fixedtol < tol
-    tic
-    num_iter = num_iter + 1;
-    iteration.number{num_iter} = num_iter;
+for totWindows = 1:length(departureTime)
+    departure.time_vect = linspace(departureTime{totWindows}.lb, departureTime{totWindows}.ub, window_size);
+    flyby.time_vect = linspace(flybyTime{totWindows}.lb, flybyTime{totWindows}.ub, window_size);
+    arrival.time_vect = linspace(arrivalTime{totWindows}.lb, arrivalTime{totWindows}.ub, window_size);
     
-    reverseStr = '';
-    for i = 1:length(departure.time_vect)
-
-        msg = sprintf('Processed %d percent', ceil((i / length(departure.time_vect)) * 100));
-        fprintf([reverseStr, msg]);
-        reverseStr = repmat(sprintf('\b'), 1, length(msg));
-
-        for j = i:length(flyby.time_vect)
-            for k = j:length(arrival.time_vect)
+    dv_1 = NaN* ones(length(departure.time_vect), length(flyby.time_vect), length(arrival.time_vect));
+    dv_2 = dv_1;
+    dv_3 = dv_1;
+    rp = dv_1;
+    num_iter = 0;
     
-                tof_1 = (flyby.time_vect(j) - departure.time_vect(i)) * 24 * 60 * 60; % seconds
-                tof_2 = (arrival.time_vect(k) - flyby.time_vect(j)) * 24 * 60 * 60; % seconds
+    tol = (departure.time_vect(end)-departure.time_vect(1)) * 24 * 60 * 60;
+    
+    while fixedtol < tol
+        tic
+        num_iter = num_iter + 1;
         
-                if (tof_1 <= 1e5) && (tof_2 <= 1e5)
-                    continue
-                end
+        reverseStr = '';
+        for i = 1:length(departure.time_vect)
+    
+            msg = sprintf('Window %i processed %d percent', totWindows, ceil((i / length(departure.time_vect)) * 100));
+            fprintf([reverseStr, msg]);
+            reverseStr = repmat(sprintf('\b'), 1, length(msg));
+    
+            for j = i:length(flyby.time_vect)
+                for k = j:length(arrival.time_vect)
         
-                [dv_1(i, j, k), dv_2(i, j, k), dv_3(i, j, k), rp_temp, exitValue] = completeInterplanetary(departure.time_vect(i), flyby.time_vect(j), arrival.time_vect(k), departure.planetId, flyby.planetId, arrival.bodyId);
-                if exitValue == 0
-                    continue
+                    tof_1 = (flyby.time_vect(j) - departure.time_vect(i)) * 24 * 60 * 60; % seconds
+                    tof_2 = (arrival.time_vect(k) - flyby.time_vect(j)) * 24 * 60 * 60; % seconds
+            
+                    if (tof_1 <= 1e5) && (tof_2 <= 1e5)
+                        continue
+                    end
+            
+                    [dv_1(i, j, k), dv_2(i, j, k), dv_3(i, j, k), rp_temp, exitValue] = completeInterplanetary(departure.time_vect(i), flyby.time_vect(j), arrival.time_vect(k), departure.planetId, flyby.planetId, arrival.bodyId);
+                    if exitValue == 0
+                        continue
+                    end
+                    rp(i, j, k) = rp_temp;
                 end
-                rp(i, j, k) = rp_temp;
             end
         end
+    
+        fprintf(": ");
+    
+        dv = dv_1 + dv_2 + dv_3;
+        [dVmin, pos1, pos2, pos3] = findMin3(dv);
+    
+        if pos1 == 1
+            pos1_bnd_1 = 1;
+            pos1_bnd_2 = 1 + 1;
+        elseif pos1 == length(departure.time_vect)
+            pos1_bnd_2 = length(departure.time_vect);
+            pos1_bnd_1 = length(departure.time_vect) - 1;
+        else
+            pos1_bnd_1 = pos1 - 1;
+            pos1_bnd_2 = pos1 + 1;
+        end
+    
+        if pos2 == 1
+            pos2_bnd_1 = 1;
+            pos2_bnd_2 = 1 + 1;
+        elseif pos2 == length(flyby.time_vect)
+            pos2_bnd_2 = length(flyby.time_vect);
+            pos2_bnd_1 = length(flyby.time_vect) - 1;
+        else
+            pos2_bnd_1 = pos2 - 1;
+            pos2_bnd_2 = pos2 + 1;
+        end
+    
+        if pos3 == 1
+            pos3_bnd_1 = 1;
+            pos3_bnd_2 = 1 + 1;
+        elseif pos3 == length(arrival.time_vect)
+            pos3_bnd_2 = length(arrival.time_vect);
+            pos3_bnd_1 = length(arrival.time_vect) - 1;
+        else
+            pos3_bnd_1 = pos3 - 1;
+            pos3_bnd_2 = pos3 + 1;
+        end
+        tol = (departure.time_vect(pos1_bnd_2) - departure.time_vect(pos1_bnd_1)) * 24 * 60 * 60;
+    
+        if tol > fixedtol
+            departure.time_vect = linspace(departure.time_vect(pos1_bnd_1), departure.time_vect(pos1_bnd_2), window_size);
+            flyby.time_vect = linspace(flyby.time_vect(pos2_bnd_1), flyby.time_vect(pos2_bnd_2), window_size);
+            arrival.time_vect = linspace(arrival.time_vect(pos3_bnd_1), arrival.time_vect(pos3_bnd_2), window_size);
+        end
+    
+        if fmincon_choice == num_iter
+            break
+        else
+            disp ("iteration " + num_iter + " done in " + toc + " s, dv = " + dVmin + " km/s")
+        end
+    end
+    
+    if fmincon_choice ~= 0
+        A_fmin = [-1 1 0; 0 -1 1]; b_fmin = [0 0];
+        opts = optimset('TolX', eps(1), 'TolFun', eps(1), 'Display', 'off');
+        [tspan, dv_fmin] = fminunc(@(tspan) completeInterplanetaryGS(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [departure.time_vect(pos1) flyby.time_vect(pos2) arrival.time_vect(pos3)]', opts);
+
+        disp ("iteration " + num_iter + " done in " + toc + " s, dv = " + dv_fmin + " km/s")
     end
 
-    fprintf(": ");
-
-    dv = dv_1 + dv_2 + dv_3;
-    [dVmin, pos1, pos2, pos3] = findMin3(dv);
-
-    if pos1 == 1
-        pos1_bnd_1 = 1;
-        pos1_bnd_2 = 1 + 1;
-    elseif pos1 == length(departure.time_vect)
-        pos1_bnd_2 = length(departure.time_vect);
-        pos1_bnd_1 = length(departure.time_vect) - 1;
-    else
-        pos1_bnd_1 = pos1 - 1;
-        pos1_bnd_2 = pos1 + 1;
-    end
-
-    if pos2 == 1
-        pos2_bnd_1 = 1;
-        pos2_bnd_2 = 1 + 1;
-    elseif pos2 == length(flyby.time_vect)
-        pos2_bnd_2 = length(flyby.time_vect);
-        pos2_bnd_1 = length(flyby.time_vect) - 1;
-    else
-        pos2_bnd_1 = pos2 - 1;
-        pos2_bnd_2 = pos2 + 1;
-    end
-
-    if pos3 == 1
-        pos3_bnd_1 = 1;
-        pos3_bnd_2 = 1 + 1;
-    elseif pos3 == length(arrival.time_vect)
-        pos3_bnd_2 = length(arrival.time_vect);
-        pos3_bnd_1 = length(arrival.time_vect) - 1;
-    else
-        pos3_bnd_1 = pos3 - 1;
-        pos3_bnd_2 = pos3 + 1;
-    end
-    tol = (departure.time_vect(pos1_bnd_2) - departure.time_vect(pos1_bnd_1)) * 24 * 60 * 60;
-
-    if tol > fixedtol
-        departure.time_vect = linspace(departure.time_vect(pos1_bnd_1), departure.time_vect(pos1_bnd_2), window_size);
-        flyby.time_vect = linspace(flyby.time_vect(pos2_bnd_1), flyby.time_vect(pos2_bnd_2), window_size);
-        arrival.time_vect = linspace(arrival.time_vect(pos3_bnd_1), arrival.time_vect(pos3_bnd_2), window_size);
-    end
-
-    iteration.time{num_iter} = toc;
-    % iteration.dv1{num_iter} = dv_1;
-    % iteration.dv2{num_iter} = dv_2;
-    % iteration.dv3{num_iter} = dv_3;
-    % iteration.dv{num_iter} = dv;
-    iteration.dv_min{num_iter} = dVmin;
-    iteration.dv_2_min{num_iter} = min(min(min(dv_2)));
-    iteration.rp{num_iter} = rp(pos1, pos2, pos3);
-    iteration.time1{num_iter} = departure.time_vect(pos1);
-    iteration.time2{num_iter} = flyby.time_vect(pos2);
-    iteration.time3{num_iter} = arrival.time_vect(pos1);
-    disp ("iteration " + num_iter + " done in " + toc + " s, dv = " + dVmin + " km/s")
-
-    if fmincon_choice == num_iter
-        break
-    end
+    solutions.dvMin{totWindows} = dv_fmin;
+    solutions.tspan{totWindows} = tspan;
 end
 
-if fmincon_choice ~= 0
-    addpath("GA functions\")
-    A_fmin = [-1 1 0; 0 -1 1]; b_fmin = [0 0];
-    opts = optimset('TolX', eps(1), 'TolFun', eps(1), 'Display', 'iter');
-    [tspan, dv_fmin] = fminunc(@(tspan) completeInterplanetaryGS(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [departure.time_vect(pos1) flyby.time_vect(pos2) arrival.time_vect(pos3)]', opts);
-end
 
-% ---PLOT-----------
+%% ---PLOT-----------
 
-% Define Actual Parameters
+n = 2;
 
-departure.Date = mjd20002date(departure.time_vect(pos1));
-flyby.Date = mjd20002date(flyby.time_vect(pos2));
-ToF_dep_flyby=(flyby.time_vect(pos2)-departure.time_vect(pos1))*24*60*60;
+departure.Date = solutions.tspan{n}(1);
+flyby.Date = solutions.tspan{n}(2);
+arrival.Date = solutions.tspan{n}(3);
 
-arrival.Date = mjd20002date(arrival.time_vect(pos3));
-ToF_flyby_arr=(arrival.time_vect(pos3)-flyby.time_vect(pos2))*24*60*60;
+ToF_dep_flyby=(flyby.Date - departure.Date)*24*60*60;
+ToF_flyby_arr=(arrival.Date - flyby.Date)*24*60*60;
 
-[departure.kep_actual, ksun_actual] = uplanet(departure.time_vect(pos1), departure.planetId);
-[flyby.kep_actual, ~] = uplanet(flyby.time_vect(pos2), flyby.planetId);
-[arrival.kep_actual, ~] = ephNEO(arrival.time_vect(pos3), arrival.bodyId);
+[departure.kep_actual, ksun_actual] = uplanet(departure.Date, departure.planetId);
+[flyby.kep_actual, ~] = uplanet(flyby.Date, flyby.planetId);
+[arrival.kep_actual, ~] = ephNEO(arrival.Date, arrival.bodyId);
 
 % Set options for the ODE solver
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );

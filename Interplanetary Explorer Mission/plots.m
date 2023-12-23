@@ -86,14 +86,10 @@ view(30,30)
 
 
 
-%% porkchop plots - departure, fly by
+%% porkchop plots - departure - fly by and flyby - arrival
 
 clc, clear
 close all
-
-xcust(1) = 1.554407711683449e+04;
-xcust(2) = 1.878584012172524e+04;
-xcust(3) = 1.968280293314873e+04;
 
 xcust(1) = 1.289338494887906e+04;
 xcust(2) = 1.670686199971615e+04;
@@ -103,13 +99,11 @@ dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
 
 departure.planetId = 6;
-flyby.plnetId = 5;
+flyby.planetId = 5;
+arrival.bodyId = 79;
 
 dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
 arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
-
-% dep_time_vect = linspace(date2mjd2000(dep_time), 1.45e4, 100);
-% arr_time_vect = linspace(1.47e4, 1.78e4, 100);
 
 orbitType = 0;
 dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
@@ -127,7 +121,7 @@ for i = 1:length(dep_time_vect)
         tof_vect(i, j) = tof;
 
         [departure.kep, ksun] = uplanet(dep_time_vect(i), departure.planetId);
-        [flyby.kep, ~] = uplanet(arr_time_vect(j), flyby.plnetId);
+        [flyby.kep, ~] = uplanet(arr_time_vect(j), flyby.planetId);
 
         [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
         [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
@@ -150,42 +144,19 @@ dv = dv_1; % without flyby dv
 contour(dep_time_vect, arr_time_vect, dv', 2:0.2:8, HandleVisibility="off")
 colorbar, grid on, hold on
 xlabel("Departure")
-ylabel("Arrival")
+ylabel("FlyBy")
 
 [pos1, pos2] = find(dv == min(min(dv)));
 plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 plot(xcust(1), xcust(2), 'or', LineWidth=1)
 
-legend("Local min", "Mission min", Location="best")
+legend("Global min", "Mission min", Location="best")
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
 
 
-%% porkchop plots - fly by, arrival
-
-clc, clear
-close all
-
-xcust(1) = 1.554407711683449e+04;
-xcust(2) = 1.878584012172524e+04;
-xcust(3) = 1.968280293314873e+04;
-
-xcust(1) = 1.289338494887906e+04;
-xcust(2) = 1.670686199971615e+04;
-xcust(3) = 1.754357184719549e+04;
-
-dep_time = [2028 01 01 0 0 0];
-arr_time = [2058 01 01 0 0 0];
-
-flyby.planetId = 5;
-arrival.bodyId = 79;
-
-dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
-arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
-
-% dep_time_vect = linspace(1.35e4, 1.48e4, 100);
-% arr_time_vect = linspace(1.535e4, 1.565e4, 100);
+% porkchop plots - fly by, arrival
 
 orbitType = 0;
 dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
@@ -223,140 +194,19 @@ end
 % dv = dv_1 + dv_2;
 dv = dv_2; % without flyby dv
 
+figure
 contour(dep_time_vect, arr_time_vect, dv', 4:0.5:25, HandleVisibility="off") % 12:35
 colorbar, grid on, hold on, axis equal
-xlabel("Departure")
+xlabel("FlyBy")
 ylabel("Arrival")
 
 [pos1, pos2] = find(dv == min(min(dv)));
 plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
 plot(xcust(2), xcust(3), 'or', LineWidth=1)
 
-legend("Local min", "Mission min", Location="best")
+legend("Global min", "Mission min", Location="best")
 
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
 warning("To do: add same colorbar for the plots")
-
-
-
-%% porkchop plots - all togeter
-
-clc, clear
-close all
-
-dep_time = [2028 01 01 0 0 0];
-arr_time = [2058 01 01 0 0 0];
-
-departure.planetId = 6;
-flyby.plnetId = 5;
-arrival.bodyId = 79;
-
-dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 50);
-flyby_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 50);
-arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 50);
-
-orbitType = 0;
-dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
-dv_2 = dv_1;
-for i = 1:length(dep_time_vect)
-    for j = 1:length(arr_time_vect)
-        tof1 = (arr_time_vect(j) - dep_time_vect(i)) * 24 * 60 * 60; % seconds
-
-        for k = 1:length(arr_time_vect)
-            tof2 = (arr_time_vect(k) - dep_time_vect(j)) * 24 * 60 * 60;
-
-            if tof1 <= 1e5 || tof2 <= 1e5
-                dv_1(i, j) = NaN;
-                dv_2(i, j) = NaN;
-                continue
-            end
-
-            [departure.kep, ksun] = uplanet(dep_time_vect(i), departure.planetId);
-            [flyby.kep, ~] = uplanet(arr_time_vect(j), flyby.plnetId);
-            [arrival.kep, ~] = ephNEO(arr_time_vect(k), arrival.bodyId);
-    
-            [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
-            [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
-            [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
-
-            [A, P, E, ERROR, VI1, VF1, TPAR, THETA] = lambertMR(departure.r0, flyby.r0, tof1, ksun, orbitType, 0);
-            if A < 0
-                dv_1(i, j) = NaN;
-                dv_2(i, j) = NaN;
-                continue
-            end
-
-            [A, P, E, ERROR, VI2, VF2, TPAR, THETA] = lambertMR(flyby.r0, arrival.r0, tof2, ksun, orbitType, 0);
-            if A < 0
-                dv_1(i, j) = NaN;
-                dv_2(i, j) = NaN;
-                continue
-            end
-    
-            dv_1(i, j) = norm(departure.v0 - VI1);
-            dv_2(i, j) = norm(VF2 - arrival.v0);
-        end
-    end
-end
-
-dv = dv_1 + dv_2;
-
-contour(dep_time_vect, arr_time_vect, dv', 2:0.2:15)
-colorbar, grid on, hold on
-xlabel("Departure")
-ylabel("Arrival")
-
-[min, pos1, pos2] = findMin2(dv);
-plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
-
-% surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
-
-
-
-%% function find dvmin
-
-function [min, pos1, pos2, pos3] = findMin3(dv)
-    min = max(max(max(dv)));
-    pos1 = 0;
-    pos2 = 0;
-    pos3 = 0;
-    for i = 1:size(dv, 1) 
-        for j = 1:size(dv, 2)
-            for k = 1:size(dv, 3) 
-                if dv(i, j, k) < min
-                    min = dv(i, j, k);
-                    pos1 = i;
-                    pos2 = j;
-                    pos3 = k;
-                end
-            end
-        end
-    end
-
-    if pos1 == 0 && pos2 == 0 && pos3 == 0
-        error("Unable to find minimum")
-    end
-end
-
-
-function [min, pos1, pos2, flag] = findMin2(dv)
-    min = max(max(max(dv)));
-    pos1 = 0;
-    pos2 = 0;
-    for i = 1:size(dv, 1) 
-        for j = 1:size(dv, 2)
-            if dv(i, j) < min
-                min = dv(i, j);
-                pos1 = i;
-                pos2 = j;
-            end
-        end
-    end
-
-    flag = 1;
-    if pos1 == 0 && pos2 == 0
-        flag = 0;
-    end
-end
 
