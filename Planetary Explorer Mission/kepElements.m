@@ -258,9 +258,41 @@ xlabel('time [days]'); ylabel('\theta [°]');
 
 
 
+%% Parameters for Celestial Body Selection
 
+addpath("Functions\")
+addpath("Functions_custom\")
 
+clear, clc
+close all
 
+% orbit data
+orbit.a = 0.8016 * 1e4;
+orbit.e = 0.1678;
+orbit.i = 50.3442;
+
+% Earth data
+earth.mu = astroConstants(13);
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu )*(1/60); %[min]
+orbit.ra=orbit.a*(1+orbit.e);
+orbit.rp=orbit.a*(1-orbit.e);
+delta_values=10;
+
+min_e=orbit.e-delta_values/100;
+max_e=orbit.e+delta_values/100;
+
+min_i=orbit.i-delta_values;
+max_i=orbit.i+delta_values;
+
+min_T=T-delta_values;
+max_T=T+delta_values;
+
+min_ra=orbit.ra-delta_values*10;
+max_ra=orbit.ra+delta_values*10;
+
+min_rp=orbit.rp-delta_values*10;
+max_rp=orbit.rp+delta_values*10;
 
 %% other celestial body
 
