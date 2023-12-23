@@ -274,9 +274,11 @@ orbit.i = 50.3442;
 % Earth data
 earth.mu = astroConstants(13);
 
-T = 2*pi*sqrt( orbit.a^3/earth.mu )*(1/60); %[min]
-orbit.ra=orbit.a*(1+orbit.e);
-orbit.rp=orbit.a*(1-orbit.e);
+T = 2*pi*sqrt( orbit.a^3/earth.mu ); %[min]
+n_orbits = 30;
+tspan= linspace( 0, T*n_orbits, 1000 );
+days=tspan./(60*60*24)
+
 delta_values=10;
 
 min_e=orbit.e-delta_values/100;
