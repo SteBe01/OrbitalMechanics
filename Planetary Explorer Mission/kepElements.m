@@ -258,43 +258,7 @@ xlabel('time [days]'); ylabel('\theta [°]');
 
 
 
-%% Parameters for Celestial Body Selection
 
-addpath("Functions\")
-addpath("Functions_custom\")
-
-clear, clc
-close all
-
-% orbit data
-orbit.a = 0.8016 * 1e4;
-orbit.e = 0.1678;
-orbit.i = 50.3442;
-
-% Earth data
-earth.mu = astroConstants(13);
-
-T = 2*pi*sqrt( orbit.a^3/earth.mu ); %[min]
-n_orbits = 30;
-tspan= linspace( 0, T*n_orbits, 1000 );
-days=tspan./(60*60*24)
-
-delta_values=10;
-
-min_e=orbit.e-delta_values/100;
-max_e=orbit.e+delta_values/100;
-
-min_i=orbit.i-delta_values;
-max_i=orbit.i+delta_values;
-
-min_T=T-delta_values;
-max_T=T+delta_values;
-
-min_ra=orbit.ra-delta_values*10;
-max_ra=orbit.ra+delta_values*10;
-
-min_rp=orbit.rp-delta_values*10;
-max_rp=orbit.rp+delta_values*10;
 
 %% other celestial body
 
@@ -303,8 +267,8 @@ addpath("Functions_custom\")
 
 clear, clc
 close all
-A = importdata("test.csv");
-
+A = importdata("test_more_days.csv");
+%%
 % orbit data
 orbit_new_object.a = A.data(1,10);
 orbit_new_object.e = A.data(1,1);
