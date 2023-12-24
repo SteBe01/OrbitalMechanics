@@ -189,7 +189,6 @@ xlabel('time [s]'); ylabel('\theta [°]');
 
 %% All plots together
 
-
 figure()
 plot(tspan./(60*60*24),a_vect)
 grid on
@@ -267,8 +266,8 @@ addpath("Functions_custom\")
 
 clear, clc
 close all
-A = importdata("test_more_days.csv");
-%%
+A = importdata("test.csv");
+
 % orbit data
 orbit_new_object.a = A.data(1,10);
 orbit_new_object.e = A.data(1,1);
@@ -288,7 +287,8 @@ earth.J2 = astroConstants(9);
 spacecraft.cD = 2.1;
 spacecraft.AM = 0.0171;
 
-%% With out propagation
+
+%% without propagation
 
 orbit_new_object.a_no_prop = A.data(:,10);
 orbit_new_object.e_no_prop = A.data(:,1);
@@ -338,6 +338,7 @@ plot(tspan./(60*60*24), orbit_new_object.theta_no_prop)
 grid on
 title('True Anomaly');
 xlabel('time [days]'); ylabel('\theta [°]');
+
 
 %% perturbations - cartesian coordinates
 
@@ -500,11 +501,8 @@ grid on
 title('True Anomaly Movmean Test');
 xlabel('time [days]'); ylabel('\theta [°]');
 
+
 %% All plots together
-
-
-
-
 
 figure()
 plot(tspan./(60*60*24), orbit_new_object.a_no_prop)
@@ -518,8 +516,6 @@ title('Semi major axis');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('a [km]');
 
-
-
 figure()
 plot(tspan./(60*60*24), orbit_new_object.e_no_prop)
 grid on
@@ -531,7 +527,6 @@ hold off
 title('Eccentricity');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('e [-]');
-
 
 figure()
 plot(tspan./(60*60*24), orbit_new_object.i_no_prop)
@@ -545,7 +540,6 @@ title('Inclination');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('i [°]');
 
-
 figure()
 plot(tspan./(60*60*24), orbit_new_object.OM_no_prop)
 grid on
@@ -558,7 +552,6 @@ title('RAAN');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\Omega [°]');
 
-
 figure()
 plot(tspan./(60*60*24), orbit_new_object.om_no_prop)
 grid on
@@ -570,7 +563,6 @@ hold off
 title('Argument of Periapsis');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\omega [°]');
-
 
 figure()
 plot(tspan./(60*60*24), orbit_new_object.theta_no_prop)
