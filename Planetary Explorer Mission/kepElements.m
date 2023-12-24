@@ -292,12 +292,12 @@ spacecraft.AM = 0.0171;
 
 orbit_new_object.a_no_prop = A.data(:,10);
 orbit_new_object.e_no_prop = A.data(:,1);
-orbit_new_object.i_no_prop = deg2rad(A.data(:,3));
-orbit_new_object.OM_no_prop = deg2rad(A.data(:,4));
-orbit_new_object.om_no_prop = deg2rad(A.data(:,5));
-orbit_new_object.theta_no_prop = deg2rad(A.data(:,9));
-
-n_orbits = 30;
+orbit_new_object.i_no_prop = A.data(:,3);
+orbit_new_object.OM_no_prop = A.data(:,4);
+orbit_new_object.om_no_prop = A.data(:,5);
+orbit_new_object.theta_no_prop = A.data(:,9);
+ 
+n_orbits = 200;
 n_points = length(A.data);
 
 T = 2*pi*sqrt( orbit_new_object.a^3/earth.mu );
@@ -345,7 +345,7 @@ xlabel('time [days]'); ylabel('\theta [°]');
 kep_body = [A.data(1,10), A.data(1,1), deg2rad(A.data(1,3)), deg2rad(A.data(1,4)), deg2rad(A.data(1,5)), deg2rad(A.data(1,9)), earth.mu];
 [r0, v0] = kep2car(kep_body);
 
-n_orbits = 30;
+n_orbits = 200;
 n_points = length(A.data);
 
 T = 2*pi*sqrt( orbit_new_object.a^3/earth.mu );
