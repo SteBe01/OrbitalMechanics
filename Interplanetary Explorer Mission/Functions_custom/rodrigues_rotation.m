@@ -2,6 +2,7 @@ function [v_rot] = rodrigues_rotation(v,delta,u)
 
 % rotate a vector 𝐯 an angle 𝛿 around unit vector 𝐮 (counter-clockwise):
 %
+% Usage
 % [v_rot] = rodrigues_rotation(v,delta,u)
 %
 % Input arguments:

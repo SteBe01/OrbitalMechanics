@@ -1,4 +1,19 @@
 function dy = eq_motion(t, s, acc_pert_fun, mu)
+% Calculates the rate of change of keplerian elements on the t,n,h frame
+%
+% Usage:
+% dy = eq_motion(t, s, acc_pert_fun, mu)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% t             [Nx1]   time       [-]
+% s             [1x6]   Keplerian Elements Vector   [-]
+% acc_pert_fun  [1x3]   Perturbing Accelerations    [km/s^2]
+% mu            [1x1]   Planetary constant          [km^3/s^2]
+%
+% Output arguments:
+% -----------------------------------------------------------------
+% dy            [6x1] Rate of change of keplerian elements    [km/s^2]
 
     a = s(1);
     e = s(2);

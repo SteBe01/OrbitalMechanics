@@ -2,6 +2,7 @@ function [rp, flag] = rpsolver(v1, v2, planetId)
 
 % Perigee radius finder of hyperbola
 %
+% Usage
 % [rp, flag] = rpsolver(v1, v2, planetId)
 %
 % Input arguments:

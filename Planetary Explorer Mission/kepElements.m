@@ -47,7 +47,7 @@ plot3( Y(:,1), Y(:,2), Y(:,3))
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('Two-body problem orbit, with J2 and air drag');
 axis equal, grid on, hold on
-earthPlotSimulation;
+earthPlot;
 plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
 plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
 

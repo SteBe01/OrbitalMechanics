@@ -2,15 +2,16 @@ function s = jupiterPlot
 
 % Generates a plot of Jupiter and returns it's graphic handler
 %
-% s = earthPlot
+% Usage
+% s = jupiterPlot
 %
 % Output arguments:
 % ---------------------------------------------------------------------
-% s             [1x1]   Earth - obj                [surface/-]
+% s             [1x1]   Jupiter - obj                [surface/-]
 
 % Earth settings
 [x1,y1,z1] = sphere(50);
-mult=69911;                     % Earth radius
+mult=69911;                     % Jupiter radius
 s = surface(x1*mult,y1*mult,z1*mult);
 
 load topo 

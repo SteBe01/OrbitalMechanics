@@ -1,4 +1,23 @@
 function acc_pert_vec = acc_pert_fun(t, y, mu, Re, J2, om_E, A_M, cD)
+% Calculates perturbing accelerations
+%
+% Usage:
+% acc_pert_vec = acc_pert_fun(t, y, mu, Re, J2, om_E, A_M, cD)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% t             [Nx1]   time       [-]
+% y             [1x6]   Keplerian Elements Vector   [-]
+% mu            [1x1]   Planetary constant          [km^3/s^2]
+% Re            [1x1]   Mean radius of the planet   [km]
+% J2            [1x1]   Gravitatonal field constant [-]
+% om_E          [1x1]   Earth angular velocity      [rad/s]
+% A_M           [1x1]   Reference area over mass    [m^2/kg]
+% cD            [1x1]   Drag coefficient            []
+% 
+% Output arguments:
+% -----------------------------------------------------------------
+% acc_pert_vec  [1x3]   Perturbing Accelerations    [km/s^2]
 
     a = y(1);
     e = y(2);

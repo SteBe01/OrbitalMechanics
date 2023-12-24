@@ -2,6 +2,7 @@ function [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, cod
 
 % Function for interplanetary dv calculator
 %
+% Usage
 % [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
 %
 % Input arguments:

@@ -4,6 +4,7 @@ function [theta_vect] = calculateThetaVect(mu, a, e, T_size)
 % (correct theta_vect can be used to generate time related orbital points)
 % The funcion also incorporates the functions Newton and vectorRectifier
 %
+% Usage
 % [theta_vect] = calculateThetaVect(mu, a, e, T_size)
 %
 % Input arguments:
