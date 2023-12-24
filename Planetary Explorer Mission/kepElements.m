@@ -266,7 +266,7 @@ addpath("Functions_custom\")
 
 clear, clc
 close all
-A = importdata("test.csv");
+A = importdata("EXPRESS-MD2.csv");
 
 % orbit data
 orbit_new_object.a = A.data(1,10);
@@ -293,9 +293,9 @@ spacecraft.AM = 0.0171;
 orbit_new_object.a_no_prop = A.data(:,10);
 orbit_new_object.e_no_prop = A.data(:,1);
 orbit_new_object.i_no_prop = deg2rad(A.data(:,3));
-orbit_new_object.OM_no_prop = deg2rad(A.data(:,4)); 
-orbit_new_object.om_no_prop = deg2rad(A.data(:,5)); 
-orbit_new_object.theta_no_prop = deg2rad(A.data(:,9)); 
+orbit_new_object.OM_no_prop = deg2rad(A.data(:,4));
+orbit_new_object.om_no_prop = deg2rad(A.data(:,5));
+orbit_new_object.theta_no_prop = deg2rad(A.data(:,9));
 
 n_orbits = 30;
 n_points = length(A.data);
