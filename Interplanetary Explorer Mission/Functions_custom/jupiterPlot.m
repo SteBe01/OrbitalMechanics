@@ -34,7 +34,7 @@ axis equal, grid on
 end
 
 % Earth’s flat image used for 3d representations and animations was downloaded from Nasa website
-% (https://svs.gsfc.nasa.gov/3615) as there's no restrictions under 
+% (https://svs.gsfc.nasa.gov/vis/a010000/a012000/a012021/Hubble_Jupiter_maps_compared_H264_1920x1080_print.jpg) as there's no restrictions under 
 % "Still Images, Audio Recordings, Video, and Related Computer Files for Non-Commercial Use" 
 % (https://www.nasa.gov/multimedia/guidelines/index.html) for our use. 
 % We do not own this image: NASA/Goddard Space Flight Center Scientific Visualization Studio 
