@@ -20,7 +20,7 @@ addpath("Functions_custom\")
 clc, clear
 close all
 
-warning("Not working!!!!!!!!!!!!!!!!, accrocchio")
+warning("Not working")
 
 xcust(1) = 1.554407711683449e+04;
 xcust(2) = 1.878584012172524e+04;
