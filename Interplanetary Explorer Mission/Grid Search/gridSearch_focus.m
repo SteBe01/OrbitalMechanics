@@ -137,9 +137,11 @@ for totWindows = 1:length(departureTime)
     if fmincon_choice ~= 0
         A_fmin = [-1 1 0; 0 -1 1]; b_fmin = [0 0];
         opts = optimset('TolX', eps(1), 'TolFun', eps(1), 'Display', 'off');
-        [tspan, dv_fmin] = fminunc(@(tspan) completeInterplanetaryGS(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [departure.time_vect(pos1) flyby.time_vect(pos2) arrival.time_vect(pos3)]', opts);
-
-        disp ("iteration " + num_iter + " done in " + toc + " s, dv = " + dv_fmin + " km/s")
+        lb = date2mjd2000(dep_time) * ones(3,1);
+        ub = date2mjd2000(arr_time) * ones(3,1);
+        [tspan, dv_fmin] = fmincon(@(tspan) completeInterplanetaryGS(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [departure.time_vect(pos1) flyby.time_vect(pos2) arrival.time_vect(pos3)]', [], [], [], [], lb, ub, [], opts);
+        
+        disp("iteration " + num_iter + " done in " + toc + " s, dv = " + dv_fmin + " km/s")
     end
 
     if totWindows > 1
@@ -169,6 +171,7 @@ for totWindows = 1:length(departureTime)
     b3 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.lb], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r');
     b4 = plot([flybyTime{totWindows}.ub flybyTime{totWindows}.ub], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r');
     b5 = plot(tspan(2), tspan(3), 'xr', LineWidth=1);
+    sgtitle("Delta velocity = " + dv_fmin + " km/s")
     drawnow
 
     solutions.dvMin{totWindows} = dv_fmin;
