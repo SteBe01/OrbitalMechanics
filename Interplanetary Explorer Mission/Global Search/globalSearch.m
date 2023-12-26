@@ -72,3 +72,7 @@ disp("Data - departure Id: " + departure.planetId + ", flyBy Id: " + flyby.plane
 disp("Solution: " + dvTot + " km/s, found at " + xcust(1) + " " + xcust(2) + " " + xcust(3))
 
 
+%% Plot
+
+missionPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
+

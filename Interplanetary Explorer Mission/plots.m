@@ -141,7 +141,7 @@ end
 % dv = dv_1 + dv_2;
 dv = dv_1; % without flyby dv
 
-contour(dep_time_vect, arr_time_vect, dv', 2:0.2:8, HandleVisibility="off")
+contour(dep_time_vect, arr_time_vect, dv', 2:0.15:8, HandleVisibility="off")
 colorbar, grid on, hold on
 xlabel("Departure")
 ylabel("FlyBy")
@@ -195,7 +195,7 @@ end
 dv = dv_2; % without flyby dv
 
 figure
-contour(dep_time_vect, arr_time_vect, dv', 4:0.5:25, HandleVisibility="off") % 12:35
+contour(dep_time_vect, arr_time_vect, dv', 4:0.5:20, HandleVisibility="off") % 12:35
 colorbar, grid on, hold on, axis equal
 xlabel("FlyBy")
 ylabel("Arrival")
