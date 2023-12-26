@@ -84,5 +84,12 @@ flyby{12}.ub = 1.99e4;
 arrival{12}.lb = 2.08e4;
 arrival{12}.ub = 2.12e4;
 
+departure{13}.lb = 1.15e4;
+departure{13}.ub = 1.42e4;
+flyby{13}.lb = 1.3e4;
+flyby{13}.ub = 1.52e4;
+arrival{13}.lb = 1.53e4;
+arrival{13}.ub = 1.57e4;
+
 end
 

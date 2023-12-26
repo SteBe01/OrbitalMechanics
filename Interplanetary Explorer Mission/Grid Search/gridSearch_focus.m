@@ -33,6 +33,11 @@ window_size = 30;
 fixedtol = 1e3;                         % in seconds
 fmincon_choice = 3;                     % 0 for no fmincon
 orbitType = 0;
+animation = 1;
+
+if animation
+    porkchop_start(dep_time, arr_time, departure.planetId, flyby.planetId, arrival.bodyId);
+end
 
 for totWindows = 1:length(departureTime)
     departure.time_vect = linspace(departureTime{totWindows}.lb, departureTime{totWindows}.ub, window_size);
@@ -137,12 +142,41 @@ for totWindows = 1:length(departureTime)
         disp ("iteration " + num_iter + " done in " + toc + " s, dv = " + dv_fmin + " km/s")
     end
 
+    if totWindows > 1
+        delete(a1)
+        delete(a2)
+        delete(a3)
+        delete(a4)
+        delete(a5)
+        delete(b1)
+        delete(b2)
+        delete(b3)
+        delete(b4)
+        delete(b5)
+    end
+
+    subplot(1, 2, 1)
+    a1 = plot([departureTime{totWindows}.lb departureTime{totWindows}.ub], [flybyTime{totWindows}.lb flybyTime{totWindows}.lb], 'r');
+    hold on
+    a2 = plot([departureTime{totWindows}.lb departureTime{totWindows}.ub], [flybyTime{totWindows}.ub flybyTime{totWindows}.ub], 'r');
+    a3 = plot([departureTime{totWindows}.lb departureTime{totWindows}.lb], [flybyTime{totWindows}.lb flybyTime{totWindows}.ub], 'r');
+    a4 = plot([departureTime{totWindows}.ub departureTime{totWindows}.ub], [flybyTime{totWindows}.lb flybyTime{totWindows}.ub], 'r');
+    a5 = plot(tspan(1), tspan(2), 'xr', LineWidth=1);
+    subplot(1, 2, 2)
+    b1 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.ub], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.lb], 'r');
+    hold on
+    b2 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.ub], [arrivalTime{totWindows}.ub arrivalTime{totWindows}.ub], 'r');
+    b3 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.lb], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r');
+    b4 = plot([flybyTime{totWindows}.ub flybyTime{totWindows}.ub], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r');
+    b5 = plot(tspan(2), tspan(3), 'xr', LineWidth=1);
+    drawnow
+
     solutions.dvMin{totWindows} = dv_fmin;
     solutions.tspan{totWindows} = tspan;
 end
 
 
-%% ---PLOT-----------
+%% Plot
 
 n = 2;
 
