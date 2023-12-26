@@ -3,6 +3,8 @@
 clc, clear
 close all
 
+windowType = 1;
+
 restoredefaultpath
 addpath("Functions\")
 addpath("..\Functions_custom\")
@@ -15,15 +17,7 @@ xcust(3) = 1.754357184719549e+04;
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
 
-% whole window
-% departure.lb = 1.15e4;
-% departure.ub = 1.42e4;
-% flyby.lb = 1.49e4;
-% flyby.ub = 1.74e4;
-% arrival.lb = 1.52e4;
-% arrival.ub = date2mjd2000(arr_time);
-
-[departureTime, flybyTime, arrivalTime] = loadWindows;
+[departureTime, flybyTime, arrivalTime] = loadWindows(windowType);
 
 departure.planetId = 6;
 flyby.planetId = 5;
@@ -181,83 +175,16 @@ end
 
 %% Plot
 
-n = 2;
+n = 14;
+if windowType == 1
+    n = n - 12;
+end
 
-departure.Date = solutions.tspan{n}(1);
-flyby.Date = solutions.tspan{n}(2);
-arrival.Date = solutions.tspan{n}(3);
+departure_time = solutions.tspan{n}(1);
+flyby_time = solutions.tspan{n}(2);
+arrival_time = solutions.tspan{n}(3);
 
-ToF_dep_flyby=(flyby.Date - departure.Date)*24*60*60;
-ToF_flyby_arr=(arrival.Date - flyby.Date)*24*60*60;
-
-[departure.kep_actual, ksun_actual] = uplanet(departure.Date, departure.planetId);
-[flyby.kep_actual, ~] = uplanet(flyby.Date, flyby.planetId);
-[arrival.kep_actual, ~] = ephNEO(arrival.Date, arrival.bodyId);
-
-% Set options for the ODE solver
-options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-
-% orbit propagation - departure
-[departure.r0_actual, departure.v0_actual] = kep2car([departure.kep_actual, ksun_actual]);
-departure.y0_actual = [departure.r0_actual departure.v0_actual];
-
-departure.T_orb_actual = 2*pi*sqrt( departure.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
-departure.tspan= linspace( 0, departure.T_orb_actual, 200 );
-[ ~, departure.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), departure.tspan, departure.y0_actual, options );
-
-% orbit propagation - flyby
-[flyby.r0_actual, flyby.v0_actual] = kep2car([flyby.kep_actual, ksun_actual]);
-flyby.y0_actual = [flyby.r0_actual flyby.v0_actual];
-
-flyby.T_orb_actual = 2*pi*sqrt( flyby.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
-flyby.tspan= linspace( 0, flyby.T_orb_actual, 200 );
-[ ~, flyby.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), flyby.tspan, flyby.y0_actual, options );
-
-% orbit propagation - arrival
-[arrival.r0_actual, arrival.v0_actual] = kep2car([arrival.kep_actual, ksun_actual]);
-arrival.y0_actual = [arrival.r0_actual arrival.v0_actual];
-
-arrival.T_orb_actual = 2*pi*sqrt( arrival.kep_actual(1)^3/ksun_actual ); % Orbital period [1/s]
-arrival.tspan= linspace( 0, arrival.T_orb_actual, 200 );
-[ ~, arrival.Y_actual ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), arrival.tspan, arrival.y0_actual, options );
-
-%Propagation first transfer ARC
-[A_1_actual, P_1_actual, E_1_actual, ERROR_1_actual, VI_1_actual, VF_1_actual, TPAR_1_actual, THETA_1_actual] = lambertMR(departure.r0_actual, flyby.r0_actual, ToF_dep_flyby, ksun_actual, orbitType, 0);
-y0_1 = [ departure.r0_actual VI_1_actual ];
-% Set time span
-T_1 = 2*pi*sqrt( A_1_actual^3/ksun_actual ); % Orbital period [s]
-tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% Perform the integration
-[   t, Y_1 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_1, y0_1, options );
-
-%Propagation second transfer ARC
-[A_2_actual, P_2_actual, E_2_actual, ERROR_2_actual, VI_2_actual, VF_2_actual, TPAR_2_actual, THETA_2_actual] = lambertMR(flyby.r0_actual, arrival.r0_actual, ToF_flyby_arr, ksun_actual, orbitType, 0);
-y0_2 = [ flyby.r0_actual VI_2_actual ];
-% Set time span
-T_2 = 2*pi*sqrt( A_2_actual^3/ksun_actual ); % Orbital period [s]
-tspan_2 = linspace( 0,ToF_flyby_arr, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% Perform the integration
-[   t, Y_2 ] = ode113( @(t,y) ode_2bp(t,y,ksun_actual), tspan_2, y0_2, options );
-
-% Plot the results
-figure()
-plot3( departure.Y_actual(:,1), departure.Y_actual(:,2), departure.Y_actual(:,3), '-','color', 'b' )
-xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
-title('orbits');
-axis equal;
-grid on;
-hold on
-plot3( flyby.Y_actual(:,1),flyby.Y_actual(:,2), flyby.Y_actual(:,3), '-' ,'color', 'r')
-plot3( arrival.Y_actual(:,1), arrival.Y_actual(:,2), arrival.Y_actual(:,3), '-','color', 'g')
-plot3( Y_1(:,1), Y_1(:,2), Y_1(:,3), '--','color', 'm' )
-plot3( Y_2(:,1), Y_2(:,2), Y_2(:,3), '--','color', 'm' )
-plot3(departure.r0_actual(1),departure.r0_actual(2),departure.r0_actual(3),'o','Color','b','MarkerFaceColor','b')
-plot3(flyby.r0_actual(1),flyby.r0_actual(2),flyby.r0_actual(3),'o','Color','r','MarkerFaceColor','r')
-plot3(arrival.r0_actual(1),arrival.r0_actual(2),arrival.r0_actual(3),'o','Color','g','MarkerFaceColor','g')
-plot3(0,0,0,'o','Color','y','MarkerFaceColor','y')
-legend('Saturn Orbit','Jupiter Orbit','Asteroid N.79 Orbit','Transfer Arc 1','Transfer Arc 2', ...
-    'Saturn','Jupiter','Asteroid N.79','Sun')
-hold off
+missionPlot(departure_time, flyby_time, arrival_time, departure.planetId, flyby.planetId, arrival.bodyId)
 
 
 %% Functions
@@ -280,3 +207,4 @@ function [min, pos1, pos2, pos3] = findMin3(dv)
         end
     end
 end
+
