@@ -40,13 +40,13 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [ ~, Y ] = ode113( @(t,y) ode_2bp(t,y,earth.mu), tspan, y0, options );
 
 figure()
-plot3( Y(:,1), Y(:,2), Y(:,3))
+plot3( Y(:,1), Y(:,2), Y(:,3),'r')
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 
 title('Two-body problem orbit');
 axis equal, grid on,hold on
 earthPlot;
-plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or','MarkerEdgeColor','blue' )
 
 
 %% ground track plot (unperturbed)
@@ -78,7 +78,7 @@ groundTrackPlot(lon, lat, "EarthTexture.jpg")
 om_E = 15.04;                   % deg/h
 theta_g = 0;                    % theta Greenwich (t0)
 
-orbit_number = orbit.ratio_k*10;
+orbit_number = orbit.ratio_k;
 tspan_dim = 100000;
 
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
