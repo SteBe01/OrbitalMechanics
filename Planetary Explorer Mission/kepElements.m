@@ -30,7 +30,7 @@ spacecraft.AM = 0.0171;
 
 %% perturbations - cartesian coordinates
 
-n_orbits = 200;
+n_orbits = orbit.ratio_k*20;
 n_points = 10000;
 
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
@@ -50,6 +50,7 @@ axis equal, grid on, hold on
 earthPlot;
 plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
 plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
+
 
 a_vect = zeros(length(Y), 1);
 e_vect = zeros(length(Y), 1);
@@ -190,66 +191,66 @@ xlabel('time [s]'); ylabel('\theta [°]');
 %% All plots together
 
 figure()
-plot(tspan./(60*60*24),a_vect)
+plot(tspan./(60*60*24),a_vect,'m')
 grid on
 hold on 
-plot(tspan./(60*60*24),kep(:,1))
-plot(tspan./(60*60*24),test_a)
+plot(tspan./(60*60*24),kep(:,1),'b')
+plot(tspan./(60*60*24),test_a,'r')
 hold off
 title('Semi major axis');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('a [km]');
 
 figure()
-plot(tspan./(60*60*24),e_vect)
+plot(tspan./(60*60*24),e_vect,'m')
 grid on
 hold on 
-plot(tspan./(60*60*24),kep(:,2))
-plot(tspan./(60*60*24),test_e)
+plot(tspan./(60*60*24),kep(:,2),'b')
+plot(tspan./(60*60*24),test_e,'r')
 hold off
 title('Eccentricity');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('e [-]');
 
 figure()
-plot(tspan./(60*60*24),rad2deg(i_vect))
+plot(tspan./(60*60*24),rad2deg(i_vect),'m')
 grid on
 hold on 
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,3))))
-plot(tspan./(60*60*24),test_i)
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,3))),'b')
+plot(tspan./(60*60*24),test_i,'r')
 hold off
 title('Inclination');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('i [°]');
 
 figure()
-plot(tspan./(60*60*24),rad2deg(Om_vect))
+plot(tspan./(60*60*24),rad2deg(Om_vect),'m')
 grid on
 hold on
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,4))))
-plot(tspan./(60*60*24),test_Om)
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,4))),'b')
+plot(tspan./(60*60*24),test_Om,'r')
 hold off
 title('RAAN');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\Omega [°]');
 
 figure()
-plot(tspan./(60*60*24),rad2deg(om_vect))
+plot(tspan./(60*60*24),rad2deg(om_vect),'m')
 grid on
 hold on 
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,5))))
-plot(tspan./(60*60*24),test_om)
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,5))),'b')
+plot(tspan./(60*60*24),test_om,'r')
 hold off
 title('Argument of Periapsis');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\omega [°]');
 
 figure()
-plot(tspan./(60*60*24),rad2deg(theta_vect))
+plot(tspan./(60*60*24),rad2deg(theta_vect),'m')
 grid on
 hold on 
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,6))))
-plot(tspan./(60*60*24),test_theta)
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,6))),'b')
+plot(tspan./(60*60*24),test_theta,'r')
 hold off
 title('True Anomaly');
 legend('Cartesian','Gauss','Filtered');
@@ -276,6 +277,8 @@ orbit_new_object.OM = deg2rad(A.data(1,4));
 orbit_new_object.om = deg2rad(A.data(1,5)); 
 orbit_new_object.theta = deg2rad(A.data(1,9)); 
 orbit_new_object.kep = [orbit_new_object.a orbit_new_object.e orbit_new_object.i orbit_new_object.OM orbit_new_object.om orbit_new_object.theta];
+orbit.ratio_k = 12;
+orbit.ratio_m = 1;
 
 % Earth data
 earth.r = astroConstants(23);
@@ -297,7 +300,7 @@ orbit_new_object.OM_no_prop = A.data(:,4);
 orbit_new_object.om_no_prop = A.data(:,5);
 orbit_new_object.theta_no_prop = A.data(:,9);
  
-n_orbits = 200;
+n_orbits = orbit.ratio_k*20;
 n_points = length(A.data);
 
 T = 2*pi*sqrt( orbit_new_object.a^3/earth.mu );
@@ -345,7 +348,7 @@ xlabel('time [days]'); ylabel('\theta [°]');
 kep_body = [A.data(1,10), A.data(1,1), deg2rad(A.data(1,3)), deg2rad(A.data(1,4)), deg2rad(A.data(1,5)), deg2rad(A.data(1,9)), earth.mu];
 [r0, v0] = kep2car(kep_body);
 
-n_orbits = 200;
+n_orbits = orbit.ratio_k*20;
 n_points = length(A.data);
 
 T = 2*pi*sqrt( orbit_new_object.a^3/earth.mu );
@@ -505,77 +508,82 @@ xlabel('time [days]'); ylabel('\theta [°]');
 %% All plots together
 
 figure()
-plot(tspan./(60*60*24), orbit_new_object.a_no_prop)
+plot(tspan./(60*60*24), orbit_new_object.a_no_prop,'g')
 grid on
 hold on
-plot(tspan./(60*60*24),a_vect)
-plot(tspan./(60*60*24),kep_new_object(:,1))
-plot(tspan./(60*60*24),test_a)
+plot(tspan./(60*60*24),a_vect,'m')
+plot(tspan./(60*60*24),kep_new_object(:,1),'b')
+plot(tspan./(60*60*24),test_a,'r')
 hold off
 title('Semi major axis');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('a [km]');
+xlim([0,21])
 
 figure()
-plot(tspan./(60*60*24), orbit_new_object.e_no_prop)
+plot(tspan./(60*60*24), orbit_new_object.e_no_prop,'g')
 grid on
 hold on 
-plot(tspan./(60*60*24),e_vect)
-plot(tspan./(60*60*24),kep_new_object(:,2))
-plot(tspan./(60*60*24),test_e)
+plot(tspan./(60*60*24),e_vect,'m')
+plot(tspan./(60*60*24),kep_new_object(:,2),'b')
+plot(tspan./(60*60*24),test_e,'r')
 hold off
 title('Eccentricity');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('e [-]');
+xlim([0,21])
 
 figure()
-plot(tspan./(60*60*24), orbit_new_object.i_no_prop)
+plot(tspan./(60*60*24), orbit_new_object.i_no_prop,'g')
 grid on
 hold on
-plot(tspan./(60*60*24),rad2deg(i_vect))
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,3))))
-plot(tspan./(60*60*24),test_i)
+plot(tspan./(60*60*24),rad2deg(i_vect),'m')
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,3))),'b')
+plot(tspan./(60*60*24),test_i,'r')
 hold off
 title('Inclination');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('i [°]');
+xlim([0,21])
 
 figure()
-plot(tspan./(60*60*24), orbit_new_object.OM_no_prop)
+plot(tspan./(60*60*24), orbit_new_object.OM_no_prop,'g')
 grid on
 hold on
-plot(tspan./(60*60*24),rad2deg(Om_vect))
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,4))))
-plot(tspan./(60*60*24),test_Om)
+plot(tspan./(60*60*24),rad2deg(Om_vect),'m')
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,4))),'b')
+plot(tspan./(60*60*24),test_Om,'r')
 hold off
 title('RAAN');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\Omega [°]');
+xlim([0,21])
 
 figure()
-plot(tspan./(60*60*24), orbit_new_object.om_no_prop)
+plot(tspan./(60*60*24), orbit_new_object.om_no_prop,'g')
 grid on
 hold on 
-plot(tspan./(60*60*24),rad2deg(om_vect))
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,5))))
-plot(tspan./(60*60*24),test_om)
+plot(tspan./(60*60*24),rad2deg(om_vect),'m')
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,5))),'b')
+plot(tspan./(60*60*24),test_om,'r')
 hold off
 title('Argument of Periapsis');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\omega [°]');
+xlim([0,21])
 
 figure()
-plot(tspan./(60*60*24), orbit_new_object.theta_no_prop)
+plot(tspan./(60*60*24), orbit_new_object.theta_no_prop,'g')
 grid on
 hold on 
-plot(tspan./(60*60*24),rad2deg(theta_vect))
-plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,6))))
-plot(tspan./(60*60*24),test_theta)
+plot(tspan./(60*60*24),rad2deg(theta_vect),'m')
+plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,6))),'b')
+plot(tspan./(60*60*24),test_theta,'r')
 hold off
 title('True Anomaly');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\theta [°]');
-
+xlim([0,21])
 
 %% movmean finder
 
