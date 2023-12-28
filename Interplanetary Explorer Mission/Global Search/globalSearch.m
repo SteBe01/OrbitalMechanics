@@ -41,11 +41,11 @@ x0(2) = x0(1) + (date2mjd2000(mission.arr_time)-x0(1)).*rand(1,1);
 x0(3) = x0(2) + (date2mjd2000(mission.arr_time)-x0(2)).*rand(1,1);
 
 startpts = CustomStartPointSet(stpts);
-lb = date2mjd2000(mission.dep_time);
-ub = date2mjd2000(mission.arr_time);
+lb = date2mjd2000(mission.dep_time) * ones(3, 1);
+ub = date2mjd2000(mission.arr_time) * ones(3, 1);
 
-opts = optimoptions(@fminunc, 'Algorithm', 'quasi-newton');
-newprob = createOptimProblem('fminunc', 'x0', x0, 'lb', lb, 'ub', ub, 'objective', f, 'options', opts);
+opts = optimoptions(@fmincon, 'Algorithm', 'sqp');
+newprob = createOptimProblem('fmincon', 'x0', x0, 'lb', lb, 'ub', ub, 'objective', f, 'options', opts);
 
 gs = GlobalSearch;
 
@@ -70,9 +70,4 @@ time_elapsed = toc;
 disp("Time elapsed: " + time_elapsed + " s")
 disp("Data - departure Id: " + departure.planetId + ", flyBy Id: " + flyby.planetId + ", arrival Id: " + arrival.bodyId)
 disp("Solution: " + dvTot + " km/s, found at " + xcust(1) + " " + xcust(2) + " " + xcust(3))
-
-
-%% Plot
-
-missionPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
 
