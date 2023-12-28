@@ -43,13 +43,13 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
 
 figure()
-plot3( Y(:,1), Y(:,2), Y(:,3))
+plot3( Y(:,1), Y(:,2), Y(:,3),'r')
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('Two-body problem orbit, with J2 and air drag');
 axis equal, grid on, hold on
 earthPlot;
-plot3( Y(1,1), Y(1,2), Y(1,3), 'or' )
-plot3( Y(end,1), Y(end,2), Y(end,3), 'or' )
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or',MarkerEdgeColor='b' )
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or',MarkerEdgeColor='b' )
 
 
 a_vect = zeros(length(Y), 1);
@@ -64,37 +64,37 @@ for i = 1:length(Y)
 end
 
 figure()
-plot(tspan./(60*60*24), a_vect)
+plot(tspan./(60*60*24), a_vect,'b')
 grid on
 title('Semi major axis');
 xlabel('time [days]'); ylabel('a [km]');
 
 figure()
-plot(tspan./(60*60*24), e_vect)
+plot(tspan./(60*60*24), e_vect,'b')
 grid on
 title('Eccentricity');
 xlabel('time [days]'); ylabel('e [-]');
 
 figure()
-plot(tspan./(60*60*24), rad2deg(i_vect))
+plot(tspan./(60*60*24), rad2deg(i_vect),'b')
 grid on
 title('Inclination');
 xlabel('time [days]'); ylabel('i [°]');
 
 figure()
-plot(tspan./(60*60*24), rad2deg(Om_vect))
+plot(tspan./(60*60*24), rad2deg(Om_vect),'b')
 grid on
 title('RAAN');
 xlabel('time [days]'); ylabel('\Omega [°]');
 
 figure()
-plot(tspan./(60*60*24), rad2deg(om_vect))
+plot(tspan./(60*60*24), rad2deg(om_vect),'b')
 grid on
 title('Argument of Periapsis');
 xlabel('time [days]'); ylabel('\omega [°]');
 
 figure()
-plot(tspan./(60*60*24), rad2deg(theta_vect))
+plot(tspan./(60*60*24), rad2deg(theta_vect),'b')
 grid on
 title('True Anomaly');
 xlabel('time [days]'); ylabel('\theta [°]');
