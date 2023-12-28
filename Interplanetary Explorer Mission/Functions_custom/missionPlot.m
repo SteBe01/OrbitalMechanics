@@ -1,5 +1,23 @@
 function [] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id)
 
+% Creates the plot for the whole mission
+%
+% Usage
+% [] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% departure_time        [1x1]   departure time          [date]
+% flyby_time            [1x1]   flyby time              [date]
+% arrival_time          [1x1]   arrival time            [date]
+% departure_Id          [1x1]   Id of dep. body         [-]
+% flyby_Id              [1x1]   Id of flyby body        [-]
+% arrival_Id            [1x1]   Id of arr. body         [-]
+% 
+% Output arguments:
+% -----------------------------------------------------------------
+% N/A
+
 orbitType = 0;
 
 ToF_dep_flyby = (flyby_time - departure_time) * 24 * 60 * 60;
@@ -54,20 +72,20 @@ arrival.T_orb = 2*pi*sqrt( arrival.kep(1)^3/ksun ); % Orbital period [1/s]
 arrival.tspan= linspace( 0, arrival.T_orb, 200 );
 [ ~, arrival.Y ] = ode113( @(t,y) ode_2bp(t,y,ksun), arrival.tspan, arrival.y0, options );
 
-%Propagation first transfer ARC
+% first transfer ARC
 [A_1, ~, ~, ~, VI_1, ~, ~, ~] = lambertMR(departure.r0, flyby.r0, ToF_dep_flyby, ksun, orbitType, 0);
 y0_1 = [ departure.r0 VI_1 ];
-% Set time span
+% set time span
 tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% Perform the integration
+% perform the integration
 [ ~, Y_1 ] = ode113( @(t,y) ode_2bp(t,y,ksun), tspan_1, y0_1, options );
 
-%Propagation second transfer ARC
+% second transfer ARC
 [A_2, ~, ~, ~, VI_2, ~, ~, ~] = lambertMR(flyby.r0, arrival.r0, ToF_flyby_arr, ksun, orbitType, 0);
 y0_2 = [ flyby.r0 VI_2 ];
-% Set time span
+% set time span
 tspan_2 = linspace( 0,ToF_flyby_arr, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
-% Perform the integration
+% perform the integration
 [ ~, Y_2 ] = ode113( @(t,y) ode_2bp(t,y,ksun), tspan_2, y0_2, options );
 
 if A_1 < 0 || A_2 < 0
@@ -91,7 +109,7 @@ else
     arrival_name = strcat("Asteroid N.", num2str(arrival_Id));
 end
 
-% Plot the results
+% plot the results
 figure()
 plot3(departure.Y(:,1), departure.Y(:,2), departure.Y(:,3), '-', 'color', 'b')
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');

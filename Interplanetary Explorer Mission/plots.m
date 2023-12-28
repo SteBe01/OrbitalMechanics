@@ -22,13 +22,13 @@ close all
 
 time_instant = [2028 01 01 0 0 0];          % TBD
 departure.planetId = 6;
-flyby.plnetId = 5;
+flyby.planetId = 5;
 arrival.bodyId = 79;
 
 time_instant_mjd200 = date2mjd2000(time_instant);
 
 [departure.kep, ksun] = uplanet(time_instant_mjd200, departure.planetId);
-[flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.plnetId);
+[flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.planetId);
 [arrival.kep, ~, ~] = ephNEO(time_instant_mjd200, arrival.bodyId);
 
 
@@ -83,7 +83,6 @@ ylabel("y [km]")
 zlabel("z [km]")
 
 view(30,30)
-
 
 
 %% porkchop plots - departure - fly by and flyby - arrival
@@ -209,4 +208,34 @@ legend("Global min", "Mission min", Location="best")
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
 warning("To do: add same colorbar for the plots")
+
+
+%% mission plot
+
+clc, clear
+close all
+
+load("Global Search\dvmin.mat")
+
+departure.planetId = 6;
+flyby.planetId = 5;
+arrival.bodyId = 79;
+load("Global Search\dvmin.mat")
+
+missionPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
+
+
+%% flyby plot
+
+clc, clear
+close all
+
+load("Global Search\dvmin.mat")
+flybyTime = 1e7;
+
+departure.planetId = 6;
+flyby.planetId = 5;
+arrival.bodyId = 79;
+
+data = flybyPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId, flybyTime);
 
