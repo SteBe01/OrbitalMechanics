@@ -54,7 +54,7 @@ plot3( Y(1,1), Y(1,2), Y(1,3), 'or','MarkerEdgeColor','blue' )
 om_E = 15.04;                   % deg/h
 theta_g = 0;                    % theta Greenwich (t0)
 
-orbit_number = orbit.ratio_k;
+orbit_number = orbit.ratio_k*3;
 tspan_dim = 100000;
 
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
@@ -63,6 +63,7 @@ tspan= linspace( 0, T, tspan_dim );
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
+title(['Ground Track']);
 
 orbit.a_rep = aFinder(orbit.ratio_k, orbit.ratio_m, om_E, earth.mu);
 T = 2*pi*sqrt( orbit.a_rep^3/earth.mu );
@@ -71,14 +72,14 @@ tspan= linspace( 0, T, tspan_dim );
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
-
+title(['Repeting Ground Track']);
 
 %% ground track plot (perturbed)
 
 om_E = 15.04;                   % deg/h
 theta_g = 0;                    % theta Greenwich (t0)
 
-orbit_number = orbit.ratio_k;
+orbit_number = orbit.ratio_k*3;
 tspan_dim = 100000;
 
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
@@ -87,6 +88,7 @@ tspan= linspace( 0, T, tspan_dim );
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart_perturbed(y0, tspan*orbit_number, earth.mu, theta_g, om_E, earth.r, earth.J2, spacecraft.AM, spacecraft.cD);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
+title(['Ground Track, with J2 and air drag']);
 
 orbit.a_rep = aFinder(orbit.ratio_k, orbit.ratio_m, om_E, earth.mu);
 T = 2*pi*sqrt( orbit.a_rep^3/earth.mu );
@@ -95,4 +97,4 @@ tspan= linspace( 0, T, tspan_dim );
 y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart_perturbed(y0, tspan*orbit_number, earth.mu, theta_g, om_E, earth.r, earth.J2, spacecraft.AM, spacecraft.cD);
 groundTrackPlot(lon, lat, "EarthTexture.jpg")
-
+title(['Repeting Ground Track, with J2 and air drag']);

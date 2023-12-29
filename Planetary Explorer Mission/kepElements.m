@@ -66,19 +66,19 @@ end
 figure()
 plot(tspan./(60*60*24), a_vect,'b')
 grid on
-title('Semi major axis');
+title('Semi major axis Evolution');
 xlabel('time [days]'); ylabel('a [km]');
 
 figure()
 plot(tspan./(60*60*24), e_vect,'b')
 grid on
-title('Eccentricity');
+title('Eccentricity Evolution');
 xlabel('time [days]'); ylabel('e [-]');
 
 figure()
 plot(tspan./(60*60*24), rad2deg(i_vect),'b')
 grid on
-title('Inclination');
+title('Inclination Evolution');
 xlabel('time [days]'); ylabel('i [°]');
 
 figure()
@@ -90,13 +90,13 @@ xlabel('time [days]'); ylabel('\Omega [°]');
 figure()
 plot(tspan./(60*60*24), rad2deg(om_vect),'b')
 grid on
-title('Argument of Periapsis');
+title('Argument of Periapsis Evolution');
 xlabel('time [days]'); ylabel('\omega [°]');
 
 figure()
 plot(tspan./(60*60*24), rad2deg(theta_vect),'b')
 grid on
-title('True Anomaly');
+title('True Anomaly Evolution');
 xlabel('time [days]'); ylabel('\theta [°]');
 
 
@@ -109,37 +109,37 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 figure()
 plot(tspan./(60*60*24), kep(:,1))
 grid on
-title('Semi major axis');
+title('Semi major axis Evolution');
 xlabel('time [days]'); ylabel('a [km]');
 
 figure()
 plot(tspan./(60*60*24), kep(:,2))
 grid on
-title('Eccentricity');
+title('Eccentricity Evolution');
 xlabel('time [days]'); ylabel('e [-]');
 
 figure()
 plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,3))))
 grid on
-title('Inclination');
+title('Inclination Evolution');
 xlabel('time [days]'); ylabel('i [°]');
 
 figure()
 plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,4))))
 grid on
-title('RAAN');
+title('RAAN Evolution');
 xlabel('time [days]'); ylabel('\Omega [°]');
 
 figure()
 plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,5))))
 grid on
-title('Argument of Periapsis');
+title('Argument of Periapsis Evolution');
 xlabel('time [days]'); ylabel('\omega [°]');
 
 figure()
 plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,6))))
 grid on
-title('True Anomaly');
+title('True Anomaly Evolution');
 xlabel('time [days]'); ylabel('\theta [°]');
 
 
@@ -190,16 +190,18 @@ xlabel('time [s]'); ylabel('\theta [°]');
 
 %% All plots together
 
+a_filt_cart=movmean(a_vect,500);
 figure()
-plot(tspan./(60*60*24),a_vect,'m')
+plot(tspan./(60*60*24),movmean(a_vect,500),'m')
 grid on
 hold on 
-plot(tspan./(60*60*24),kep(:,1),'b')
+%plot(tspan./(60*60*24),kep(:,1),'b')
 plot(tspan./(60*60*24),test_a,'r')
 hold off
-title('Semi major axis');
+title('Semi major axis Evolution');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('a [km]');
+
 
 figure()
 plot(tspan./(60*60*24),e_vect,'m')
@@ -208,7 +210,7 @@ hold on
 plot(tspan./(60*60*24),kep(:,2),'b')
 plot(tspan./(60*60*24),test_e,'r')
 hold off
-title('Eccentricity');
+title('Eccentricity Evolution');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('e [-]');
 
@@ -219,7 +221,7 @@ hold on
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,3))),'b')
 plot(tspan./(60*60*24),test_i,'r')
 hold off
-title('Inclination');
+title('Inclination Evolution');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('i [°]');
 
@@ -230,7 +232,7 @@ hold on
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,4))),'b')
 plot(tspan./(60*60*24),test_Om,'r')
 hold off
-title('RAAN');
+title('RAAN Evolution');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\Omega [°]');
 
@@ -241,7 +243,7 @@ hold on
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,5))),'b')
 plot(tspan./(60*60*24),test_om,'r')
 hold off
-title('Argument of Periapsis');
+title('Argument of Periapsis Evolution');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\omega [°]');
 
@@ -252,7 +254,7 @@ hold on
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,6))),'b')
 plot(tspan./(60*60*24),test_theta,'r')
 hold off
-title('True Anomaly');
+title('True Anomaly Evolution');
 legend('Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\theta [°]');
 
@@ -515,7 +517,7 @@ plot(tspan./(60*60*24),a_vect,'m')
 plot(tspan./(60*60*24),kep_new_object(:,1),'b')
 plot(tspan./(60*60*24),test_a,'r')
 hold off
-title('Semi major axis');
+title('Semi major axis Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('a [km]');
 xlim([0,21])
@@ -528,7 +530,7 @@ plot(tspan./(60*60*24),e_vect,'m')
 plot(tspan./(60*60*24),kep_new_object(:,2),'b')
 plot(tspan./(60*60*24),test_e,'r')
 hold off
-title('Eccentricity');
+title('Eccentricity Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('e [-]');
 xlim([0,21])
@@ -541,7 +543,7 @@ plot(tspan./(60*60*24),rad2deg(i_vect),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,3))),'b')
 plot(tspan./(60*60*24),test_i,'r')
 hold off
-title('Inclination');
+title('Inclination Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('i [°]');
 xlim([0,21])
@@ -554,7 +556,7 @@ plot(tspan./(60*60*24),rad2deg(Om_vect),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,4))),'b')
 plot(tspan./(60*60*24),test_Om,'r')
 hold off
-title('RAAN');
+title('RAAN Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\Omega [°]');
 xlim([0,21])
@@ -567,7 +569,7 @@ plot(tspan./(60*60*24),rad2deg(om_vect),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,5))),'b')
 plot(tspan./(60*60*24),test_om,'r')
 hold off
-title('Argument of Periapsis');
+title('Argument of Periapsis Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\omega [°]');
 xlim([0,21])
@@ -580,7 +582,7 @@ plot(tspan./(60*60*24),rad2deg(theta_vect),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,6))),'b')
 plot(tspan./(60*60*24),test_theta,'r')
 hold off
-title('True Anomaly');
+title('True Anomaly Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
 xlabel('time [days]'); ylabel('\theta [°]');
 xlim([0,21])
