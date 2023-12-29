@@ -145,13 +145,28 @@ xlabel('time [days]'); ylabel('\theta [°]');
 
 %% test for movmean
 
+n_orbits = orbit.ratio_k*20;
+n_points = 10000;
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan = linspace( 0, T*n_orbits, n_points );
+
+Period = 2*pi*sqrt( orbit.a^3/earth.mu );
+num_elements=length(tspan);
+num_elements_per_period=num_elements/T*n_orbits;
 test_a = movmean(kep(:,1), 500);
+new_a=movmean(kep(:,1), num_elements_per_period);
 figure()
-plot(test_a)
+plot(kep(:,1),'y')
+hold on
+plot(new_a,'r')
+plot(test_a,'b')
 grid on
 title('Semi major axis Movmean Test');
+legend('Real','Old','New');
 xlabel('time [s]'); ylabel('a [km]');
 
+%%
 test_e= movmean(kep(:,2), 500);
 figure()
 plot(test_e)
@@ -192,17 +207,17 @@ xlabel('time [s]'); ylabel('\theta [°]');
 
 a_filt_cart=movmean(a_vect,500);
 figure()
-plot(tspan./(60*60*24),movmean(a_vect,500),'m')
+plot(tspan./(60*60*24),movmean(a_vect,num_elements_per_period),'m')
 grid on
 hold on 
 %plot(tspan./(60*60*24),kep(:,1),'b')
-plot(tspan./(60*60*24),test_a,'r')
+plot(tspan./(60*60*24),new_a,'r')
 hold off
-title('Semi major axis Evolution');
-legend('Cartesian','Gauss','Filtered');
+title('Semi major axis Evolution Filtered');
+legend('Cartesian','Gauss');
 xlabel('time [days]'); ylabel('a [km]');
 
-
+%%
 figure()
 plot(tspan./(60*60*24),e_vect,'m')
 grid on
