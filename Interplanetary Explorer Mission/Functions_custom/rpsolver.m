@@ -34,9 +34,9 @@ fun = @(rp) (delta - delta_fun(rp, v1, v2, mu)) * (rp > 0);
 rp = fzero(@(rp) fun(rp), (impact_param_plus+impact_param_minus)/2);
 
 if rp < astroConstants(planetId + 20)
-    flag = 0;               % inside planet
+    flag = 1;               % inside planet
 else
-    flag = 1;
+    flag = 0;
 end
 
 end

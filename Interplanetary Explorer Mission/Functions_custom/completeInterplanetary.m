@@ -36,7 +36,7 @@ if tof1 <= 0 || tof2 <= 0
 end
 
 if code1 <= 10
-    [departure.kep, ksun] = uplanet(t1, code1);
+    [departure.kep, ~] = uplanet(t1, code1);
 else
     [departure.kep, ~] = ephNEO(t1, code1);  
 end
@@ -52,20 +52,30 @@ else
     [arrival.kep, ~] = ephNEO(t3, code3);  
 end
 
+ksun = astroConstants(4);
 [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
 [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
 [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
 
 orbitType = 0;
 nOrbits = 0;
-[A_1, P_1, E_1, ERROR_1, VI_1, VF_1, TPAR_1, THETA_1] = lambertMR(departure.r0, flyby.r0, tof1, ksun, orbitType, nOrbits);
-[A_2, P_2, E_2, ERROR_2, VI_2, VF_2, TPAR_2, THETA_2] = lambertMR(flyby.r0, arrival.r0, tof2, ksun, orbitType, nOrbits);
+[~, ~, ~, ERROR_1, VI_1, VF_1, ~, ~] = lambertMR(departure.r0, flyby.r0, tof1, ksun, orbitType, nOrbits);
+[~, ~, ~, ERROR_2, VI_2, VF_2, ~, ~] = lambertMR(flyby.r0, arrival.r0, tof2, ksun, orbitType, nOrbits);
+
+if ERROR_1 || ERROR_2
+    exitValue = 1;
+    dv1 = NaN;
+    dv2 = NaN;
+    dv3 = NaN;
+    rp = NaN;
+    return
+end
 
 flyby.v_inf_minus = VF_1 - flyby.v0;
 flyby.v_inf_plus = VI_2 - flyby.v0;
 
 if code2 + 10 > 19
-    exitValue = 0;
+    exitValue = 1;
     dv1 = NaN;
     dv2 = NaN;
     dv3 = NaN;
@@ -80,10 +90,7 @@ dv1 = norm(VI_1 - departure.v0);
 dv2 = abs(sqrt((2*flyby.mu/rp)+norm(flyby.v_inf_plus)^2)-sqrt((2*flyby.mu/rp)+norm(flyby.v_inf_minus)^2));
 dv3 = norm(arrival.v0 - VF_2);
 
-
-
-
-exitValue = 1;
+exitValue = 0;
 
 end
 

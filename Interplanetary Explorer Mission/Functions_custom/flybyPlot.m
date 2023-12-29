@@ -3,7 +3,7 @@ function [data] = flybyPlot(departure_time, flyby_time, arrival_time, departure_
 % Creates the plot for the whole mission
 %
 % Usage
-% [] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id)
+% [data] = flybyPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id, flybyTime)
 %
 % Input arguments:
 % ----------------------------------------------------------------
@@ -24,21 +24,22 @@ ToF_dep_flyby = (flyby_time - departure_time) * 24 * 60 * 60;
 ToF_flyby_arr = (arrival_time-flyby_time) * 24 * 60 * 60;
 
 if departure_Id <= 10
-    [departure.kep, ksun] = uplanet(departure_time, departure_Id);
+    [departure.kep, ~] = uplanet(departure_time, departure_Id);
 else
     [departure.kep, ~] = ephNEO(departure_time, departure_Id);
 end
 if flyby_Id <= 10
-    [flyby.kep, ksun] = uplanet(flyby_time, flyby_Id);
+    [flyby.kep, ~] = uplanet(flyby_time, flyby_Id);
 else
     [flyby.kep, ~] = ephNEO(flyby_time, flyby_Id);
 end
 if arrival_Id <= 10
-    [arrival.kep, ksun] = uplanet(arrival_time, arrival_Id);
+    [arrival.kep, ~] = uplanet(arrival_time, arrival_Id);
 else
     [arrival.kep, ~] = ephNEO(arrival_time, arrival_Id);
 end
 
+ksun = astroConstants(4);
 mu_planet = astroConstants(flyby_Id + 10);
 
 mean_distances_vect = 1e6.*[57.9 108.2 149.6 228 778.5 1432 2867 4515 5906.4];
@@ -75,7 +76,7 @@ V_inf_minus = v_inf_minus - flyby.v0;
 V_inf_plus = v_inf_plus - flyby.v0;
 
 [rp, flag] = rpsolver(V_inf_minus, V_inf_plus, flyby_Id);
-if ~flag
+if flag
     error("rpsolver returned an error")
 end
 
@@ -123,6 +124,7 @@ if maxIndex < Y_len
     [ ~, Y_minus ] = ode113( @(t,y) ode_2bp(t,y,mu_planet), tspan, y0, options );
 end
 
+figure
 plot3( Y_minus(:,1), Y_minus(:,2), Y_minus(:,3), LineWidth=1)
 hold on, grid on, axis equal
 
@@ -186,9 +188,12 @@ else
 end
 
 data.rp = rp;
+data.r_planet = mult;
+data.h = rp - mult;
 data.rsoi = r_soi;
 data.deltaVp = deltaVp;
 data.deltaVtot = deltaVtot;
+
 data.a.plus = a_plus;
 data.a.minus = a_minus;
 data.e.plus = e_plus;

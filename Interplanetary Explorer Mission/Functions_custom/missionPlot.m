@@ -28,9 +28,9 @@ if ToF_dep_flyby <= 0 || ToF_flyby_arr <= 0
 end
 
 if departure_Id <= 10
-    [departure.kep, ksun] = uplanet(departure_time, departure_Id);
+    [departure.kep, ~] = uplanet(departure_time, departure_Id);
 else
-    [departure.kep, ksun] = ephNEO(departure_time, departure_Id);
+    [departure.kep, ~] = ephNEO(departure_time, departure_Id);
 end
 if flyby_Id <= 10
     [flyby.kep, ~] = uplanet(flyby_time, flyby_Id);
@@ -43,6 +43,7 @@ else
     [arrival.kep, ~] = ephNEO(arrival_time, arrival_Id);
 end
 
+ksun = astroConstants(4);
 PlanetNames = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Sun"];
 
 % Set options for the ODE solver
@@ -73,7 +74,7 @@ arrival.tspan= linspace( 0, arrival.T_orb, 200 );
 [ ~, arrival.Y ] = ode113( @(t,y) ode_2bp(t,y,ksun), arrival.tspan, arrival.y0, options );
 
 % first transfer ARC
-[A_1, ~, ~, ~, VI_1, ~, ~, ~] = lambertMR(departure.r0, flyby.r0, ToF_dep_flyby, ksun, orbitType, 0);
+[A_1, ~, ~, ERROR_1, VI_1, ~, ~, ~] = lambertMR(departure.r0, flyby.r0, ToF_dep_flyby, ksun, orbitType, 0);
 y0_1 = [ departure.r0 VI_1 ];
 % set time span
 tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
@@ -81,13 +82,16 @@ tspan_1 = linspace( 0,ToF_dep_flyby, 5000 ); %% change 2*T to 5*T to get 5 orbit
 [ ~, Y_1 ] = ode113( @(t,y) ode_2bp(t,y,ksun), tspan_1, y0_1, options );
 
 % second transfer ARC
-[A_2, ~, ~, ~, VI_2, ~, ~, ~] = lambertMR(flyby.r0, arrival.r0, ToF_flyby_arr, ksun, orbitType, 0);
+[A_2, ~, ~, ERROR_2, VI_2, ~, ~, ~] = lambertMR(flyby.r0, arrival.r0, ToF_flyby_arr, ksun, orbitType, 0);
 y0_2 = [ flyby.r0 VI_2 ];
 % set time span
 tspan_2 = linspace( 0,ToF_flyby_arr, 5000 ); %% change 2*T to 5*T to get 5 orbital periods
 % perform the integration
 [ ~, Y_2 ] = ode113( @(t,y) ode_2bp(t,y,ksun), tspan_2, y0_2, options );
 
+if ERROR_1 || ERROR_2
+    error("Lambert returned an error")
+end
 if A_1 < 0 || A_2 < 0
     error("A_1 < 0 || A_2 < 0")
 end
