@@ -11,12 +11,27 @@ addpath("Functions\")
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
-n_iter = 1;
+n_iter = 20;
+windowChoice = 2;
 
-time_instant_dep = [2028 01 01 0 0 0];
-time_instant_arr = [2058 01 01 0 0 0];
-lb = ones(3,1) .* date2mjd2000(time_instant_dep);
-ub = ones(3,1) .* date2mjd2000(time_instant_arr);
+if windowChoice == 1
+    mission.dep_time_lb = [2030 12 09 0 0 0];
+    mission.dep_time_ub = [2039 02 25 0 0 0];
+    mission.flyby_time_lb = [2042 12 26 0 0 0];
+    mission.flyby_time_ub = [2048 09 25 0 0 0];
+    mission.arr_time_lb = [2045 06 13 0 0 0];
+    mission.arr_time_ub = [2058 01 01 0 0 0];
+elseif windowChoice == 2
+    mission.dep_time_lb = [2028 01 01 0 0 0];
+    mission.dep_time_ub = [2058 01 01 0 0 0];
+    mission.flyby_time_lb = [2028 01 01 0 0 0];
+    mission.flyby_time_ub = [2058 01 01 0 0 0];
+    mission.arr_time_lb = [2028 01 01 0 0 0];
+    mission.arr_time_ub = [2058 01 01 0 0 0];
+end
+
+lb = [date2mjd2000(mission.dep_time_lb) date2mjd2000(mission.flyby_time_lb) date2mjd2000(mission.arr_time_lb)]';
+ub = [date2mjd2000(mission.dep_time_ub) date2mjd2000(mission.flyby_time_ub) date2mjd2000(mission.arr_time_ub)]';
 
 % rng default
 
@@ -29,13 +44,17 @@ else
     options.Display = "iter";
 end
 
+opts = optimset('TolX', eps(1), 'TolFun', eps(1), 'Display', 'off');
+
 for i = 1:n_iter
     [sol,fval,exitflag,output,population,scores] = ga(@(vect) completeInterplanetaryGA(vect(1), vect(2), vect(3), departure.planetId, flyby.planetId, arrival.bodyId), 3, [1 -1 0; 0 1 -1; 1 0 -1], [0 0 0], [], [], lb, ub, [], options);
+
+    [tspan, dv_fmin] = fmincon(@(tspan) completeInterplanetaryGA(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [sol(1), sol(2), sol(3)]', [], [], [], [], lb, ub, [], opts);
+
+    [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId);
     
-    [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(sol(1), sol(2), sol(3), departure.planetId, flyby.planetId, arrival.bodyId);
-    
-    if fval < 12.5
-        writematrix([readmatrix("GaResults.csv"); fval, sol, dv1, dv2, dv3, rp], "GaResults.csv")
-    end
+    writematrix([readmatrix("GaResults.csv"); windowChoice, dv_fmin, tspan', dv1, dv2, dv3, rp], "GaResults.csv")
 end
+
+disp("Finished!")
 

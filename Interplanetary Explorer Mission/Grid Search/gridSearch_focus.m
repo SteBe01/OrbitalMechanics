@@ -129,7 +129,6 @@ for totWindows = 1:length(departureTime)
     end
     
     if fmincon_choice ~= 0
-        A_fmin = [-1 1 0; 0 -1 1]; b_fmin = [0 0];
         opts = optimset('TolX', eps(1), 'TolFun', eps(1), 'Display', 'off');
         lb = date2mjd2000(dep_time) * ones(3,1);
         ub = date2mjd2000(arr_time) * ones(3,1);
