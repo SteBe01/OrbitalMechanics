@@ -210,6 +210,47 @@ legend("Global min", "Mission min", Location="best")
 warning("To do: add same colorbar for the plots")
 
 
+%% window plot
+
+clc, clear
+close all
+
+load("Global Search\dvmin.mat")
+
+departure.planetId = 6;
+flyby.planetId = 5;
+arrival.bodyId = 79;
+dep_time = [2028 01 01 0 0 0];
+arr_time = [2058 01 01 0 0 0];
+
+addpath("Grid Search\Functions\")
+
+porkchop_start(dep_time, arr_time, departure.planetId, flyby.planetId, arrival.bodyId)
+
+mission.dep_time_lb = date2mjd2000([2030 12 09 0 0 0]);
+mission.dep_time_ub = date2mjd2000([2039 02 25 0 0 0]);
+mission.flyby_time_lb = date2mjd2000([2042 12 26 0 0 0]);
+mission.flyby_time_ub = date2mjd2000([2048 09 25 0 0 0]);
+mission.arr_time_lb = date2mjd2000([2045 06 13 0 0 0]);
+mission.arr_time_ub = date2mjd2000([2058 01 01 0 0 0]);
+
+subplot(1, 2, 1)
+plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_lb], 'r');
+hold on
+plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_ub mission.flyby_time_ub], 'r');
+plot([mission.dep_time_lb mission.dep_time_lb], [mission.flyby_time_lb mission.flyby_time_ub], 'r');
+plot([mission.dep_time_ub mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_ub], 'r');
+plot(xcust(1), xcust(2), 'xr', LineWidth=1);
+
+subplot(1, 2, 2)
+plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_lb], 'r');
+hold on
+plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_ub mission.arr_time_ub], 'r');
+plot([mission.flyby_time_lb mission.flyby_time_lb], [mission.arr_time_lb mission.arr_time_ub], 'r');
+plot([mission.flyby_time_ub mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_ub], 'r');
+plot(xcust(2), xcust(3), 'xr', LineWidth=1);
+
+
 %% mission plot
 
 clc, clear
@@ -220,7 +261,6 @@ load("Global Search\dvmin.mat")
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
-load("Global Search\dvmin.mat")
 
 missionPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
 
