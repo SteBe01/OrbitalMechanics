@@ -60,10 +60,10 @@ H = H_vect(i);                              % [km]
 
 rho = rho0 * exp(-(h-h0)/H);                % [kg/m^3]
 v_rel = v - cross([0 0 om_E], r)';          % [km]
-v_rel = v_rel * 1e3;                        % [m]
+v_rel = v_rel * 1e3;                        % [m/s]
 
 a_drag = (-0.5 * A_M * rho * cD * norm(v_rel)^2) ...
-    * (v_rel ./ norm(v_rel)) * 1e-3;        % [m/s^s]
+    * (v_rel ./ norm(v_rel)) * 1e-3;        % [m/s^2]
 
 % Set the derivatives of the state
 dy = [ v

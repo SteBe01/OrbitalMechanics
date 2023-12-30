@@ -42,18 +42,20 @@ end
 ksun = astroConstants(4);
 mu_planet = astroConstants(flyby_Id + 10);
 
-mean_distances_vect = 1e6.*[57.9 108.2 149.6 228 778.5 1432 2867 4515 5906.4];
+% a_vect = 1e6.*[57.91 108.2 149.6 227.9 778.6 1433 2872 4495 5906]; % From Curtis
 if flyby_Id <= 9
     m_planet = astroConstants(flyby_Id + 10) / astroConstants(1);
     m_sun = astroConstants(4) / astroConstants(1);
 else
     error("r_orb_planet not defined!")
 end
-r_soi = mean_distances_vect(flyby_Id) * (m_planet/m_sun)^(2/5);
 
 [departure.r0, ~] = kep2car([departure.kep, ksun]);
 [flyby.r0, flyby.v0] = kep2car([flyby.kep, ksun]);
 [arrival.r0, ~] = kep2car([arrival.kep, ksun]);
+
+% r_soi = a_vect(flyby_Id) * (m_planet/m_sun)^(2/5);
+r_soi = norm(flyby.r0) * (m_planet/m_sun)^(2/5);
 
 % first transfer ARC
 [A_1, ~, ~, ERROR1, ~, VF_1, ~, ~] = lambertMR(departure.r0, flyby.r0, ToF_dep_flyby, ksun, orbitType, 0);
