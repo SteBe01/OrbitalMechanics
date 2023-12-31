@@ -1,9 +1,9 @@
-function [a, e, i, OM, om, theta] = car2kep(rr, vv, mu)
+function [a, e, i, OM, om, theta] = car2kep_old(rr, vv, mu)
 
 % Transformation from Cartesian state to orbital elements
 %
 % Usage:
-% [a, e, i, OM, om, theta] = car2kep (rr, vv, mu)
+% [a, e, i, OM, om, theta] = car2kep_old (rr, vv, mu)
 %
 % Input arguments:
 % ----------------------------------------------------------------
