@@ -63,36 +63,36 @@ for i = 1:length(Y)
     [a_vect(i), e_vect(i), i_vect(i), Om_vect(i), om_vect(i), theta_vect(i)] = car2kep(Y(i,1:3), Y(i,4:6), earth.mu);
 end
 
-figure()
-plot(tspan./(60*60*24), a_vect,'b')
-grid on
-title('Semi major axis Evolution');
-xlabel('time [days]'); ylabel('a [km]');
-
-figure()
-plot(tspan./(60*60*24), e_vect,'b')
-grid on
-title('Eccentricity Evolution');
-xlabel('time [days]'); ylabel('e [-]');
-
-figure()
-plot(tspan./(60*60*24), rad2deg(i_vect),'b')
-grid on
-title('Inclination Evolution');
-xlabel('time [days]'); ylabel('i [°]');
-
-figure()
-plot(tspan./(60*60*24), rad2deg(Om_vect),'b')
-grid on
-title('RAAN');
-xlabel('time [days]'); ylabel('\Omega [°]');
-
-figure()
-plot(tspan./(60*60*24), rad2deg(om_vect),'b')
-grid on
-title('Argument of Periapsis Evolution');
-xlabel('time [days]'); ylabel('\omega [°]');
-
+% figure()
+% plot(tspan./(60*60*24), a_vect,'b')
+% grid on
+% title('Semi major axis Evolution');
+% xlabel('time [days]'); ylabel('a [km]');
+% 
+% figure()
+% plot(tspan./(60*60*24), e_vect,'b')
+% grid on
+% title('Eccentricity Evolution');
+% xlabel('time [days]'); ylabel('e [-]');
+% 
+% figure()
+% plot(tspan./(60*60*24), rad2deg(i_vect),'b')
+% grid on
+% title('Inclination Evolution');
+% xlabel('time [days]'); ylabel('i [°]');
+% 
+% figure()
+% plot(tspan./(60*60*24), rad2deg(Om_vect),'b')
+% grid on
+% title('RAAN');
+% xlabel('time [days]'); ylabel('\Omega [°]');
+% 
+% figure()
+% plot(tspan./(60*60*24), rad2deg(om_vect),'b')
+% grid on
+% title('Argument of Periapsis Evolution');
+% xlabel('time [days]'); ylabel('\omega [°]');
+% 
 figure()
 plot(tspan./(60*60*24), rad2deg(theta_vect),'b')
 grid on
@@ -106,174 +106,311 @@ s0 = [orbit.a; orbit.e; orbit.i; orbit.OM; orbit.om; orbit.theta];
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [t, kep] = ode113(@(t,s) eq_motion(t, s, @(t,s) acc_pert_fun(t, s, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), earth.mu), tspan, s0, options);
 
-figure()
-plot(tspan./(60*60*24), kep(:,1))
-grid on
-title('Semi major axis Evolution');
-xlabel('time [days]'); ylabel('a [km]');
+% figure()
+% plot(tspan./(60*60*24), kep(:,1))
+% grid on
+% title('Semi major axis Evolution');
+% xlabel('time [days]'); ylabel('a [km]');
+% 
+% figure()
+% plot(tspan./(60*60*24), kep(:,2))
+% grid on
+% title('Eccentricity Evolution');
+% xlabel('time [days]'); ylabel('e [-]');
+% 
+% figure()
+% plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,3))))
+% grid on
+% title('Inclination Evolution');
+% xlabel('time [days]'); ylabel('i [°]');
+% 
+% figure()
+% plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,4))))
+% grid on
+% title('RAAN Evolution');
+% xlabel('time [days]'); ylabel('\Omega [°]');
+% 
+% figure()
+% plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,5))))
+% grid on
+% title('Argument of Periapsis Evolution');
+% xlabel('time [days]'); ylabel('\omega [°]');
+% 
+% figure()
+% plot(tspan./(60*60*24), kep(:,6))
+% grid on
+% title('True Anomaly Evolution');
+% xlabel('time [days]'); ylabel('\theta [°]');
 
-figure()
-plot(tspan./(60*60*24), kep(:,2))
-grid on
-title('Eccentricity Evolution');
-xlabel('time [days]'); ylabel('e [-]');
 
-figure()
-plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,3))))
-grid on
-title('Inclination Evolution');
-xlabel('time [days]'); ylabel('i [°]');
-
-figure()
-plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,4))))
-grid on
-title('RAAN Evolution');
-xlabel('time [days]'); ylabel('\Omega [°]');
-
-figure()
-plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,5))))
-grid on
-title('Argument of Periapsis Evolution');
-xlabel('time [days]'); ylabel('\omega [°]');
-
-figure()
-plot(tspan./(60*60*24), rad2deg(wrapTo2Pi(kep(:,6))))
-grid on
-title('True Anomaly Evolution');
-xlabel('time [days]'); ylabel('\theta [°]');
-
-
-%% test for movmean
+%% filter for movmean
 
 n_orbits = orbit.ratio_k*20;
-n_points = 10000;
 
-T = 2*pi*sqrt( orbit.a^3/earth.mu );
-tspan = linspace( 0, T*n_orbits, n_points );
-num_elements=length(tspan);
-num_elements_per_period=num_elements/T*n_orbits;
+num_elements=length(kep(:,1));
+num_elements_per_period=num_elements/n_orbits;
 
-test_a = movmean(kep(:,1), 500);
-new_a=movmean(kep(:,1), num_elements_per_period);
-figure()
-plot(kep(:,1),'y')
-hold on
-plot(new_a,'r')
-plot(test_a,'b')
-grid on
-title('Semi major axis Movmean Test');
-legend('Real','Old','New');
-xlabel('time [s]'); ylabel('a [km]');
+filter_a = movmean(kep(:,1), num_elements_per_period);
+filter_e= movmean(kep(:,2), num_elements_per_period);
+filter_i = movmean(rad2deg(wrapTo2Pi(kep(:,3))), num_elements_per_period);
+filter_Om = movmean(rad2deg(wrapTo2Pi(kep(:,4))), num_elements_per_period);
+filter_om = movmean(rad2deg(wrapTo2Pi(kep(:,5))), num_elements_per_period);
+filter_theta = movmean(kep(:,6), num_elements_per_period);
 
 
-test_e= movmean(kep(:,2), num_elements_per_period);
-figure()
-plot(test_e)
-grid on
-title('Eccentricity Movmean Test');
-xlabel('time [s]'); ylabel('e [-]');
+% figure()
+% plot(filter_a,'b')
+% grid on
+% title('Semi major axis Movmean filter');
+% xlabel('time [s]'); ylabel('a [km]');
+% 
+% figure()
+% plot(filter_e)
+% grid on
+% title('Eccentricity Movmean filter');
+% xlabel('time [s]'); ylabel('e [-]');
+% 
+% figure()
+% plot(filter_i)
+% grid on
+% title('Inclination Movmean filter');
+% xlabel('time [s]'); ylabel('i [°]');
+% 
+% figure()
+% plot(filter_Om)
+% grid on
+% title('RAAN Movmean filter');
+% xlabel('time [s]'); ylabel('\Omega [°]')
+% 
+% figure()
+% plot(filter_om)
+% grid on
+% title('Argument of Periapsis Movmean filter');
+% xlabel('time [s]'); ylabel('\omega [°]');
 
-test_i = movmean(rad2deg(wrapTo2Pi(kep(:,3))), num_elements_per_period);
-figure()
-plot(test_i)
-grid on
-title('Inclination Movmean Test');
-xlabel('time [s]'); ylabel('i [°]');
-
-test_Om = movmean(rad2deg(wrapTo2Pi(kep(:,4))), num_elements_per_period);
-figure()
-plot(test_Om)
-grid on
-title('RAAN Movmean Test');
-xlabel('time [s]'); ylabel('\Omega [°]');
-
-test_om = movmean(rad2deg(wrapTo2Pi(kep(:,5))), num_elements_per_period);
-figure()
-plot(test_om)
-grid on
-title('Argument of Periapsis Movmean Test');
-xlabel('time [s]'); ylabel('\omega [°]');
-
-test_theta = movmean(rad2deg(wrapTo2Pi(kep(:,6))), num_elements_per_period);
-figure()
-plot(test_theta)
-grid on
-title('True Anomaly Movmean Test');
-xlabel('time [s]'); ylabel('\theta [°]');
+% figure()
+% plot(filter_theta)
+% grid on
+% title('True Anomaly Movmean filter');
+% xlabel('time [s]'); ylabel('\theta [°]');
 
 
 %% All plots together
 
-a_filt_cart=movmean(a_vect,500);
+%% Semi major axis
+
+
+% Only filtered
 figure()
-plot(tspan./(60*60*24),movmean(a_vect,num_elements_per_period),'m')
+plot(tspan./(T),movmean(a_vect,num_elements_per_period),'m')
 grid on
 hold on 
-%plot(tspan./(60*60*24),kep(:,1),'b')
-plot(tspan./(60*60*24),new_a,'r')
+plot(tspan./(T),filter_a,'r')
+grid on
 hold off
 title('Semi major axis Evolution Filtered');
-legend('Cartesian','Gauss');
-xlabel('time [days]'); ylabel('a [km]');
+legend('Cartesian','Gauss','Location', 'Best');
+xlabel('time [T]'); ylabel('a [km]');
 
-
+% Filtered vs unfiltered
 figure()
-plot(tspan./(60*60*24),movmean(e_vect,num_elements_per_period),'m')
+plot(tspan./(T),a_vect,'m')
 grid on
 hold on 
-%plot(tspan./(60*60*24),kep(:,2),'b')
-plot(tspan./(60*60*24),test_e,'r')
+plot(tspan./(T),kep(:,1),'b')
+plot(tspan./(T),movmean(a_vect,num_elements_per_period),'y')
+plot(tspan./(T),filter_a,'r')
+grid on
+hold off
+title('Semi major axis Evolution Filtered vs Unfltered');
+legend('Cartesian','Gauss','Cartesian Filtered','Gauss Filtered','Location', 'Best');
+xlabel('time [T]'); ylabel('a [km]');
+
+
+%% Eccentricity
+
+% Only filtered
+figure()
+plot(tspan./(T),movmean(e_vect,num_elements_per_period),'m')
+grid on
+hold on 
+plot(tspan./(T),filter_e,'r')
+grid on
+hold off
+title('Eccentricity Evolution Filtered');
+legend('Cartesian','Gauss','Location', 'Best');
+xlabel('time [T]'); ylabel('e [-]');
+
+%  Filtered vs unfiltered
+figure()
+plot(tspan./(T),e_vect,'m')
+grid on
+hold on 
+plot(tspan./(T),kep(:,2),'b')
+plot(tspan./(T),movmean(e_vect,num_elements_per_period),'y')
+plot(tspan./(T),filter_e,'r')
+grid on
 hold off
 title('Eccentricity Evolution');
-legend('Cartesian','Gauss','Filtered');
-xlabel('time [days]'); ylabel('e [-]');
+legend('Cartesian','Gauss','Cartesian Filtered','Gauss Filtered','Location', 'Best');
+xlabel('time [T]'); ylabel('e [-]');
 
+%% Inclination 
+
+% Only filtered
 figure()
-plot(tspan./(60*60*24),rad2deg(movmean(i_vect,num_elements_per_period)),'m')
+plot(tspan./(T),rad2deg(wrapTo2Pi(movmean(i_vect,num_elements_per_period))),'m')
 grid on
 hold on 
-%plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,3))),'b')
-plot(tspan./(60*60*24),test_i,'r')
+plot(tspan./(T),filter_i,'r')
+grid on
 hold off
 title('Inclination Evolution');
-legend('Cartesian','Gauss','Filtered');
-xlabel('time [days]'); ylabel('i [°]');
+legend('Cartesian','Gauss','Location', 'Best');
+xlabel('time [T]'); ylabel('i [°]');
 
+% Filtered vs unfiltered 
 figure()
-plot(tspan./(60*60*24),rad2deg(movmean(Om_vect,num_elements_per_period)),'m')
+plot(tspan./(T),rad2deg(wrapTo2Pi(i_vect)),'m')
+grid on
+hold on 
+plot(tspan./(T),rad2deg(wrapTo2Pi(kep(:,3))),'b')
+plot(tspan./(T),rad2deg(wrapTo2Pi(movmean(i_vect,num_elements_per_period))),'y')
+plot(tspan./(T),filter_i,'r')
+grid on
+hold off
+title('Inclination Evolution');
+legend('Cartesian','Gauss','Cartesian Filtered','Gauss Filtered','Location', 'Best');
+xlabel('time [T]'); ylabel('i [°]');
+
+%% RAAN
+
+% Only filtered
+figure()
+plot(tspan./(T),rad2deg(wrapTo2Pi(movmean(Om_vect,num_elements_per_period))),'m')
 grid on
 hold on
-%plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,4))),'b')
-plot(tspan./(60*60*24),test_Om,'r')
+plot(tspan./(T),filter_Om,'r')
+grid on
 hold off
 title('RAAN Evolution');
-legend('Cartesian','Gauss','Filtered');
-xlabel('time [days]'); ylabel('\Omega [°]');
+legend('Cartesian','Gauss','Location', 'Best');
+xlabel('time [T]'); ylabel('\Omega [°]');
 
+% Filtered vs Unfiltered
 figure()
-plot(tspan./(60*60*24),rad2deg(movmean(om_vect,num_elements_per_period)),'m')
+plot(tspan./(T),rad2deg(wrapTo2Pi(wrapTo2Pi(Om_vect))),'m')
+grid on
+hold on
+plot(tspan./(T),rad2deg(wrapTo2Pi(wrapTo2Pi(kep(:,4)))),'b')
+plot(tspan./(T),rad2deg(wrapTo2Pi(movmean(Om_vect,num_elements_per_period))),'y')
+plot(tspan./(T),filter_Om,'r')
+grid on
+hold off
+title('RAAN Evolution');
+legend('Cartesian','Gauss','Cartesian Filtered','Gauss Filtered','Location', 'Best');
+xlabel('time [T]'); ylabel('\Omega [°]');
+
+%% Argument of Periapsis 
+
+% Only filtered
+figure()
+plot(tspan./(T),rad2deg(wrapTo2Pi(movmean(om_vect,num_elements_per_period))),'m')
 grid on
 hold on 
-%plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,5))),'b')
-plot(tspan./(60*60*24),test_om,'r')
+plot(tspan./(T),filter_om,'r')
+grid on
 hold off
 title('Argument of Periapsis Evolution');
-legend('Cartesian','Gauss','Filtered');
-xlabel('time [days]'); ylabel('\omega [°]');
+legend('Cartesian','Gauss','Location', 'Best');
+xlabel('time [T]'); ylabel('\omega [°]');
 
+% Filtered vs unfiltered
 figure()
-plot(tspan./(60*60*24),rad2deg(movmean(theta_vect,num_elements_per_period)),'m')
+plot(tspan./(T),rad2deg(wrapTo2Pi(wrapTo2Pi(om_vect))),'m')
 grid on
 hold on 
-%plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep(:,6))),'b')
-plot(tspan./(60*60*24),test_theta,'r')
+plot(tspan./(T),rad2deg(wrapTo2Pi(kep(:,5))),'b')
+plot(tspan./(T),rad2deg(wrapTo2Pi(movmean(om_vect,num_elements_per_period))),'y')
+plot(tspan./(T),filter_om,'r')
+grid on
+hold off
+title('Argument of Periapsis Evolution');
+legend('Cartesian','Gauss','Cartesian Filtered','Gauss Filtered','Location', 'Best');
+xlabel('time [T]'); ylabel('\omega [°]');
+
+%% True Anomaly
+
+% Only filtered
+figure()
+plot(tspan./(T),rad2deg(movmean(theta_vect,num_elements_per_period)),'m')
+grid on
+hold on 
+plot(tspan./(T),filter_theta,'r')
+grid on
 hold off
 title('True Anomaly Evolution');
-legend('Cartesian','Gauss','Filtered');
-xlabel('time [days]'); ylabel('\theta [°]');
+legend('Cartesian','Gauss','Location', 'Best');
+xlabel('time [T]'); ylabel('\theta [°]');
+
+figure()
+plot(tspan./(T),rad2deg(theta_vect),'b')
+grid on
+hold on 
+plot(tspan./(T),kep(:,6),'b')
+plot(tspan./(T),rad2deg(movmean(theta_vect,num_elements_per_period)),'m')
+plot(tspan./(T),filter_theta,'r')
+grid on
+hold off
+title('True Anomaly Evolution');
+legend('Cartesian','Gauss','Cartesian Filtered','Gauss Filtered','Location', 'Best');
+xlabel('time [T]'); ylabel('\theta [°]');
 
 
 
+%% Difference Certesian and Gauss
+
+figure()
+a_diff=abs(a_vect-kep(:,1))/orbit.a;
+plot(tspan./(T),a_diff,'b')
+grid on
+title('Semi major axis Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|a_c_a_r_t - a_g_a_u_s_s|/ a_0 [km]');
+
+figure()
+e_diff=abs(e_vect-kep(:,2));
+plot(tspan./(T),e_diff,'b')
+grid on
+title('Eccentricity Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|e_c_a_r_t - e_g_a_u_s_s| [°]');
+
+figure()
+i_diff=abs(i_vect-kep(:,3))/(2*pi());
+plot(tspan./(T),rad2deg(wrapTo2Pi(i_diff)),'b')
+grid on
+title('Inclination Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|i_c_a_r_t - i_g_a_u_s_s|/2 \pi [°]');
+
+figure()
+Om_diff=abs(Om_vect-kep(:,4))/(2*pi());
+plot(tspan./(T),rad2deg(wrapTo2Pi(Om_diff)),'b')
+grid on
+title('RAAN Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|\Omega_c_a_r_t - \Omega_g_a_u_s_s|/2 \pi [°]');
+
+figure()
+om_diff=abs(om_vect-kep(:,5))/(2*pi());
+plot(tspan./(T),rad2deg(wrapTo2Pi(om_diff)),'b')
+grid on
+title('Argument of Periapsis Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|\omega_c_a_r_t - \omega_g_a_u_s_s|/2 \pi [°]');
+
+figure()
+theta_diff=abs(theta_vect-kep(:,6))/abs(kep(:,6));
+plot(tspan./(T),rad2deg(wrapTo2Pi(theta_diff)),'b')
+grid on
+title('True Anomaly Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[°]');
 
 
 %% other celestial body
@@ -476,7 +613,7 @@ title('True Anomaly');
 xlabel('time [days]'); ylabel('\theta [°]');
 
 
-%% test for movmean
+%% filter for movmean
 
 n_orbits = orbit.ratio_k*20;
 n_points = 10000;
@@ -486,46 +623,46 @@ tspan = linspace( 0, T*n_orbits, n_points );
 num_elements=length(tspan);
 num_elements_per_period=num_elements/T*n_orbits;
 
-test_a = movmean(kep_new_object(:,1), num_elements_per_period);
+filter_a = movmean(kep_new_object(:,1), num_elements_per_period);
 figure()
-plot(tspan./(60*60*24),test_a)
+plot(tspan./(60*60*24),filter_a)
 grid on
-title('Semi major axis Movmean Test');
+title('Semi major axis Movmean filter');
 xlabel('time [days]'); ylabel('a [km]');
 
-test_e= movmean(kep_new_object(:,2), num_elements_per_period);
+filter_e= movmean(kep_new_object(:,2), num_elements_per_period);
 figure()
-plot(tspan./(60*60*24),test_e)
+plot(tspan./(60*60*24),filter_e)
 grid on
-title('Eccentricity Movmean Test');
+title('Eccentricity Movmean filter');
 xlabel('time [days]'); ylabel('e [-]');
 
-test_i = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,3))), num_elements_per_period);
+filter_i = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,3))), num_elements_per_period);
 figure()
-plot(tspan./(60*60*24),test_i)
+plot(tspan./(60*60*24),filter_i)
 grid on
-title('Inclination Movmean Test');
+title('Inclination Movmean filter');
 xlabel('time [days]'); ylabel('i [°]');
 
-test_Om = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,4))), num_elements_per_period);
+filter_Om = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,4))), num_elements_per_period);
 figure()
-plot(tspan./(60*60*24),test_Om)
+plot(tspan./(60*60*24),filter_Om)
 grid on
-title('RAAN Movmean Test');
+title('RAAN Movmean filter');
 xlabel('time [days]'); ylabel('\Omega [°]');
 
-test_om = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,5))), num_elements_per_period);
+filter_om = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,5))), num_elements_per_period);
 figure()
-plot(tspan./(60*60*24),test_om)
+plot(tspan./(60*60*24),filter_om)
 grid on
-title('Argument of Periapsis Movmean Test');
+title('Argument of Periapsis Movmean filter');
 xlabel('time [days]'); ylabel('\omega [°]');
 
-test_theta = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,6))), num_elements_per_period);
+filter_theta = movmean(rad2deg(wrapTo2Pi(kep_new_object(:,6))), num_elements_per_period);
 figure()
-plot(tspan./(60*60*24),test_theta)
+plot(tspan./(60*60*24),filter_theta)
 grid on
-title('True Anomaly Movmean Test');
+title('True Anomaly Movmean filter');
 xlabel('time [days]'); ylabel('\theta [°]');
 
 
@@ -537,7 +674,7 @@ grid on
 hold on
 plot(tspan./(60*60*24),movmean(a_vect,num_elements_per_period),'m')
 plot(tspan./(60*60*24),kep_new_object(:,1),'b')
-plot(tspan./(60*60*24),test_a,'r')
+plot(tspan./(60*60*24),filter_a,'r')
 hold off
 title('Semi major axis Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
@@ -550,7 +687,7 @@ grid on
 hold on 
 plot(tspan./(60*60*24),movmean(e_vect,num_elements_per_period),'m')
 plot(tspan./(60*60*24),kep_new_object(:,2),'b')
-plot(tspan./(60*60*24),test_e,'r')
+plot(tspan./(60*60*24),filter_e,'r')
 hold off
 title('Eccentricity Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
@@ -563,7 +700,7 @@ grid on
 hold on
 plot(tspan./(60*60*24),rad2deg(movmean(i_vect,num_elements_per_period)),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,3))),'b')
-plot(tspan./(60*60*24),test_i,'r')
+plot(tspan./(60*60*24),filter_i,'r')
 hold off
 title('Inclination Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
@@ -576,7 +713,7 @@ grid on
 hold on
 plot(tspan./(60*60*24),rad2deg(movmean(Om_vect,num_elements_per_period)),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,4))),'b')
-plot(tspan./(60*60*24),test_Om,'r')
+plot(tspan./(60*60*24),filter_Om,'r')
 hold off
 title('RAAN Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
@@ -589,7 +726,7 @@ grid on
 hold on 
 plot(tspan./(60*60*24),rad2deg(movmean(om_vect,num_elements_per_period)),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,5))),'b')
-plot(tspan./(60*60*24),test_om,'r')
+plot(tspan./(60*60*24),filter_om,'r')
 hold off
 title('Argument of Periapsis Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
@@ -602,7 +739,7 @@ grid on
 hold on 
 plot(tspan./(60*60*24),rad2deg(movmean(theta_vect,num_elements_per_period)),'m')
 plot(tspan./(60*60*24),rad2deg(wrapTo2Pi(kep_new_object(:,6))),'b')
-plot(tspan./(60*60*24),test_theta,'r')
+plot(tspan./(60*60*24),filter_theta,'r')
 hold off
 title('True Anomaly Evolution');
 legend('Real Data','Cartesian','Gauss','Filtered');
