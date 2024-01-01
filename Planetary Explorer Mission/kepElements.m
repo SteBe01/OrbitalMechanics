@@ -690,7 +690,7 @@ plot(tspan./(Period), movmean(orbit_new_object.a_no_prop,num_elements_per_period
 plot(tspan./(Period),movmean(a_vect,num_elements_per_period),'y')
 plot(tspan./(Period),filter_a,'r')
 hold off
-title('Semi major axis Evolution');
+title('Semi major axis Evolution Real Body');
 legend('Real Data','Cartesian','Gauss', ...
     'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
@@ -710,7 +710,7 @@ plot(tspan./(Period), movmean(orbit_new_object.e_no_prop,num_elements_per_period
 plot(tspan./(Period),movmean(e_vect,num_elements_per_period),'y')
 plot(tspan./(Period),filter_e,'r')
 hold off
-title('Eccentricity Evolution');
+title('Eccentricity Evolution Real Body');
 legend('Real Data','Cartesian','Gauss', ...
     'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
@@ -729,7 +729,7 @@ plot(tspan./(Period), movmean(orbit_new_object.i_no_prop,num_elements_per_period
 plot(tspan./(Period),rad2deg(movmean(i_vect,num_elements_per_period)),'y')
 plot(tspan./(Period),filter_i,'r')
 hold off
-title('Inclination Evolution');
+title('Inclination Evolution Real Body');
 legend('Real Data','Cartesian','Gauss', ...
     'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
@@ -738,16 +738,16 @@ xlabel('time [T]'); ylabel('i [°]');
 %% RAAN
 
 figure()
-plot(tspan./(Period),orbit_new_object.OM_no_prop,'g')
+plot(tspan./(Period),unwrap(orbit_new_object.OM_no_prop),'g')
 grid on
 hold on
 plot(tspan./(Period),rad2deg(Om_vect),'c')
 plot(tspan./(Period),rad2deg(kep_new_object(:,4)),'b')
-plot(tspan./(Period), movmean(orbit_new_object.OM_no_prop,num_elements_per_period),'m')
+plot(tspan./(Period), movmean(unwrap(orbit_new_object.OM_no_prop),num_elements_per_period),'m')
 plot(tspan./(Period),rad2deg(movmean(Om_vect,num_elements_per_period)),'y')
 plot(tspan./(Period),filter_Om,'r')
 hold off
-title('RAAN Evolution');
+title('RAAN Evolution Real Body');
 legend('Real Data','Cartesian','Gauss', ...
     'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
@@ -756,16 +756,16 @@ xlabel('time [T]'); ylabel('\Omega [°]');
 %% Argument of Periapsis 
 
 figure()
-plot(tspan./(Period),orbit_new_object.om_no_prop,'g')
+plot(tspan./(Period),unwrap(orbit_new_object.om_no_prop),'g')
 grid on
 hold on
 plot(tspan./(Period),rad2deg(om_vect),'c')
 plot(tspan./(Period),rad2deg(kep_new_object(:,5)),'b')
-plot(tspan./(Period), movmean(orbit_new_object.om_no_prop,num_elements_per_period),'m')
+plot(tspan./(Period), movmean(unwrap(orbit_new_object.om_no_prop),num_elements_per_period),'m')
 plot(tspan./(Period),rad2deg(movmean(om_vect,num_elements_per_period)),'y')
 plot(tspan./(Period),filter_om,'r')
 hold off
-title('Argument of periapsis Evolution');
+title('Argument of periapsis Evolution Real Body');
 legend('Real Data','Cartesian','Gauss', ...
     'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
@@ -783,9 +783,56 @@ plot(tspan./(Period), rad2deg(movmean(unwrap(orbit_new_object.theta_no_prop),num
 plot(tspan./(Period),rad2deg(movmean(unwrap(theta_vect),num_elements_per_period)),'y')
 plot(tspan./(Period),filter_theta,'r')
 hold off
-title('Argument of periapsis Evolution');
+title('True Anomaly Evolution Real Body');
 legend('Real Data','Cartesian','Gauss', ...
     'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
 xlabel('time [T]'); ylabel('\theta [°]');
+
+
+%% Difference Real Data and Gauss
+
+figure()
+a_diff=abs(orbit_new_object.a_no_prop-kep_new_object(:,1))/orbit_new_object.a;
+plot(tspan./(Period),a_diff,'b')
+grid on
+title('Semi major axis Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|a_r_e_a_l - a_g_a_u_s_s|/ a_0 [km]');
+
+figure()
+e_diff=abs(orbit_new_object.e_no_prop-kep_new_object(:,2));
+plot(tspan./(Period),e_diff,'b')
+grid on
+title('Eccentricity Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|e_r_e_a_l - e_g_a_u_s_s| [-]');
+
+figure()
+i_diff=abs(deg2rad(orbit_new_object.i_no_prop)-kep_new_object(:,3))/(2*pi());
+plot(tspan./(Period),rad2deg(i_diff),'b')
+grid on
+title('Inclination Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|i_r_e_a_l - i_g_a_u_s_s|/2 \pi [°]');
+
+figure()
+Om_diff=abs(deg2rad(unwrap(orbit_new_object.OM_no_prop))-unwrap(kep_new_object(:,4)))/(2*pi());
+plot(tspan./(Period),rad2deg(Om_diff),'b')
+grid on
+title('RAAN Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|\Omega_r_e_a_l - \Omega_g_a_u_s_s|/2 \pi [°]');
+
+figure()
+om_diff=abs(deg2rad(unwrap(orbit_new_object.om_no_prop))-unwrap(kep_new_object(:,5)))/(2*pi());
+plot(tspan./(Period),rad2deg(om_diff),'b')
+grid on
+title('Argument of Periapsis Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|\omega_r_e_a_l - \omega_g_a_u_s_s|/2 \pi [°]');
+
+
+figure()
+theta_diff=abs(unwrap(orbit_new_object.theta_no_prop)-unwrap(kep_new_object(:,6)))./abs(unwrap(orbit_new_object.theta_no_prop));
+plot(tspan./(Period),rad2deg(wrapTo2Pi(theta_diff)),'b')
+grid on
+title('True Anomaly Evolution Propagation Method Difference');
+xlabel('time [T]'); ylabel('|\theta_r_e_a_l - \theta_g_a_u_s_s|/ \theta_r_e_a_l[°]');
+
 
