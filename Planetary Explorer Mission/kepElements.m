@@ -422,6 +422,41 @@ title('True Anomaly Evolution Propagation Method Difference');
 xlabel('time [T]'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[°]');
 
 
+%% Simulation 
+
+n_orbits = orbit.ratio_k*8;
+n_points = 100;
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan = linspace( 0, T*n_orbits, n_points );
+
+[r0, v0] = kep2car(orbit.a, orbit.e, orbit.i, orbit.OM, orbit.om, orbit.theta, earth.mu);
+y0 = [ r0'; v0' ];
+
+options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
+[ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
+
+figure()
+plot3( Y(:,1), Y(:,2), Y(:,3),'r')
+xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+title('Two-body problem orbit, with J2 and air drag');
+axis equal, grid on, hold on
+earthPlot;
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or',MarkerEdgeColor='b' )
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or',MarkerEdgeColor='b' )
+
+figure()
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or',MarkerEdgeColor='b' )
+hold on
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or',MarkerEdgeColor='b' )
+ani1=animatedline('Color','r');
+for i=1:length(tspan)
+    addpoints(ani1,Y(i,1), Y(i,2), Y(i,3));
+    earthPlot;
+    drawnow
+    pause(0.01);
+end
+
 %% other celestial body
 
 addpath("Functions\")
