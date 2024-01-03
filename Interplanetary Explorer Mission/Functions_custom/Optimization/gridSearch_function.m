@@ -9,6 +9,9 @@ if mission.options.animation
     porkchop_start(dep_time, arr_time, mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
 end
 
+solutions_dvMin = zeros(length(departureTime), 1);
+solutions_tspan = zeros(length(departureTime), 3);
+
 for totWindows = 1:length(departureTime)
     departure.time_vect = linspace(departureTime{totWindows}.lb, departureTime{totWindows}.ub, mission.options.window_size);
     flyby.time_vect = linspace(flybyTime{totWindows}.lb, flybyTime{totWindows}.ub, mission.options.window_size);
@@ -143,9 +146,12 @@ for totWindows = 1:length(departureTime)
     sgtitle("Delta velocity = " + dv_fmin + " km/s")
     drawnow
 
-    solutions.dvMin{totWindows} = dv_fmin;
-    solutions.tspan{totWindows} = tspan;
+    solutions_dvMin(totWindows) = dv_fmin;
+    solutions_tspan(totWindows, :) = tspan;
 end
+
+[solutions.dvMin, min_dv_index] = min(solutions_dvMin);
+solutions.tspan = solutions_tspan(min_dv_index, :);
 
 
 function [min, pos1, pos2, pos3] = findMin3(dv)

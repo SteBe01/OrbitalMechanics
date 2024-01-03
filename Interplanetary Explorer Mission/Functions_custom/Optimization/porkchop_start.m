@@ -1,5 +1,7 @@
 function [] = porkchop_start(dep_time, arr_time, dep_planetId, flyby_planetId, arrival_bodyId)
 
+figure
+
 dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
 arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);
 

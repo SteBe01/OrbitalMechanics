@@ -8,7 +8,8 @@ addpath("Functions\")
 addpath("..\Functions_custom\")
 addpath(genpath("..\\Functions"))
 
-%--------Define well this values with Tsyn and ToF!!!!!!
+warning("This script is a test script! The window is too large")
+%-----------------------------------------------------
 mission.dep_time = [2028 01 01 0 0 0];
 mission.arr_time = [2058 01 01 0 0 0];
 %-----------------------------------------------------
@@ -140,7 +141,6 @@ while fixedtol < tol
 end
 
 if fmincon_choice ~= 0
-    addpath("GA functions\")
     A_fmin = [-1 1 0; 0 -1 1]; b_fmin = [0 0];
     opts = optimset('TolX', eps(1), 'TolFun', eps(1), 'Display', 'iter');
     [tspan, dv_fmin] = fminunc(@(tspan) completeInterplanetaryGS(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [departure.time_vect(pos1) flyby.time_vect(pos2) arrival.time_vect(pos3)]', opts);

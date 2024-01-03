@@ -63,8 +63,6 @@ dvTot = dv1 + dv2 + dv3;
 
 time_elapsed = toc;
 disp("Time elapsed: " + time_elapsed + " s")
-disp("Data - departure Id: " + mission.departure_Id + ", flyBy Id: " + mission.flyby_Id + ", arrival Id: " + mission.arrival_Id)
-disp("Solution: " + dvTot + " km/s, found at " + xcust(1) + " " + xcust(2) + " " + xcust(3))
 
 solution.dv_fmin = fcust;
 solution.tspan = xcust;

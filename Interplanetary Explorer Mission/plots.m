@@ -5,7 +5,7 @@ close all
 
 restoredefaultpath
 addpath(genpath("Functions\"))
-addpath("Functions_custom\")
+addpath(genpath("Functions_custom\"))
 
 % set(0, 'defaultTextInterpreter', 'latex');
 % set(0, 'defaultLineLineWidth', 2);
