@@ -668,7 +668,7 @@ figure()
 a_diff=abs(orbit_new_object.a_no_prop-kep_new_object(:,1))/orbit_new_object.a;
 plot(tspan./(Period),a_diff,'b')
 grid on
-title('Semi major axis Evolution Propagation Method Difference');
+title('Semi major axis EvolutionEvolution Real Data vs  Propagation Method Difference');
 xlabel('time [T]'); ylabel('|a_r_e_a_l - a_g_a_u_s_s|/ a_0 [km]');
 
 %Eccentricity
@@ -676,7 +676,7 @@ figure()
 e_diff=abs(orbit_new_object.e_no_prop-kep_new_object(:,2));
 plot(tspan./(Period),e_diff,'b')
 grid on
-title('Eccentricity Evolution Propagation Method Difference');
+title('Eccentricity Evolution Evolution Real Data vs Propagation Method Difference');
 xlabel('time [T]'); ylabel('|e_r_e_a_l - e_g_a_u_s_s| [-]');
 
 %Inclination
@@ -684,7 +684,7 @@ figure()
 i_diff=abs(deg2rad(orbit_new_object.i_no_prop)-kep_new_object(:,3))/(2*pi());
 plot(tspan./(Period),rad2deg(i_diff),'b')
 grid on
-title('Inclination Evolution Propagation Method Difference');
+title('Inclination Evolution Evolution Real Data vs Propagation Method Difference');
 xlabel('time [T]'); ylabel('|i_r_e_a_l - i_g_a_u_s_s|/2 \pi [°]');
 
 %RAAN
@@ -692,7 +692,7 @@ figure()
 Om_diff=abs(deg2rad(unwrap(orbit_new_object.OM_no_prop))-unwrap(kep_new_object(:,4)))/(2*pi());
 plot(tspan./(Period),rad2deg(Om_diff),'b')
 grid on
-title('RAAN Evolution Propagation Method Difference');
+title('RAAN Evolution Evolution Real Data vs Propagation Method Difference');
 xlabel('time [T]'); ylabel('|\Omega_r_e_a_l - \Omega_g_a_u_s_s|/2 \pi [°]');
 
 %Argument of periapsis
@@ -700,7 +700,7 @@ figure()
 om_diff=abs(deg2rad(unwrap(orbit_new_object.om_no_prop))-unwrap(kep_new_object(:,5)))/(2*pi());
 plot(tspan./(Period),rad2deg(om_diff),'b')
 grid on
-title('Argument of Periapsis Evolution Propagation Method Difference');
+title('Argument of Periapsis Evolution Evolution Real Data vs Propagation Method Difference');
 xlabel('time [T]'); ylabel('|\omega_r_e_a_l - \omega_g_a_u_s_s|/2 \pi [°]');
 
 %True anomaly
@@ -708,6 +708,6 @@ figure()
 theta_diff=abs(unwrap(orbit_new_object.theta_no_prop)-unwrap(kep_new_object(:,6)))./abs(unwrap(orbit_new_object.theta_no_prop));
 plot(tspan./(Period),rad2deg(wrapTo2Pi(theta_diff)),'b')
 grid on
-title('True Anomaly Evolution Propagation Method Difference');
+title('True Anomaly Evolution Real Data vs Propagation Method Difference');
 xlabel('time [T]'); ylabel('|\theta_r_e_a_l - \theta_g_a_u_s_s|/ \theta_r_e_a_l[°]');
 
