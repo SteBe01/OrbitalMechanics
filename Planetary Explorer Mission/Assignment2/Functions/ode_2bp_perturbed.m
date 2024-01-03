@@ -16,10 +16,14 @@ function dy = ode_2bp_perturbed( ~, y, mu, Re, J2, om_E, A_M, cD)
 %
 % CONTRIBUTORS:
 % Juan Luis Gonzalo Gomez
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 %
 % VERSIONS
 % 2018-09-26: First version
-%
+% 2023-03-01: last version
 % -------------------------------------------------------------------------
 
 % Position and velocity

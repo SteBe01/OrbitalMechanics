@@ -20,6 +20,12 @@ function [alpha, delta, lon, lat] = groundTrack_cart_perturbed(y0, t_vect, mu_E,
 % delta         [Nx1]       delta                           [deg]
 % lon           [Nx1]       lon                             [deg]
 % lat           [Nx1]       lat                             [deg]
+% 
+% CONTRIBUITORS:
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 
 options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
 [~, Y] = ode113(@(t,y) ode_2bp_perturbed( t, y, mu_E, Re, J2, deg2rad(om_E) / 3600, A_M, cD), t_vect, y0, options);

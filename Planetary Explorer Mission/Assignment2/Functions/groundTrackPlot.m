@@ -14,6 +14,12 @@ function [] = groundTrackPlot(lon, lat, EarthPlot_name)
 % Output arguments:
 % -----------------------------------------------------------------
 % N/A
+% 
+% CONTRIBUITORS:
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 
 earth_img = imread(EarthPlot_name);
 

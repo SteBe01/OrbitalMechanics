@@ -15,6 +15,12 @@ function [a_sat] = aFinder(k, m, om_E, mu)
 % Output arguments:
 % -----------------------------------------------------------------
 % a             [1x1]   semi-major                  [km]
+% 
+% CONTRIBUITORS:
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 
 n = (deg2rad(om_E)/3600) * (k / m);
 a_sat = (mu/n^2)^(1/3);

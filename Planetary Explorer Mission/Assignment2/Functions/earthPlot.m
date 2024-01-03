@@ -8,6 +8,12 @@ function s = earthPlot
 % Output arguments:
 % ---------------------------------------------------------------------
 % s             [1x1]   Earth - obj                [surface/-]
+% 
+% CONTRIBUITORS:
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 
 % Earth settings
 [x1,y1,z1] = sphere(50);

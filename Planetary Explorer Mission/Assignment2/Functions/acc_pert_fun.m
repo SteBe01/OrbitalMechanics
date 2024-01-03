@@ -18,6 +18,12 @@ function acc_pert_vec = acc_pert_fun(t, y, mu, Re, J2, om_E, A_M, cD)
 % Output arguments:
 % -----------------------------------------------------------------
 % acc_pert_vec  [1x3]   Perturbing Accelerations    [km/s^2]
+% 
+% CONTRIBUITORS:
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 
     a = y(1);
     e = y(2);

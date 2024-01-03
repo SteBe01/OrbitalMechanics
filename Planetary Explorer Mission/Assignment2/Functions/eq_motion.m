@@ -14,6 +14,12 @@ function dy = eq_motion(t, s, acc_pert_fun, mu)
 % Output arguments:
 % -----------------------------------------------------------------
 % dy            [6x1] Rate of change of keplerian elements    [km/s^2]
+% 
+% CONTRIBUITORS:
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 
     a = s(1);
     e = s(2);

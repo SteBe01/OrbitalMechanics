@@ -18,6 +18,12 @@ function [theta_vect] = calculateThetaVect(mu, a, e, T_size)
 % Output arguments:
 % 
 % theta_vect    [T_sizex1]/[1xT_size]   theta vect                      [s]
+% 
+% CONTRIBUITORS:
+% Pier Francesco A. Bachini
+% Stefano Belleti
+% Chiara Giardini
+% Carolina Gómez Sánchez
 
 
     T_tot=2*pi*sqrt(a^3/mu);
