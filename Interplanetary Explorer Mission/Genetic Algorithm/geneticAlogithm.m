@@ -11,8 +11,8 @@ addpath("Functions\")
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
-n_iter = 20;
-windowChoice = 2;
+n_iter = 1;
+windowChoice = 1;
 
 if windowChoice == 1
     mission.dep_time_lb = [2030 12 09 0 0 0];
@@ -37,7 +37,7 @@ ub = [date2mjd2000(mission.dep_time_ub) date2mjd2000(mission.flyby_time_ub) date
 
 options = optimoptions('ga', 'MaxStallGenerations', 15, 'FunctionTolerance', ...
         1e-4, 'MaxGenerations', 1e3, 'NonlinearConstraintAlgorithm', 'penalty',...
-        'PopulationSize', 100, 'UseVectorized', false, 'UseParallel',false, InitialPopulationRange=[lb ub]', CrossoverFcn='crossoverlaplace');
+        'PopulationSize', 100, 'UseVectorized', false, 'UseParallel',false, InitialPopulationRange=[lb ub]', CrossoverFcn='crossoverlaplace', PlotFcn='gaplotdistance');
 if n_iter > 1
     options.Display = "final";
 else

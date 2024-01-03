@@ -7,6 +7,10 @@ restoredefaultpath
 addpath(genpath("Functions\"))
 addpath("Functions_custom\")
 
+% set(0, 'defaultTextInterpreter', 'latex');
+% set(0, 'defaultLineLineWidth', 2);
+% set(0, 'DefaultAxesFontSize', 12);
+
 % data - goup 2346
 % Departure: Saturn
 % Flyby: Jupiter
