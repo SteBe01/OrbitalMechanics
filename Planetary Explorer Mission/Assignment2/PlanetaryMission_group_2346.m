@@ -425,33 +425,6 @@ title('True Anomaly Evolution Propagation Method Difference');
 xlabel('time [T]'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[°]');
 
 
-%% Simulation 
-
-n_orbits = orbit.ratio_k*8;
-n_points = 10000;
-
-T = 2*pi*sqrt( orbit.a^3/earth.mu );
-tspan = linspace( 0, T*n_orbits, n_points );
-
-[r0, v0] = kep2car(orbit.a, orbit.e, orbit.i, orbit.OM, orbit.om, orbit.theta, earth.mu);
-y0 = [ r0'; v0' ];
-
-options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
-[ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
-
-%Orbit Plot
-figure()
-plot3( Y(1,1), Y(1,2), Y(1,3), 'or',MarkerEdgeColor='b' )
-hold on
-plot3( Y(end,1), Y(end,2), Y(end,3), 'or',MarkerEdgeColor='b' )
-ani1=animatedline('Color','r');
-earthPlot;
-for i=1:length(tspan)
-    addpoints(ani1,Y(i,1), Y(i,2), Y(i,3));
-    drawnow
-end
-
-
 %% other celestial body
 
 
@@ -513,7 +486,7 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 
 % Plot orbit perturbed
 figure()
-plot3( Y(:,1), Y(:,2), Y(:,3), '-' )
+plot3( Y(:,1), Y(:,2), Y(:,3), 'r' )
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('Two-body problem orbit, with J2 and air drag Real Body');
 axis equal, grid on, hold on
@@ -560,103 +533,79 @@ filter_theta =  movmean(rad2deg(unwrap(kep_new_object(:,6))), num_elements_per_p
 
 % Semi major axis
 figure()
-plot(tspan./(Period),orbit_new_object.a_no_prop,'g')
+plot(tspan./(Period), movmean(orbit_new_object.a_no_prop,num_elements_per_period),'r')
 grid on
 hold on
-plot(tspan./(Period),a_vect,'c')
-plot(tspan./(Period),kep_new_object(:,1),'b')
-plot(tspan./(Period), movmean(orbit_new_object.a_no_prop,num_elements_per_period),'m')
-plot(tspan./(Period),movmean(a_vect,num_elements_per_period),'y')
-plot(tspan./(Period),filter_a,'r')
+plot(tspan./(Period),movmean(a_vect,num_elements_per_period),'g')
+plot(tspan./(Period),filter_a,'b')
 hold off
 title('Semi major axis Evolution Real Body');
-legend('Real Data','Cartesian','Gauss', ...
-    'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
+legend('Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
 xlabel('time [T]'); ylabel('a [km]');
 
 % Eccentricity
 figure()
-plot(tspan./(Period),orbit_new_object.e_no_prop,'g')
+plot(tspan./(Period), movmean(orbit_new_object.e_no_prop,num_elements_per_period),'r')
 grid on
 hold on
-plot(tspan./(Period),e_vect,'c')
-plot(tspan./(Period),kep_new_object(:,2),'b')
-plot(tspan./(Period), movmean(orbit_new_object.e_no_prop,num_elements_per_period),'m')
-plot(tspan./(Period),movmean(e_vect,num_elements_per_period),'y')
-plot(tspan./(Period),filter_e,'r')
+plot(tspan./(Period),movmean(e_vect,num_elements_per_period),'g')
+plot(tspan./(Period),filter_e,'b')
 hold off
 title('Eccentricity Evolution Real Body');
-legend('Real Data','Cartesian','Gauss', ...
-    'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
+legend('Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
 xlabel('time [T]'); ylabel('e [-]');
 
 % Inclination 
 figure()
-plot(tspan./(Period),orbit_new_object.i_no_prop,'g')
+plot(tspan./(Period), movmean(orbit_new_object.i_no_prop,num_elements_per_period),'r')
 grid on
 hold on
-plot(tspan./(Period),rad2deg(i_vect),'c')
-plot(tspan./(Period),rad2deg(kep_new_object(:,3)),'b')
-plot(tspan./(Period), movmean(orbit_new_object.i_no_prop,num_elements_per_period),'m')
-plot(tspan./(Period),rad2deg(movmean(i_vect,num_elements_per_period)),'y')
-plot(tspan./(Period),filter_i,'r')
+plot(tspan./(Period),rad2deg(movmean(i_vect,num_elements_per_period)),'g')
+plot(tspan./(Period),filter_i,'b')
 hold off
 title('Inclination Evolution Real Body');
-legend('Real Data','Cartesian','Gauss', ...
-    'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
+legend('Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
 xlabel('time [T]'); ylabel('i [°]');
 
 % RAAN
 figure()
-plot(tspan./(Period),unwrap(orbit_new_object.OM_no_prop),'g')
+plot(tspan./(Period), movmean(unwrap(orbit_new_object.OM_no_prop),num_elements_per_period),'r')
 grid on
 hold on
-plot(tspan./(Period),rad2deg(Om_vect),'c')
-plot(tspan./(Period),rad2deg(kep_new_object(:,4)),'b')
-plot(tspan./(Period), movmean(unwrap(orbit_new_object.OM_no_prop),num_elements_per_period),'m')
-plot(tspan./(Period),rad2deg(movmean(Om_vect,num_elements_per_period)),'y')
-plot(tspan./(Period),filter_Om,'r')
+plot(tspan./(Period),rad2deg(movmean(Om_vect,num_elements_per_period)),'g')
+plot(tspan./(Period),filter_Om,'b')
 hold off
 title('RAAN Evolution Real Body');
-legend('Real Data','Cartesian','Gauss', ...
-    'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
+legend('Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
 xlabel('time [T]'); ylabel('\Omega [°]');
 
 % Argument of Periapsis 
 figure()
-plot(tspan./(Period),unwrap(orbit_new_object.om_no_prop),'g')
+plot(tspan./(Period), movmean(unwrap(orbit_new_object.om_no_prop),num_elements_per_period),'r')
 grid on
 hold on
-plot(tspan./(Period),rad2deg(om_vect),'c')
-plot(tspan./(Period),rad2deg(kep_new_object(:,5)),'b')
-plot(tspan./(Period), movmean(unwrap(orbit_new_object.om_no_prop),num_elements_per_period),'m')
-plot(tspan./(Period),rad2deg(movmean(om_vect,num_elements_per_period)),'y')
-plot(tspan./(Period),filter_om,'r')
+plot(tspan./(Period),rad2deg(movmean(om_vect,num_elements_per_period)),'g')
+plot(tspan./(Period),filter_om,'b')
 hold off
 title('Argument of periapsis Evolution Real Body');
-legend('Real Data','Cartesian','Gauss', ...
-    'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
+legend('Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
 xlabel('time [T]'); ylabel('\omega [°]');
 
 % True Anomaly
 figure()
-plot(tspan./(Period),rad2deg(unwrap(orbit_new_object.theta_no_prop)),'g')
+plot(tspan./(Period), rad2deg(movmean(unwrap(orbit_new_object.theta_no_prop),num_elements_per_period)),'r')
 grid on
 hold on
-plot(tspan./(Period),rad2deg(unwrap(theta_vect)),'c')
-plot(tspan./(Period),rad2deg(kep_new_object(:,6)),'b')
-plot(tspan./(Period), rad2deg(movmean(unwrap(orbit_new_object.theta_no_prop),num_elements_per_period)),'m')
-plot(tspan./(Period),rad2deg(movmean(unwrap(theta_vect),num_elements_per_period)),'y')
-plot(tspan./(Period),filter_theta,'r')
+plot(tspan./(Period),rad2deg(movmean(unwrap(theta_vect),num_elements_per_period)),'g')
+plot(tspan./(Period),filter_theta,'b')
 hold off
 title('True Anomaly Evolution Real Body');
-legend('Real Data','Cartesian','Gauss', ...
-    'Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
+legend('Real Data Filtered','Cartesian Filtered','Gauss Filtered', ...
     'Location','Best');
 xlabel('time [T]'); ylabel('\theta [°]');
 
@@ -711,3 +660,50 @@ grid on
 title('True Anomaly Evolution Real Data vs Propagation Method Difference');
 xlabel('time [T]'); ylabel('|\theta_r_e_a_l - \theta_g_a_u_s_s|/ \theta_r_e_a_l[°]');
 
+%% Simulation 
+
+% orbit data
+orbit.a = 0.8016 * 1e4;
+orbit.e = 0.1678;
+orbit.i = deg2rad(50.3442);
+orbit.OM = deg2rad(27.2290);        %Taken from similar object
+orbit.om = deg2rad(315.4032);       %Taken from similar object
+orbit.theta=deg2rad(122.0796);      %Taken from similar object
+orbit.kep = [orbit.a orbit.e orbit.i orbit.OM orbit.om orbit.theta];
+orbit.ratio_k = 12;
+orbit.ratio_m = 1;
+
+% Earth data
+earth.r = astroConstants(23);
+earth.mu = astroConstants(13);
+earth.om = deg2rad(15.04) / 3600;
+earth.J2 = astroConstants(9);
+
+% perturbation: J2 and Drag (cD = 2.1, A/M = 0.0171 m^2/kg)
+spacecraft.cD = 2.1;
+spacecraft.AM = 0.0171;
+
+n_orbits = orbit.ratio_k*8;
+n_points = 10000;
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan = linspace( 0, T*n_orbits, n_points );
+
+[r0, v0] = kep2car(orbit.a, orbit.e, orbit.i, orbit.OM, orbit.om, orbit.theta, earth.mu);
+y0 = [ r0'; v0' ];
+
+options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
+[ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan, y0, options );
+
+%Orbit Plot
+figure()
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or',MarkerEdgeColor='b' )
+hold on
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or',MarkerEdgeColor='b' )
+ani1=animatedline('Color','r');
+earthPlot;
+title('Simulation')
+for i=1:length(tspan)
+    addpoints(ani1,Y(i,1), Y(i,2), Y(i,3));
+    drawnow
+end
