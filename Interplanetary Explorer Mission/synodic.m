@@ -2,6 +2,9 @@
 
 % ---Synodic Periods-----------
 
+addpath("Functions\time\")
+addpath("Functions_costum\")
+
 date_departure = [2028 01 01 0 0 0];
 departure.planetId = 6;
 flyby.planetId = 5;
