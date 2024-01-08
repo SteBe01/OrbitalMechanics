@@ -40,12 +40,15 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 
 %Orbit plot
 figure()
-plot3( Y(:,1), Y(:,2), Y(:,3),'r')
+plot3( Y(:,1), Y(:,2), Y(:,3),'r',LineWidth=2)
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('Two-body problem orbit');
 axis equal, grid on,hold on
-earthPlot;
-plot3( Y(1,1), Y(1,2), Y(1,3), 'or','MarkerEdgeColor','blue' )
+s = earthPlot;
+rotate(s, [0 0 1],-70,[0 0 0]);
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or','MarkerEdgeColor','blue' ,LineWidth=2, MarkerSize=7)
+
+view(-40,20)
 
 
 %% ground track plot (unperturbed)
@@ -195,7 +198,7 @@ title(['Repeting Ground Track, with J2 and air drag 36 Orbits']);
 %% perturbations - cartesian coordinates
 
 n_orbits = orbit.ratio_k*8;
-n_points = 10000;
+n_points = 100000;
 
 T = 2*pi*sqrt( orbit.a^3/earth.mu );
 tspan = linspace( 0, T*n_orbits, n_points );
@@ -212,9 +215,10 @@ scatter3( Y(:,1), Y(:,2), Y(:,3),1,1:length(tspan))
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('Two-body problem orbit, with J2 and air drag');
 axis equal, grid on, hold on
-earthPlot;
-plot3( Y(1,1), Y(1,2), Y(1,3), 'or',MarkerEdgeColor='b' )
-plot3( Y(end,1), Y(end,2), Y(end,3), 'or',MarkerEdgeColor='b' )
+s = earthPlot;
+rotate(s, [0 0 1],-70,[0 0 0]);
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or','MarkerEdgeColor','blue' ,LineWidth=2, MarkerSize=7)
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or','MarkerEdgeColor','red' ,LineWidth=2, MarkerSize=7)
 
 Period=2*pi*sqrt( orbit.a^3/earth.mu );
 a_vect = zeros(length(Y), 1);
@@ -227,6 +231,9 @@ theta_vect = zeros(length(Y), 1);
 for i = 1:length(Y)
     [a_vect(i), e_vect(i), i_vect(i), Om_vect(i), om_vect(i), theta_vect(i)] = car2kep(Y(i,1:3), Y(i,4:6), earth.mu);
 end
+
+view(-40,20)
+colorbar
 
 
 %% perturbations - Gauss's planetary equations
@@ -707,3 +714,100 @@ for i=1:length(tspan)
     addpoints(ani1,Y(i,1), Y(i,2), Y(i,3));
     drawnow
 end
+
+
+
+
+%% 12 Orbits
+orbit_number = orbit.ratio_k;
+tspan_dim = 100000;
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan= linspace( 0, T, tspan_dim );
+[r0, v0] = kep2car([orbit.kep, earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
+groundTrackPlot(lon, lat, "EarthTexture.jpg")
+title(['Ground Track 12 Orbits']);
+
+% 1 Orbit
+orbit_number = 1;
+tspan_dim = 100000;
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan= linspace( 0, T, tspan_dim );
+[r0, v0] = kep2car([orbit.kep, earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
+groundTrackPlot2(lon, lat, "red");
+
+
+
+
+
+
+
+
+
+%% unpert and single unpert
+
+% 12 Orbits
+orbit_number = orbit.ratio_k*3;
+tspan_dim = 100000;
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan= linspace( 0, T, tspan_dim );
+[r0, v0] = kep2car([orbit.kep, earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
+groundTrackPlot(lon, lat, "EarthTexture.jpg")
+title(['Ground Track, with J2 and air drag 12 Orbits']);
+
+orbit_number = 1;
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan= linspace( 0, T, tspan_dim );
+[r0, v0] = kep2car([orbit.kep, earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
+groundTrackPlot2(lon, lat, "red", 3)
+
+
+%% normal with and without pert
+
+orbit_number = orbit.ratio_k*3;
+tspan_dim = 100000;
+
+T = 2*pi*sqrt( orbit.a^3/earth.mu );
+tspan= linspace( 0, T, tspan_dim );
+[r0, v0] = kep2car([orbit.kep earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart_perturbed(y0, tspan*orbit_number, earth.mu, theta_g, om_E, earth.r, earth.J2, spacecraft.AM, spacecraft.cD);
+groundTrackPlot(lon, lat, "EarthTexture.jpg")
+title(['Ground Track, with J2 and air drag 12 Orbits']);
+
+[r0, v0] = kep2car([orbit.kep earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
+groundTrackPlot2(lon, lat, "red", 1.5)
+
+
+%% repetition (new a), with perturbed reprtition (new a)
+
+orbit_number = orbit.ratio_k*3;
+tspan_dim = 100000;
+
+orbit.a_rep = aFinder(orbit.ratio_k, orbit.ratio_m, om_E, earth.mu);
+
+T = 2*pi*sqrt( orbit.a_rep^3/earth.mu );
+tspan= linspace( 0, T, tspan_dim );
+[r0, v0] = kep2car([orbit.a_rep orbit.kep(2:end) earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart_perturbed(y0, tspan*orbit_number, earth.mu, theta_g, om_E, earth.r, earth.J2, spacecraft.AM, spacecraft.cD);
+groundTrackPlot(lon, lat, "EarthTexture.jpg")
+title(['Ground Track, with J2 and air drag 12 Orbits']);
+
+[r0, v0] = kep2car([orbit.a_rep orbit.kep(2:end) earth.mu]);
+y0 = [ r0'; v0' ];
+[~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
+groundTrackPlot2(lon, lat, "red", 1.5)
+
