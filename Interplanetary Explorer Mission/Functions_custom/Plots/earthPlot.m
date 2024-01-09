@@ -11,7 +11,7 @@ function s = earthPlot
 
 % Earth settings
 [x1,y1,z1] = sphere(50);
-mult=6378;                     % Earth radius
+mult = astroConstants(23);                     % Earth radius
 s = surface(x1*mult,y1*mult,z1*mult);
 
 load topo 

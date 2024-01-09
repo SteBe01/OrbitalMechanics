@@ -1,5 +1,21 @@
 function [departure, flyby, arrival] = loadWindows(type)
 
+% Time window loader for gridSearch_function.m
+%
+% Usage
+% [departure, flyby, arrival] = loadWindows(type)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% type          [1x1]   1 (final window(s)) or 2        [struct]
+%
+% -----------------------------------------------------------------
+% Output arguments:
+% 
+% departure     [-]     departure window                [struct]
+% flyby         [-]     flyby window                    [struct]
+% arrival       [-]     arriva window                   [struct]
+
 switch type
     case 1
         departure{1}.lb = 1.15e4;

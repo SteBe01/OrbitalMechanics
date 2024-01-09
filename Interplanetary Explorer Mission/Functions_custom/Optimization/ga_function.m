@@ -1,5 +1,19 @@
 function [solution] = ga_function(mission)
 
+% Core function for genetic algorithm optimization
+%
+% Usage
+% [solution] = ga_function(mission)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% mission       [-]       mission data          [struct]
+%
+% -----------------------------------------------------------------
+% Output arguments:
+% 
+% solution      [-]       mission solution      [struct]
+
 lb = [date2mjd2000(mission.dep_time_lb) date2mjd2000(mission.flyby_time_lb) date2mjd2000(mission.arr_time_lb)]';
 ub = [date2mjd2000(mission.dep_time_ub) date2mjd2000(mission.flyby_time_ub) date2mjd2000(mission.arr_time_ub)]';
 

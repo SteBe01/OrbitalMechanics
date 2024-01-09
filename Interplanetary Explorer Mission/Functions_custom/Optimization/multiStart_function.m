@@ -1,5 +1,19 @@
 function [solution] = multiStart_function(mission)
 
+% Core function for multi start optimization
+%
+% Usage
+% [solution] = multiStart_function(mission)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% mission       [-]       mission data          [struct]
+%
+% -----------------------------------------------------------------
+% Output arguments:
+% 
+% solution      [-]       mission solution      [struct]
+
 tic
 
 % random vector of players

@@ -1,9 +1,9 @@
-function [] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id)
+function [image, lgd] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id)
 
 % Creates the plot for the whole mission
 %
 % Usage
-% [] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id)
+% [image, lgd] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id)
 %
 % Input arguments:
 % ----------------------------------------------------------------
@@ -16,7 +16,8 @@ function [] = missionPlot(departure_time, flyby_time, arrival_time, departure_Id
 % 
 % Output arguments:
 % -----------------------------------------------------------------
-% N/A
+% image                 [1x1]   handler for the image   [-]
+% lgd                   [1x1]   handler for the legend  [-]
 
 orbitType = 0;
 
@@ -114,20 +115,20 @@ else
 end
 
 % plot the results
-figure()
-plot3(departure.Y(:,1), departure.Y(:,2), departure.Y(:,3), '-', 'color', 'b')
+image = figure();
+plot3(departure.Y(:,1), departure.Y(:,2), departure.Y(:,3), '-', 'color', 'b', LineWidth=1)
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 title('Complete mission');
 axis equal, grid on, hold on
-plot3(flyby.Y(:,1),flyby.Y(:,2), flyby.Y(:,3), '-', 'color', 'r')
-plot3(arrival.Y(:,1), arrival.Y(:,2), arrival.Y(:,3), '-', 'color', 'g')
-plot3(Y_1(:,1), Y_1(:,2), Y_1(:,3), '--', 'color', 'm', 'HandleVisibility', 'off')
-plot3(Y_2(:,1), Y_2(:,2), Y_2(:,3), '--', 'color', 'm', 'HandleVisibility', 'off')
+plot3(flyby.Y(:,1),flyby.Y(:,2), flyby.Y(:,3), '-', 'color', 'r', LineWidth=1)
+plot3(arrival.Y(:,1), arrival.Y(:,2), arrival.Y(:,3), '-', 'color', 'g', LineWidth=1)
+plot3(Y_1(:,1), Y_1(:,2), Y_1(:,3), '--', 'color', 'm', 'HandleVisibility', 'off', LineWidth=1)
+plot3(Y_2(:,1), Y_2(:,2), Y_2(:,3), '--', 'color', 'm', 'HandleVisibility', 'off', LineWidth=1)
 plot3(departure.r0(1), departure.r0(2), departure.r0(3), 'o', 'Color', 'b', 'MarkerFaceColor', 'b')
 plot3(flyby.r0(1), flyby.r0(2), flyby.r0(3), 'o', 'Color', 'r', 'MarkerFaceColor', 'r')
 plot3(arrival.r0(1), arrival.r0(2), arrival.r0(3), 'o', 'Color', 'g', 'MarkerFaceColor', 'g')
 plot3(0, 0, 0, 'o', 'Color', 'y', 'MarkerFaceColor', 'y')
-legend(strcat(departure_name, ' orbit'), strcat(flyby_name, ' orbit'), strcat(arrival_name, ' orbit'), departure_name, flyby_name, arrival_name, 'Sun')
+lgd = legend(strcat(departure_name, ' orbit'), strcat(flyby_name, ' orbit'), strcat(arrival_name, ' orbit'), departure_name, flyby_name, arrival_name, 'Sun');
 hold off
 
 end

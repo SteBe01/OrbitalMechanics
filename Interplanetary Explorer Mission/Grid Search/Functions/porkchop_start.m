@@ -42,8 +42,8 @@ dv = dv_1; % without flyby dv
 subplot(1, 2, 1)
 contour(dep_time_vect, arr_time_vect, dv', 2:0.2:8, HandleVisibility="off")
 colorbar, grid on, hold on, axis equal
-xlabel("Departure")
-ylabel("FlyBy")
+xlabel("Departure [mjd2000]")
+ylabel("FlyBy [mjd2000]")
 
 
 % porkchop plots - fly by, arrival
@@ -87,8 +87,8 @@ dv = dv_2; % without flyby dv
 subplot(1, 2, 2)
 contour(dep_time_vect, arr_time_vect, dv', 4:0.5:25, HandleVisibility="off") % 12:35
 colorbar, grid on, hold on, axis equal
-xlabel("FlyBy")
-ylabel("Arrival")
+xlabel("FlyBy [mjd2000]")
+ylabel("Arrival [mjd2000]")
 
 end
 

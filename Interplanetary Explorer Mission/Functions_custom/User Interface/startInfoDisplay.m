@@ -1,5 +1,18 @@
 function [] = startInfoDisplay(mission)
 
+% Print the data for the chosen mission
+%
+% Usage
+% [] = startInfoDisplay(mission)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% mission           [-]     mission struct      [-]
+% 
+% Output arguments:
+% -----------------------------------------------------------------
+% N/A
+
 disp("Mission details: ")
 fprintf("Departure Id: " + mission.departure_Id + ", flyby Id: " + mission.flyby_Id + " and Arrival Id: " + mission.arrival_Id)
 fprintf("\nWindow details [date]: ")

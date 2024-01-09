@@ -1,5 +1,22 @@
 function [] = porkchop_start(dep_time, arr_time, dep_planetId, flyby_planetId, arrival_bodyId)
 
+% Creates the starting plot for "contour plots"
+%
+% Usage
+% [] = porkchop_start(dep_time, arr_time, dep_planetId, flyby_planetId, arrival_bodyId)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% dep_time              [1x1]   tot departure time      [date]
+% arr_time              [1x1]   tot arrival time        [date]
+% dep_planetId          [1x1]   Id of dep. body         [-]
+% flyby_planetId        [1x1]   Id of flyby body        [-]
+% arrival_bodyId        [1x1]   Id of arr. body         [-]
+% 
+% Output arguments:
+% -----------------------------------------------------------------
+% N/A
+
 figure
 
 dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 300);

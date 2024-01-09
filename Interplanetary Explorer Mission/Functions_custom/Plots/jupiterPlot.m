@@ -11,7 +11,7 @@ function s = jupiterPlot
 
 % Earth settings
 [x1,y1,z1] = sphere(50);
-mult=69911;                     % Jupiter radius
+mult = 69911;                     % Jupiter radius
 s = surface(x1*mult,y1*mult,z1*mult);
 
 load topo 

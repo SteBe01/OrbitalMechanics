@@ -7,9 +7,9 @@ restoredefaultpath
 addpath(genpath("Functions\"))
 addpath(genpath("Functions_custom\"))
 
-% set(0, 'defaultTextInterpreter', 'latex');
-% set(0, 'defaultLineLineWidth', 2);
-% set(0, 'DefaultAxesFontSize', 12);
+set(0, 'defaultTextInterpreter', 'latex');
+set(0, 'defaultLineLineWidth', 2);
+set(0, 'DefaultAxesFontSize', 12);
 
 % data - goup 2346
 % Departure: Saturn
@@ -74,9 +74,10 @@ plot3(arrival.Y(:, 1), arrival.Y(:, 2), arrival.Y(:, 3), Color="red", HandleVisi
 scatter3(departure.r0(1), departure.r0(2), departure.r0(3), "blu", "filled")
 scatter3(flyby.r0(1), flyby.r0(2), flyby.r0(3), "green", "filled")
 scatter3(arrival.r0(1), arrival.r0(2), arrival.r0(3), "red", "filled")
+scatter3(0, 0, 0, "yellow", "filled")
 
 
-legend("Departure (Saturn)", "Fly-By (Jupiter)", "Arrival (Asteroid N.79)", Location="best")
+legend("Departure (Saturn)", "Fly-By (Jupiter)", "Arrival (Asteroid N.79)", "Sun", Location="best")
 
 xlim([min(min(min(departure.Y(:,1)), min(flyby.Y(:,1))), min(arrival.Y(:,1))) max(max(max(departure.Y(:,1)), max(flyby.Y(:,1))), max(arrival.Y(:,1)))])
 ylim([min(min(min(departure.Y(:,2)), min(flyby.Y(:,2))), min(arrival.Y(:,2))) max(max(max(departure.Y(:,2)), max(flyby.Y(:,2))), max(arrival.Y(:,2)))])
@@ -89,10 +90,16 @@ zlabel("z [km]")
 view(30,30)
 
 
-%% porkchop plots - departure - fly by and flyby - arrival
+%% contour plots (with or without dv min position and with or without time window): departure - flyby and flyby - arrival
 
 clc, clear
 close all
+
+% ------------------------------------------------
+toggle_timeWindow = 1;
+toggle_finalSolution = 1;
+toggle_titles = 1;
+% ------------------------------------------------
 
 xcust(1) = 1.289338494887906e+04;
 xcust(2) = 1.670686199971615e+04;
@@ -108,6 +115,7 @@ arrival.bodyId = 79;
 dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
 arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
 
+% contour plots - departure, fly by
 orbitType = 0;
 dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
 dv_2 = dv_1;
@@ -144,23 +152,27 @@ end
 % dv = dv_1 + dv_2;
 dv = dv_1; % without flyby dv
 
+plot1 = figure();
 contour(dep_time_vect, arr_time_vect, dv', 2:0.15:8, HandleVisibility="off")
+if toggle_titles
+    title("Contour plot: departure - flyby")
+end
 colorbar, grid on, hold on
-xlabel("Departure")
-ylabel("FlyBy")
+xlabel("Departure [mjd2000]")
+ylabel("Flyby [mjd2000]")
 
-[pos1, pos2] = find(dv == min(min(dv)));
-plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
-plot(xcust(1), xcust(2), 'or', LineWidth=1)
+if toggle_finalSolution
+    [pos1, pos2] = find(dv == min(min(dv)));
+    plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1.7, MarkerSize=8)
+    plot(xcust(1), xcust(2), 'or', LineWidth=1.7, MarkerSize=6)
 
-legend("Global min", "Mission min", Location="best")
-
+    if ~toggle_timeWindow
+        legend("Contour plot min", "Mission min", Location="southeast")
+    end
+end
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
-
-
-% porkchop plots - fly by, arrival
-
+% contour plots - fly by, arrival
 orbitType = 0;
 dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
 dv_2 = dv_1;
@@ -197,62 +209,59 @@ end
 % dv = dv_1 + dv_2;
 dv = dv_2; % without flyby dv
 
-figure
-contour(dep_time_vect, arr_time_vect, dv', 4:0.5:20, HandleVisibility="off") % 12:35
+plot2 = figure();
+contour(dep_time_vect, arr_time_vect, dv', 4:0.5:20, HandleVisibility="off")
+if toggle_titles
+    title("Contour plot: flyby - arrival")
+end
 colorbar, grid on, hold on, axis equal
-xlabel("FlyBy")
-ylabel("Arrival")
+xlabel("Flyby [mjd2000]")
+ylabel("Arrival [mjd2000]")
 
-[pos1, pos2] = find(dv == min(min(dv)));
-plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1)
-plot(xcust(2), xcust(3), 'or', LineWidth=1)
+if toggle_finalSolution
+    [pos1, pos2] = find(dv == min(min(dv)));
+    plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1.7, MarkerSize=8)
+    plot(xcust(2), xcust(3), 'or', LineWidth=1.7, MarkerSize=6)
 
-legend("Global min", "Mission min", Location="best")
-
+    if ~toggle_timeWindow
+        legend("Contour plot min", "Mission min", Location="southeast")
+    end
+end
 % surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
 
-warning("To do: add same colorbar for the plots")
+if toggle_timeWindow
+    mission.dep_time_lb = date2mjd2000([2030 12 09 0 0 0]);
+    mission.dep_time_ub = date2mjd2000([2039 02 25 0 0 0]);
+    mission.flyby_time_lb = date2mjd2000([2042 12 26 0 0 0]);
+    mission.flyby_time_ub = date2mjd2000([2048 09 25 0 0 0]);
+    mission.arr_time_lb = date2mjd2000([2045 06 13 0 0 0]);
+    mission.arr_time_ub = date2mjd2000([2058 01 01 0 0 0]);
+    
+    figure(plot1)
+    plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_lb], 'r', LineWidth=2, HandleVisibility='off');
+    plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_ub mission.flyby_time_ub], 'r', LineWidth=2, HandleVisibility='off');
+    plot([mission.dep_time_lb mission.dep_time_lb], [mission.flyby_time_lb mission.flyby_time_ub], 'r', LineWidth=2, HandleVisibility='off');
+    if toggle_finalSolution
+        plot([mission.dep_time_ub mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_ub], 'r', LineWidth=2);
+        legend("Contour plot min", "Mission min", "Time window", Location="southeast")
+    else
+        plot([mission.dep_time_ub mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_ub], 'r', LineWidth=2, HandleVisibility='off');
+    end
+    
+    figure(plot2)
+    plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_lb], 'r', LineWidth=2, HandleVisibility='off');
+    plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_ub mission.arr_time_ub], 'r', LineWidth=2, HandleVisibility='off');
+    plot([mission.flyby_time_lb mission.flyby_time_lb], [mission.arr_time_lb mission.arr_time_ub], 'r', LineWidth=2, HandleVisibility='off');
+    if toggle_finalSolution
+        plot([mission.flyby_time_ub mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_ub], 'r', LineWidth=2);
+        legend("Contour plot min", "Mission min", "Time window", Location="southeast")
+    else
+        plot([mission.flyby_time_ub mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_ub], 'r', LineWidth=2, HandleVisibility='off');
+    end
+end
 
-
-%% window plot
-
-clc, clear
-close all
-
-load("Global Search\dvmin.mat")
-
-departure.planetId = 6;
-flyby.planetId = 5;
-arrival.bodyId = 79;
-dep_time = [2028 01 01 0 0 0];
-arr_time = [2058 01 01 0 0 0];
-
-addpath("Grid Search\Functions\")
-
-porkchop_start(dep_time, arr_time, departure.planetId, flyby.planetId, arrival.bodyId)
-
-mission.dep_time_lb = date2mjd2000([2030 12 09 0 0 0]);
-mission.dep_time_ub = date2mjd2000([2039 02 25 0 0 0]);
-mission.flyby_time_lb = date2mjd2000([2042 12 26 0 0 0]);
-mission.flyby_time_ub = date2mjd2000([2048 09 25 0 0 0]);
-mission.arr_time_lb = date2mjd2000([2045 06 13 0 0 0]);
-mission.arr_time_ub = date2mjd2000([2058 01 01 0 0 0]);
-
-subplot(1, 2, 1)
-plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_lb], 'r');
-hold on
-plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_ub mission.flyby_time_ub], 'r');
-plot([mission.dep_time_lb mission.dep_time_lb], [mission.flyby_time_lb mission.flyby_time_ub], 'r');
-plot([mission.dep_time_ub mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_ub], 'r');
-plot(xcust(1), xcust(2), 'xr', LineWidth=1);
-
-subplot(1, 2, 2)
-plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_lb], 'r');
-hold on
-plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_ub mission.arr_time_ub], 'r');
-plot([mission.flyby_time_lb mission.flyby_time_lb], [mission.arr_time_lb mission.arr_time_ub], 'r');
-plot([mission.flyby_time_ub mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_ub], 'r');
-plot(xcust(2), xcust(3), 'xr', LineWidth=1);
+fontsize(plot1, 15, "points")
+fontsize(plot2, 15, "points")
 
 
 %% mission plot
@@ -266,7 +275,9 @@ departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
 
-missionPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
+[image, lgd] = missionPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
+fontsize(image, 15, "points");
+fontsize(lgd, 10, "points");
 
 
 %% flyby plot
@@ -281,5 +292,7 @@ departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
 
-data = flybyPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId, flybyTime);
+[data, image, lgd]= flybyPlot(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId, flybyTime);
+fontsize(image, 15, "points");
+fontsize(lgd, 12, "points");
 
