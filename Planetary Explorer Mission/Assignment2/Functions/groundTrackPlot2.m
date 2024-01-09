@@ -67,7 +67,9 @@ axis on
 
 xlabel("Latitude [deg]")
 ylabel("Longitude [deg]")
-legend("Start", "End 1st Plot", 'End 2nd Plot', Location="best")
+
+leg=legend("Start", "End 1st Plot", 'End 2nd Plot', Location="best");
+fontsize(leg, 10, "points")
 
 hold off
 

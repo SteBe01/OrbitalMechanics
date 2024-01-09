@@ -26,7 +26,7 @@ earth_img = imread(EarthPlot_name);
 lon_range = [-180, 180];
 lat_range = [-90, 90];
 
-figure()
+image=figure();
 imshow(earth_img, 'XData', lon_range, 'YData', lat_range);
 hold on;
 
@@ -67,7 +67,9 @@ axis on
 
 xlabel("Latitude [deg]")
 ylabel("Longitude [deg]")
-legend("Start", "End", Location="best")
+leg=legend("Start", "End", Location="best");
+fontsize(image, 15, "points")
+fontsize(leg, 15, "points")
 
 hold off
 
