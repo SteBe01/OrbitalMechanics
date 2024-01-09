@@ -3,7 +3,7 @@ function [] = groundTrackPlot2(lon, lat, col, line)
 % plot for ground tracks
 %
 % usage:
-% groundTrackPlot(lon, lat, EarthPlot_name)
+% groundTrackPlot2(lon, lat, col, line)
 %
 % Input arguments:
 % ----------------------------------------------------------------
@@ -59,7 +59,7 @@ end
 plot(lon(first:end),lat(first:end), LineWidth=line, Color=col, HandleVisibility="off")
 
 % plot(lon(1),lat(1), "or", LineWidth=2)
-plot(lon(end),lat(end), "square", Color="red", LineWidth=2)
+plot(lon(end),lat(end), "square", Color="black", LineWidth=2)
 
 axis equal
 axis([lon_range, lat_range])
@@ -67,7 +67,7 @@ axis on
 
 xlabel("Latitude [deg]")
 ylabel("Longitude [deg]")
-legend("Start", "End", Location="best")
+legend("Start", "End 1st Plot", 'End 2nd Plot', Location="best")
 
 hold off
 

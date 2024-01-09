@@ -58,8 +58,8 @@ for i=1:len-1
 end
 plot(lon(first:end),lat(first:end), LineWidth=1.5, Color="green", HandleVisibility="off")
 
-plot(lon(1),lat(1), "or", LineWidth=2)
-plot(lon(end),lat(end), "square", Color="red", LineWidth=2)
+plot(lon(1),lat(1), "or",Color="magenta", LineWidth=2)
+plot(lon(end),lat(end), "square", Color="yellow", LineWidth=2)
 
 axis equal
 axis([lon_range, lat_range])
