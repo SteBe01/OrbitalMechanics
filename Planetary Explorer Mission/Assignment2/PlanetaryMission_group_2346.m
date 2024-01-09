@@ -402,7 +402,6 @@ options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan_nb, y0, options );
 
 
-
 %% perturbations - Cartesian's planetary equations
 a_vect = zeros(length(Y), 1);
 e_vect = zeros(length(Y), 1);
