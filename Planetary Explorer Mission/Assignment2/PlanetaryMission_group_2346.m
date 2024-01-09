@@ -386,6 +386,36 @@ T = 2*pi*sqrt( orbit_new_object.a^3/earth.mu );
 tspan_nb= linspace( 0, T*n_orbits, n_points );
 Period=2*pi*sqrt( orbit_new_object.a^3/earth.mu );
 
+%% Plot Perturbation New Body
+
+kep_body = [A.data(1,10), A.data(1,1), deg2rad(A.data(1,3)), deg2rad(A.data(1,4)), deg2rad(A.data(1,5)), deg2rad(A.data(1,9)), earth.mu];
+[r0, v0] = kep2car(kep_body);
+
+n_points = 100000;
+
+T = 2*pi*sqrt( orbit_new_object.a^3/earth.mu );
+tspan_nb= linspace( 0, T*n_orbits, n_points );
+
+y0 = [ r0'; v0' ];
+
+options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
+[ T, Y ] = ode113( @(t,y) ode_2bp_perturbed( t, y, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), tspan_nb, y0, options );
+
+%Orbit Propagation
+figure()
+plot3( Y(1,1), Y(1,2), Y(1,3), 'or','MarkerEdgeColor','blue' ,LineWidth=2, MarkerSize=7)
+hold on
+plot3( Y(end,1), Y(end,2), Y(end,3), 'or','MarkerEdgeColor','red' ,LineWidth=2, MarkerSize=7)
+scatter3( Y(:,1), Y(:,2), Y(:,3),1,1:length(tspan))
+xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+title('Two-body problem orbit, with J2 and air drag New Body');
+axis equal, grid on, hold on
+s = earthPlot;
+hold off
+rotate(s, [0 0 1],-70,[0 0 0]);
+view(-40,20)
+legend("Start", "End", Location="best")
+
 %% perturbations - cartesian coordinates
 
 kep_body = [A.data(1,10), A.data(1,1), deg2rad(A.data(1,3)), deg2rad(A.data(1,4)), deg2rad(A.data(1,5)), deg2rad(A.data(1,9)), earth.mu];
