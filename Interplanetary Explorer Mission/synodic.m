@@ -2,8 +2,12 @@
 
 % ---Synodic Periods-----------
 
-addpath("Functions\time\")
-addpath("Functions_costum\")
+clc, clear
+close all
+
+restoredefaultpath
+addpath(genpath("Functions\"))
+addpath(genpath("Functions_custom\"))
 
 date_departure = [2028 01 01 0 0 0];
 departure.planetId = 6;

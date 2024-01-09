@@ -1,5 +1,18 @@
 function [] = windowDisplay(mission)
 
+% Print the time window for the chosen mission
+%
+% Usage
+% [] = windowDisplay(mission)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% mission           [-]     mission struct      [-]
+% 
+% Output arguments:
+% -----------------------------------------------------------------
+% N/A
+
 mission.dep_time_lb = date2mjd2000(mission.dep_time_lb);
 mission.dep_time_ub = date2mjd2000(mission.dep_time_ub);
 mission.flyby_time_lb = date2mjd2000(mission.flyby_time_lb);

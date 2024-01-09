@@ -1,5 +1,19 @@
 function [solutions] = gridSearch_function(mission)
 
+% Core function for grid search optimization
+%
+% Usage
+% [solutions] = gridSearch_function(mission)
+%
+% Input arguments:
+% ----------------------------------------------------------------
+% mission       [-]       mission data          [struct]
+%
+% -----------------------------------------------------------------
+% Output arguments:
+% 
+% solution      [-]       mission solution      [struct]
+
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
 

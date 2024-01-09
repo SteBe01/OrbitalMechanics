@@ -56,7 +56,7 @@ end
 ee = cross(vv, h)/mu - rr/r;
 e = norm(ee);
 
-if OM_check == 0 || e < 1e-10       % APPROXIMATION HEEEEEEELP
+if OM_check == 0 || e < 1e-10
     om = 0;
 else
     if e < 1e-10
@@ -77,3 +77,4 @@ else
 end
 
 end
+

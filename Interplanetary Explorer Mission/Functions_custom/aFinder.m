@@ -10,7 +10,7 @@ function [a_sat] = aFinder(k, m, om_E, mu)
 % k             [1x1]   satellite revolutions       [-]
 % m             [1x1]   Earth revolutions           [-]
 % om_E          [1x1]   Earth angular velocity      [deg/h]
-% mu            [1x1]   const                       []
+% mu            [1x1]   const                       [km^3/s^2]
 % 
 % Output arguments:
 % -----------------------------------------------------------------

@@ -68,8 +68,8 @@ else
 end
 
 missionPlot(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
-[data] = flybyPlot(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id, 1e7);
-warning("Change time for the flyby plot!!!!!!! line 71, 1e7")
+[data, ~, ~] = flybyPlot(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id, 1e7);
 
-% endInfoDisplay(results)
+[results.dv1, results.dv2, results.dv3, results.rp, results.exitValue] = completeInterplanetary(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
+endInfoDisplay(data, results)
 

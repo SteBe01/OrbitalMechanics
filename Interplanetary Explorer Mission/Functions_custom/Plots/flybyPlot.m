@@ -1,9 +1,9 @@
-function [data] = flybyPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id, flybyTime)
+function [data, image, lgd] = flybyPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id, flybyTime)
 
-% Creates the plot for the whole mission
+% Creates the plot for the flyby
 %
 % Usage
-% [data] = flybyPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id, flybyTime)
+% [data, image, lgd] = flybyPlot(departure_time, flyby_time, arrival_time, departure_Id, flyby_Id, arrival_Id, flybyTime)
 %
 % Input arguments:
 % ----------------------------------------------------------------
@@ -17,6 +17,8 @@ function [data] = flybyPlot(departure_time, flyby_time, arrival_time, departure_
 % Output arguments:
 % -----------------------------------------------------------------
 % data                  [-]     all data available      [-]
+% image                 [1x1]   handler for the image   [-]
+% lgd                   [1x1]   handler for the legend  [-]
 
 orbitType = 0;
 
@@ -54,7 +56,6 @@ end
 [flyby.r0, flyby.v0] = kep2car([flyby.kep, ksun]);
 [arrival.r0, ~] = kep2car([arrival.kep, ksun]);
 
-% r_soi = a_vect(flyby_Id) * (m_planet/m_sun)^(2/5);
 r_soi = norm(flyby.r0) * (m_planet/m_sun)^(2/5);
 
 % first transfer ARC
@@ -126,8 +127,8 @@ if maxIndex < Y_len
     [ ~, Y_minus ] = ode113( @(t,y) ode_2bp(t,y,mu_planet), tspan, y0, options );
 end
 
-figure
-plot3( Y_minus(:,1), Y_minus(:,2), Y_minus(:,3), LineWidth=1)
+image = figure();
+plot3( Y_minus(:,1), Y_minus(:,2), Y_minus(:,3), LineWidth=2)
 hold on, grid on, axis equal
 
 y0 = [rp_vect directionPeri.*Vp_hyp_plus];
@@ -140,7 +141,7 @@ if maxIndex < Y_len
     [ ~, Y_plus ] = ode113( @(t,y) ode_2bp(t,y,mu_planet), tspan, y0, options );
 end
 
-plot3( Y_plus(:,1), Y_plus(:,2), Y_plus(:,3), LineWidth=1)
+plot3( Y_plus(:,1), Y_plus(:,2), Y_plus(:,3), LineWidth=2)
 
 % asymptotes
 V_inf_minus_direction = V_inf_minus./norm(V_inf_minus);
@@ -150,13 +151,13 @@ asyStart1 = (rp-a_minus) .* rp_direction;
 mult1 = vecnorm(Y_minus(end, 1:3) - asyStart1);
 plot3(asyStart1(1), asyStart1(2), asyStart1(3), 'xr', HandleVisibility='off')
 asy_minus = [-V_inf_minus_direction*mult1 + asyStart1; asyStart1];
-plot3(asy_minus(:,1), asy_minus(:,2), asy_minus(:,3), '--b')
+plot3(asy_minus(:,1), asy_minus(:,2), asy_minus(:,3), '--b', LineWidth=1)
 
 asyStart2 = (rp-a_plus) .* rp_direction;
 mult2 = vecnorm(Y_plus(end, 1:3) - asyStart2);
 plot3(asyStart2(1), asyStart2(2), asyStart2(3), 'xr', HandleVisibility='off')
 asy_plus = [V_inf_plus_direction*mult2 + asyStart2; asyStart2];
-plot3(asy_plus(:,1), asy_plus(:,2), asy_plus(:,3), '--r')
+plot3(asy_plus(:,1), asy_plus(:,2), asy_plus(:,3), '--r', LineWidth=1)
 
 if norm(asy_minus(2,:)) < norm(asy_plus(2,:))
     point = asy_plus(2,:);
@@ -165,7 +166,11 @@ else
 end
 
 point = [point; -point];
-plot3(point(:,1), point(:,2), point(:,3), '--m')
+plot3(point(:,1), point(:,2), point(:,3), '--m', LineWidth=1)
+
+% planet velocity
+% planetV_plot = [flyby.v0; 0 0 0].*1000000;
+% plot3(planetV_plot(:,1), planetV_plot(:,2), planetV_plot(:,3), '--m', LineWidth=1)
 
 if hyp_plane(3) > 0
     view(hyp_plane)
@@ -184,17 +189,24 @@ if vecnorm(Y_plus(end, 1:3)) > r_soi || vecnorm(Y_minus(end, 1:3)) > r_soi
     [x1, y1, z1] = sphere;
     surf(x1 * r_soi, y1 * r_soi, z1 * r_soi, 'FaceAlpha', .2, 'EdgeColor', 'none', FaceColor=[0 1 0]);
 
-    legend("Hyperbola -Inf", "Hyperbola +Inf", "Asyptote -Inf", "Asyptote +Inf", "Hyperbola axis", PlanetNames(flyby_Id), "Sphere of Influence")
+    lgd = legend("Hyperbola -Inf", "Hyperbola +Inf", "Asyptote -Inf", "Asyptote +Inf", "Hyperbola axis", PlanetNames(flyby_Id), "Sphere of Influence");
 else
-    legend("Hyperbola -Inf", "Hyperbola +Inf", "Asyptote -Inf", "Asyptote +Inf", "Hyperbola axis", PlanetNames(flyby_Id))
+    lgd = legend("Hyperbola -Inf", "Hyperbola +Inf", "Asyptote -Inf", "Asyptote +Inf", "Hyperbola axis", PlanetNames(flyby_Id));
 end
+xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+
+% time of flight sphere of influence
+deltaT1 = tof_soi(a_plus, e_plus, r_soi, mu_planet);
+deltaT2 = tof_soi(a_minus, e_minus, r_soi, mu_planet);
 
 data.rp = rp;
 data.r_planet = mult;
 data.h = rp - mult;
+data.deltaTot = (delta_minus + delta_plus)/2;
 data.rsoi = r_soi;
 data.deltaVp = deltaVp;
 data.deltaVtot = deltaVtot;
+data.ToF = deltaT1 + deltaT2;
 
 data.a.plus = a_plus;
 data.a.minus = a_minus;
@@ -204,6 +216,8 @@ data.delta.plus = delta_plus;
 data.delta.minus = delta_minus;
 data.impact_param.plus = impact_param_plus;
 data.impact_param.minus = impact_param_minus;
+data.tof.plus = deltaT1;
+data.tof.minus = deltaT2;
 
 end
 
