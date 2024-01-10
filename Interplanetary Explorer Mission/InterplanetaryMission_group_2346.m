@@ -22,7 +22,7 @@ simChoice = 1;
 
 restoredefaultpath
 addpath(genpath("Functions\"))
-addpath(genpath("Functions_custom\"))
+addpath(genpath("Functions_webeep\"))
 
 mission.departure_Id = 6;
 mission.flyby_Id = 5;
