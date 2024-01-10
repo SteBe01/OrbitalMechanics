@@ -7,20 +7,21 @@
 % line 79  - Ground track unperturbed (36 orbits) + unperturbed (1 orbit)
 % line 106 - Ground track perturbed (36 orbits) + unperturbed (36 orbits)
 % line 126 - Ground track repetition (new a, 36 orbits), with perturbed reprtition (new a, 36 orbits)
-% line 148 - Perturbations - Cartesian coordinates
-% line 183 - Perturbations - Cartesian's planetary equations
-% line 198 - Perturbations - Gauss's planetary equations
-% line 205 - Filter for movmean
-% line 218 - Evolution of Keplerian Elements (Gaussian method) and filtered
-% line 293 - Difference Certesian and Gauss
-% line 368 - Real celestial body
-% line 412 - Plot Perturbation New Body
-% line 443 - Perturbations - Cartesian coordinates
+% line 152 - Perturbations - Cartesian coordinates
+% line 184 - Perturbations - Cartesian's planetary equations
+% line 199 - Perturbations - Gauss's planetary equations
+% line 206 - Filter for movmean
+% line 219 - Evolution of Keplerian Elements (Gaussian method) and filtered
+% line 294 - Difference Certesian and Gauss
+% line 370 - Real celestial body
+% line 414 - Plot Perturbation New Body
+% line 445 - Perturbations - Cartesian coordinates
 % line 461 - Perturbations - Cartesian's planetary equations
-% line 473 - Perturbations - Gauss's planetary equations
-% line 492 - All plots together
-% line 587 - Differences Real Data and Gauss
-% line 662 - Test animation 
+% line 475 - Perturbations - Gauss's planetary equations
+% line 482 - Filter for movmean
+% line 495 - All plots together
+% line 590 - Differences Real Data and Gauss
+% line 666 - Test animation 
 
 restoredefaultpath
 addpath("Functions\")
@@ -144,6 +145,10 @@ y0 = [ r0'; v0' ];
 [~, ~, lon, lat] = groundTrack_cart(y0, tspan*orbit_number, earth.mu, theta_g, om_E);
 groundTrackPlot2(lon, lat, "red", 1.5)
 
+disp("The semi-major axis given was 8016km")
+disp("and the one needed for a repeating ground track with a ratio of 12:1 is:")
+disp(orbit.a_rep +"km") 
+
 
 %% Perturbations - Cartesian coordinates
 
@@ -175,9 +180,6 @@ rotate(s, [0 0 1],-70,[0 0 0]);
 view(-40,20)
 
 legend("Start", "End", Location="best")
-
-% c = colorbar();
-% c.Label.String = 'Orbits';
 
 
 %% Perturbations - Cartesian's planetary equations
@@ -368,7 +370,7 @@ xlabel('time [T]'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_
 
 %% Real celestial body
 
-clear, clc
+clear
 
 A = importdata("EXPRESS-MD2.csv");
 
@@ -476,6 +478,7 @@ end
 s0 = [orbit_new_object.a; orbit_new_object.e; orbit_new_object.i; orbit_new_object.OM; orbit_new_object.om; orbit_new_object.theta];
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [t, kep_new_object] = ode113(@(t,s) eq_motion(t, s, @(t,s) acc_pert_fun(t, s, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), earth.mu), tspan_nb, s0, options);
+
 
 %% filter for movmean
 
@@ -708,4 +711,3 @@ for i=1:length(tspan)
     addpoints(ani1,Y(i,1), Y(i,2), Y(i,3));
     drawnow
 end
-
