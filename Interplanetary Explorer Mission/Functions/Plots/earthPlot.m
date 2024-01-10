@@ -1,8 +1,8 @@
 function s = earthPlot
 
-% Generates a plot of the Earth and returns it's graphic handler
+% Generates a plot of Earth and returns it's graphic handler
 %
-% Usage:
+% Usage
 % s = earthPlot
 %
 % Output arguments:
@@ -20,7 +20,7 @@ function s = earthPlot
 
 % Earth settings
 [x1,y1,z1] = sphere(50);
-mult=6378;                     % Earth radius
+mult = astroConstants(23);                     % Earth radius
 s = surface(x1*mult,y1*mult,z1*mult);
 
 load topo 
@@ -49,4 +49,3 @@ end
 % We do not own this image: NASA/Goddard Space Flight Center Scientific Visualization Studio 
 % The Blue Marble Next Generation data is courtesy of Reto Stockli (NASA/GSFC) 
 % and NASA's Earth Observatory.
-

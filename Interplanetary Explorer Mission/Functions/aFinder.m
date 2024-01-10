@@ -1,8 +1,8 @@
 function [a_sat] = aFinder(k, m, om_E, mu)
 
-% Calculates semi-major axis for repeating orbits
+% a for repeating orbits
 %
-% Usage:
+% Usage
 % [a_sat] = aFinder(k, m, om_E, mu)
 %
 % Input arguments:
@@ -29,4 +29,3 @@ n = (deg2rad(om_E)/3600) * (k / m);
 a_sat = (mu/n^2)^(1/3);
 
 end
-

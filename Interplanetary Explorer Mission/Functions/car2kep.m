@@ -2,8 +2,8 @@ function [a, e, i, OM, om, theta] = car2kep(rr, vv, mu)
 
 % Transformation from Cartesian state to orbital elements
 %
-% Usage:
-% [a, e, i, OM, om, theta] = car2kep (rr, vv, mu)
+% Usage
+% [a, e, i, OM, om, theta] = car2kep(rr, vv, mu)
 %
 % Input arguments:
 % ----------------------------------------------------------------
@@ -65,7 +65,7 @@ end
 ee = cross(vv, h)/mu - rr/r;
 e = norm(ee);
 
-if OM_check == 0 || e < 1e-10       % APPROXIMATION HEEEEEEELP
+if OM_check == 0 || e < 1e-10
     om = 0;
 else
     if e < 1e-10

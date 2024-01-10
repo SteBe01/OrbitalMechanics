@@ -1,33 +1,33 @@
 function [] = groundTrackPlot2(lon, lat, col, line)
 
-% plot for ground tracks
+% plot for ground tracks (second layer, to be used after groundTrackPlot)
 %
 % usage:
-% groundTrackPlot2(lon, lat, col, line)
+% [] = groundTrackPlot2(lon, lat, col, line)
 %
 % Input arguments:
 % ----------------------------------------------------------------
-% lon               [3x1]       longitude vector                [deg]
-% lat               [3x1]       latitude vector                 [deg]
-% EarthPlot_name    [string]    name of the Earth Plot (img)    [-]
+% lon               [Nx1]       longitude vector                [deg]
+% lat               [Nx1]       latitude vector                 [deg]
+% col               [string]    color for the plot              [-]
+% line              [1x1]       lineWidth                       [-]
 % 
 % Output arguments:
 % -----------------------------------------------------------------
 % N/A
-% 
-% CONTRIBUITORS:
-% Pier Francesco A. Bachini
-% Stefano Belleti
-% Chiara Giardini
-% Carolina Gómez Sánchez
-
-% earth_img = imread(EarthPlot_name);
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 lon_range = [-180, 180];
 lat_range = [-90, 90];
 
-% figure()
-% imshow(earth_img, 'XData', lon_range, 'YData', lat_range);
 hold on;
 
 len = length(lon);
@@ -58,7 +58,6 @@ for i=1:len-1
 end
 plot(lon(first:end),lat(first:end), LineWidth=line, Color=col, HandleVisibility="off")
 
-% plot(lon(1),lat(1), "or", LineWidth=2)
 plot(lon(end),lat(end), "square", Color="black", LineWidth=2)
 
 axis equal
@@ -74,3 +73,4 @@ fontsize(leg, 10, "points")
 hold off
 
 end
+
