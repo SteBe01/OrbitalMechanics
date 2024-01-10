@@ -302,7 +302,7 @@ hold off
 grid on
 title('Semi major axis Evolution Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|a_c_a_r_t - a_g_a_u_s_s|/ a_0 [km]');
+xlabel('time [T]'); ylabel('|a_c_a_r_t - a_g_a_u_s_s|/ a_0 [-]');
 
 % Eccentricity
 figure()
@@ -316,53 +316,54 @@ title('Eccentricity Evolution Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
 xlabel('time [T]'); ylabel('|e_c_a_r_t - e_g_a_u_s_s| [-]');
 
+
 % Inclination
 figure()
 i_diff=abs(i_vect-kep(:,3))/(2*pi());
-plot(tspan./(Period),rad2deg(wrapTo2Pi(i_diff)),'b')
+plot(tspan./(Period),i_diff,'b')
 hold on
-plot(tspan./(Period),movmean(rad2deg(wrapTo2Pi(i_diff)),num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
+plot(tspan./(Period),movmean(i_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
 title('Inclination Evolution Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|i_c_a_r_t - i_g_a_u_s_s|/2 \pi [°]');
+xlabel('time [T]'); ylabel('|i_c_a_r_t - i_g_a_u_s_s|/2 \pi [-]');
 
 % RAAN
 figure()
 Om_diff=abs(Om_vect-kep(:,4))/(2*pi());
-plot(tspan./(Period),rad2deg(wrapTo2Pi(Om_diff)),'b')
+plot(tspan./(Period),Om_diff,'b')
 hold on
-plot(tspan./(Period),movmean(rad2deg(wrapTo2Pi(Om_diff)),num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
+plot(tspan./(Period),movmean(Om_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
 title('RAAN Evolution Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|\Omega_c_a_r_t - \Omega_g_a_u_s_s|/2 \pi [°]');
+xlabel('time [T]'); ylabel('|\Omega_c_a_r_t - \Omega_g_a_u_s_s|/2 \pi [-]');
 
 % Argument of periapsis
 figure()
 om_diff=abs(om_vect-kep(:,5))/(2*pi());
-plot(tspan./(Period),rad2deg(wrapTo2Pi(om_diff)),'b')
+plot(tspan./(Period),om_diff,'b')
 hold on
-plot(tspan./(Period),movmean(rad2deg(wrapTo2Pi(om_diff)),num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
+plot(tspan./(Period),movmean(om_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
 title('Argument of Periapsis Evolution Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|\omega_c_a_r_t - \omega_g_a_u_s_s|/2 \pi [°]');
+xlabel('time [T]'); ylabel('|\omega_c_a_r_t - \omega_g_a_u_s_s|/2 \pi [-]');
 
 % True Anomaly
 figure()
 theta_diff=abs(unwrap(theta_vect)-kep(:,6))./abs(kep(:,6));
-plot(tspan./(Period),rad2deg(wrapTo2Pi(theta_diff)),'b')
+plot(tspan./(Period),theta_diff,'b')
 hold on
-plot(tspan./(Period),movmean(rad2deg(wrapTo2Pi(theta_diff)),num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
+plot(tspan./(Period),movmean(theta_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
 title('True Anomaly Evolution Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('Orbits'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[°]');
+xlabel('Orbits'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[-]');
 
 
 %% Real celestial body
