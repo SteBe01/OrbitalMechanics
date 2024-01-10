@@ -477,7 +477,7 @@ s0 = [orbit_new_object.a; orbit_new_object.e; orbit_new_object.i; orbit_new_obje
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
 [t, kep_new_object] = ode113(@(t,s) eq_motion(t, s, @(t,s) acc_pert_fun(t, s, earth.mu, earth.r, earth.J2, earth.om, spacecraft.AM, spacecraft.cD), earth.mu), tspan_nb, s0, options);
 
-% filter for movmean
+%% filter for movmean
 
 num_elements=length(kep_new_object(:,1));
 num_elements_per_period=num_elements/n_orbits;
@@ -595,9 +595,9 @@ hold on
 plot(tspan_nb./(Period), movmean(a_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
-title('Semi major axis EvolutionEvolution Real Data vs  Propagation Method Difference');
+title('Semi major axis Evolution Real Data vs  Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|a_r_e_a_l - a_g_a_u_s_s|/ a_0 [km]');
+xlabel('time [T]'); ylabel('|a_r_e_a_l - a_g_a_u_s_s|/ a_0 [-]');
 
 % Eccentricity
 figure()
@@ -607,57 +607,58 @@ hold on
 plot(tspan_nb./(Period), movmean(e_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
-title('Eccentricity Evolution Evolution Real Data vs Propagation Method Difference');
+title('Eccentricity Evolution Real Data vs Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
 xlabel('time [T]'); ylabel('|e_r_e_a_l - e_g_a_u_s_s| [-]');
+
 
 % Inclination
 figure()
 i_diff=abs(deg2rad(orbit_new_object.i_no_prop)-kep_new_object(:,3))/(2*pi());
-plot(tspan_nb./(Period),rad2deg(i_diff),'b')
+plot(tspan_nb./(Period),i_diff,'b')
 hold on
-plot(tspan_nb./(Period), movmean(rad2deg(i_diff),num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
+plot(tspan_nb./(Period), movmean(i_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
-title('Inclination Evolution Evolution Real Data vs Propagation Method Difference');
+title('Inclination Evolution Real Data vs Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|i_r_e_a_l - i_g_a_u_s_s|/2 \pi [°]');
+xlabel('time [T]'); ylabel('|i_r_e_a_l - i_g_a_u_s_s|/2 \pi [-]');
 
 % RAAN
 figure()
 Om_diff=abs(deg2rad(unwrap(orbit_new_object.OM_no_prop))-unwrap(kep_new_object(:,4)))/(2*pi());
-plot(tspan_nb./(Period),rad2deg(Om_diff),'b',LineWidth=1.2)
+plot(tspan_nb./(Period),Om_diff,'b',LineWidth=1.2)
 hold on
-plot(tspan_nb./(Period), movmean(rad2deg(Om_diff),num_elements_per_period,'Endpoints','fill'),'r')
+plot(tspan_nb./(Period), movmean(Om_diff,num_elements_per_period,'Endpoints','fill'),'r')
 hold off
 grid on
 title('RAAN Evolution Evolution Real Data vs Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|\Omega_r_e_a_l - \Omega_g_a_u_s_s|/2 \pi [°]');
+xlabel('time [T]'); ylabel('|\Omega_r_e_a_l - \Omega_g_a_u_s_s|/2 \pi [-]');
 
 % Argument of periapsis
 figure()
 om_diff=abs(deg2rad(unwrap(orbit_new_object.om_no_prop))-unwrap(kep_new_object(:,5)))/(2*pi());
-plot(tspan_nb./(Period),rad2deg(om_diff),'b',LineWidth=1)
+plot(tspan_nb./(Period),om_diff,'b',LineWidth=1)
 hold on
-plot(tspan_nb./(Period), movmean(rad2deg(om_diff),num_elements_per_period,'Endpoints','fill'),'r')
+plot(tspan_nb./(Period), movmean(om_diff,num_elements_per_period,'Endpoints','fill'),'r')
 hold off
 grid on
-title('Argument of Periapsis Evolution Evolution Real Data vs Propagation Method Difference');
+title('Argument of Periapsis Evolution Real Data vs Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|\omega_r_e_a_l - \omega_g_a_u_s_s|/2 \pi [°]');
+xlabel('time [T]'); ylabel('|\omega_r_e_a_l - \omega_g_a_u_s_s|/2 \pi [-]');
 
 % True anomaly
 figure()
 theta_diff=abs(unwrap(orbit_new_object.theta_no_prop)-unwrap(kep_new_object(:,6)))./abs(unwrap(orbit_new_object.theta_no_prop));
-plot(tspan_nb./(Period),rad2deg(wrapTo2Pi(theta_diff)),'b')
+plot(tspan_nb./(Period),theta_diff,'b')
 hold on
-plot(tspan_nb./(Period), movmean(rad2deg(wrapTo2Pi(theta_diff)),num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
+plot(tspan_nb./(Period), movmean(theta_diff,num_elements_per_period,'Endpoints','fill'),'r',LineWidth=1.5)
 hold off
 grid on
 title('True Anomaly Evolution Real Data vs Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('time [T]'); ylabel('|\theta_r_e_a_l - \theta_g_a_u_s_s|/ \theta_r_e_a_l[°]');
+xlabel('time [T]'); ylabel('|\theta_r_e_a_l - \theta_g_a_u_s_s|/ \theta_r_e_a_l[-]');
 
 
 %% Test animation 
@@ -702,7 +703,7 @@ hold on
 plot3( Y(end,1), Y(end,2), Y(end,3), 'or',MarkerEdgeColor='b' )
 ani1=animatedline('Color','r');
 earthPlot;
-title('Simulation')
+title('Animation')
 for i=1:length(tspan)
     addpoints(ani1,Y(i,1), Y(i,2), Y(i,3));
     drawnow
