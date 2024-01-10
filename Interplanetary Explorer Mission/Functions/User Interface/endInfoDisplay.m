@@ -34,7 +34,7 @@ fprintf("\n - Delta V departure: \t\t\t\t" + results.dv1 + " km/s")
 fprintf("\n - Delta V perigee flyby: \t\t\t" + results.dv2 + " km/s")
 fprintf("\n - Delta V flyby (given by planet): " + data.deltaVtot + " km/s")
 fprintf("\n - Delta V arrival: \t\t\t\t" + results.dv3 + " km/s")
-fprintf("\n - Ratio Delta V perigee flyby \n    over total Delta V of flyby:\t" + results.dv2/data.deltaVtot);
+fprintf("\n - Ratio Delta V perigee flyby \n    over total Delta V of flyby:\t" + data.ratio);
 
 fprintf("\nDelta t: ")
 fprintf("\n - Delta t total: \t\t\t\t\t" + (results.tspan(3) - results.tspan(1))/365.25 + " years")
@@ -52,6 +52,11 @@ fprintf("\n - Perigee height: \t\t\t\t\t" + data.h + " km")
 fprintf("\n - Turn angle: \t\t\t\t\t\t" + rad2deg(data.deltaTot) + " deg")
 fprintf("\n - SoI time of flight: \t\t\t\t" + data.ToF/(24*3600) + " days")
 fprintf("\n                       \t\t\t\t" + data.ToF/(3600) + " hours")
+
+fprintf("\nLambert data: ")
+fprintf("\n - Kep elements (1): \t\t\t\t[a1, e1, i1, OM1, om1, theta1] = [" + results.lambert.a1 + " km, " + results.lambert.e1 + ", " + results.lambert.i1 + " rad, " + results.lambert.OM1 + " rad, " + results.lambert.om1 + " rad, " + results.lambert.theta1 + " rad")
+fprintf("\n - Kep elements (2): \t\t\t\t[a2, e2, i2, OM2, om2, theta2] = [" + results.lambert.a2 + " km, " + results.lambert.e2 + ", " + results.lambert.i2 + " rad, " + results.lambert.OM2 + " rad, " + results.lambert.om2 + " rad, " + results.lambert.theta2 + " rad")
+
 
 fprintf("\n")
 

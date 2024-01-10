@@ -60,7 +60,7 @@ for totWindows = 1:length(departureTime)
                         continue
                     end
             
-                    [dv_1(i, j, k), dv_2(i, j, k), dv_3(i, j, k), rp_temp, exitValue] = completeInterplanetary(departure.time_vect(i), flyby.time_vect(j), arrival.time_vect(k), mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
+                    [dv_1(i, j, k), dv_2(i, j, k), dv_3(i, j, k), rp_temp, exitValue, ~] = completeInterplanetary(departure.time_vect(i), flyby.time_vect(j), arrival.time_vect(k), mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
                     if exitValue
                         continue
                     end

@@ -53,7 +53,7 @@ for i = 1:n_iter
 
     [tspan, dv_fmin] = fmincon(@(tspan) completeInterplanetaryGA(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [sol(1), sol(2), sol(3)]', [], [], [], [], lb, ub, [], opts);
 
-    [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId);
+    [dv1, dv2, dv3, rp, exitValue, ~] = completeInterplanetary(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId);
 end
 
 disp("Finished!")

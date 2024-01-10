@@ -1,9 +1,9 @@
-function [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
+function [dv1, dv2, dv3, rp, exitValue, lambert] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
 
 % Function for interplanetary dv calculator
 %
 % Usage
-% [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
+% [dv1, dv2, dv3, rp, exitValue, lambert] = completeInterplanetary(t1, t2, t3, code1, code2, code3)
 %
 % Input arguments:
 % ----------------------------------------------------------------
@@ -22,6 +22,7 @@ function [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, cod
 % dv3           [1x1]       third dv                        [km/s]
 % rp            [1x1]       perigee radius of hyperbola     [km]
 % exitValue     [1x1]       0 or 1, function success        [-]
+% lambert       [1x6]       lambert data                    [-]
 %
 % CONTRIBUTORS:
 %   Pier Francesco A. Bachini
@@ -70,6 +71,9 @@ orbitType = 0;
 nOrbits = 0;
 [~, ~, ~, ERROR_1, VI_1, VF_1, ~, ~] = lambertMR(departure.r0, flyby.r0, tof1, ksun, orbitType, nOrbits);
 [~, ~, ~, ERROR_2, VI_2, VF_2, ~, ~] = lambertMR(flyby.r0, arrival.r0, tof2, ksun, orbitType, nOrbits);
+
+[lambert.a1, lambert.e1, lambert.i1, lambert.OM1, lambert.om1, lambert.theta1] = car2kep(departure.r0, VI_1, ksun);
+[lambert.a2, lambert.e2, lambert.i2, lambert.OM2, lambert.om2, lambert.theta2] = car2kep(arrival.r0, VF_2, ksun);
 
 if ERROR_1 || ERROR_2
     exitValue = 1;

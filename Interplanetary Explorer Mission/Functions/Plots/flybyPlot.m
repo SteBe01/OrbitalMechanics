@@ -215,6 +215,7 @@ data.deltaTot = (delta_minus + delta_plus)/2;
 data.rsoi = r_soi;
 data.deltaVp = deltaVp;
 data.deltaVtot = deltaVtot;
+data.ratio = deltaVp/deltaVtot;
 data.ToF = deltaT1 + deltaT2;
 
 data.a.plus = a_plus;

@@ -11,7 +11,7 @@
 clc, clear
 close all
 
-simChoice = 2;
+simChoice = 1;
 
 % data - goup 2346
 % Departure: Saturn
@@ -74,6 +74,6 @@ end
 missionPlot(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
 [data, ~, ~] = flybyPlot(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id, 1e7);
 
-[results.dv1, results.dv2, results.dv3, results.rp, results.exitValue] = completeInterplanetary(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
+[results.dv1, results.dv2, results.dv3, results.rp, results.exitValue, results.lambert] = completeInterplanetary(results.tspan(1), results.tspan(2), results.tspan(3), mission.departure_Id, mission.flyby_Id, mission.arrival_Id);
 endInfoDisplay(data, results)
 

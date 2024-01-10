@@ -94,7 +94,7 @@ end
 
 [xcust, fcust] = run(ms, newprob, startpts);
 
-[dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
+[dv1, dv2, dv3, rp, exitValue, ~] = completeInterplanetary(xcust(1), xcust(2), xcust(3), departure.planetId, flyby.planetId, arrival.bodyId);
 dvTot = dv1 + dv2 + dv3;
 
 time_elapsed = toc;
