@@ -11,7 +11,7 @@
 clc, clear
 close all
 
-simChoice = 1;
+simChoice = 2;
 
 % data - goup 2346
 % Departure: Saturn
@@ -56,7 +56,7 @@ elseif simChoice == 2
     disp('"Genetic Algorithm" optimization started...')
 
     % ga options
-    mission.options.n_iter = 5;
+    mission.options.n_iter = 10;
 
     [results] = ga_function(mission);
 elseif simChoice == 3
