@@ -1,8 +1,8 @@
 function dy = ode_2bp_perturbed( ~, y, mu, Re, J2, om_E, A_M, cD)
-% ode_2bp ODE system for the two-body problem (Keplerian motion)
+% ode_2bp ODE system for the two-body problem (Keplerian motion), perturbed
 %
 % PROTOTYPE
-% dy = ode_2bp( t, y, mu, Re, J2 )
+% dy = ode_2bp_perturbed( t, y, mu, Re, J2, om_E, A_M, cD)
 %
 % INPUT:
 % t[1] Time (can be omitted, as the system is autonomous) [T]
@@ -17,13 +17,14 @@ function dy = ode_2bp_perturbed( ~, y, mu, Re, J2, om_E, A_M, cD)
 % CONTRIBUTORS:
 % Juan Luis Gonzalo Gomez
 % Pier Francesco A. Bachini
-% Stefano Belleti
+% Stefano Belletti
 % Chiara Giardini
 % Carolina Gómez Sánchez
 %
 % VERSIONS
-% 2018-09-26: First version
-% 2023-03-01: last version
+% 2018-09-26: first version
+% 2023-03-01: second version
+% 2024-01-10: latest
 % -------------------------------------------------------------------------
 
 % Position and velocity
@@ -32,7 +33,6 @@ v = y(4:6);
 
 % Distance from the primary
 rnorm = norm(r);
-
 
 % Calculate perturbation
 % J2
@@ -77,5 +77,5 @@ if h <= 0
     error("Impact on Earth detected! Reduce simulation time");
 end
 
-
 end
+

@@ -3,23 +3,26 @@ function [] = groundTrackPlot(lon, lat, EarthPlot_name)
 % plot for ground tracks
 %
 % usage:
-% groundTrackPlot(lon, lat, EarthPlot_name)
+% [] = groundTrackPlot(lon, lat, EarthPlot_name)
 %
 % Input arguments:
 % ----------------------------------------------------------------
-% lon               [3x1]       longitude vector                [deg]
-% lat               [3x1]       latitude vector                 [deg]
+% lon               [Nx1]       longitude vector                [deg]
+% lat               [Nx1]       latitude vector                 [deg]
 % EarthPlot_name    [string]    name of the Earth Plot (img)    [-]
 % 
 % Output arguments:
 % -----------------------------------------------------------------
 % N/A
-% 
-% CONTRIBUITORS:
-% Pier Francesco A. Bachini
-% Stefano Belleti
-% Chiara Giardini
-% Carolina Gómez Sánchez
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 earth_img = imread(EarthPlot_name);
 
@@ -74,3 +77,4 @@ fontsize(leg, 15, "points")
 hold off
 
 end
+

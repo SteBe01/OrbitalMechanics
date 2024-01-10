@@ -1,8 +1,0 @@
-http://www.satflare.com/advsearch.aspx?sat=&sort=0&order=0&lat=0&lon=0&alt=0&max=1000&ExcDeb=0&ExcRB=0&IncNoMag=1&IncShadow=1&minmag=-20&maxmag=20&minel=-90&maxel=90&mininc=-180&maxinc=180&minas=0&maxas=90&minperi=200&maxperi=400&minapo=2000&maxapo=4000&minecc=0&maxecc=1&minmm=0&maxmm=1000000&minage=0&maxage=10000000&dec=0&ra=0&eqfov=360
-(main website: http://www.satflare.com/advsearch.aspx)
-
-example: EXPRESS MD2 (NORAD = 38745 or 34802)
-
-http://celestrak.org/satcat/search.php --> TLE with NORAD
-
-https://ssd.jpl.nasa.gov/horizons/app.html#/ with TLE

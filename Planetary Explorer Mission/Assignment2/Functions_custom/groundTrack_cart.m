@@ -19,12 +19,15 @@ function [alpha, delta, lon, lat] = groundTrack_cart(y0, t_vect, mu_E, theta0_g,
 % delta         [Nx1]       delta                           [deg]
 % lon           [Nx1]       lon                             [deg]
 % lat           [Nx1]       lat                             [deg]
-% 
-% CONTRIBUITORS:
-% Pier Francesco A. Bachini
-% Stefano Belleti
-% Chiara Giardini
-% Carolina Gómez Sánchez
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
 [~, Y] = ode113(@(t,y) ode_2bp(t,y,mu_E), t_vect, y0, options);
@@ -52,3 +55,4 @@ end
 lon = lon - ones(length(lon),1)*180;
 
 end
+

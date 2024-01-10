@@ -12,7 +12,10 @@ function [alpha, delta, lon, lat] = groundTrack_cart_perturbed(y0, t_vect, mu_E,
 % mu_E          [1x1]       mu Earth                        [km^3/s^2]
 % theta0_g      [1x1]       theta0 of Earth                 [deg]
 % om_E          [1x1]       angular velocity of Earth       [deg/h]
-% TO BE FINISHED
+% Re            [1x1]       Earth[s equatorial radius       [km]
+% J2            [1x1]       const                           [-]
+% A_M           [1x1]       area/mass ratio                 [m^2/kg]
+% cD            [1x1]       drag coeff                      [-]
 % 
 % Output arguments:
 % -----------------------------------------------------------------
@@ -20,12 +23,15 @@ function [alpha, delta, lon, lat] = groundTrack_cart_perturbed(y0, t_vect, mu_E,
 % delta         [Nx1]       delta                           [deg]
 % lon           [Nx1]       lon                             [deg]
 % lat           [Nx1]       lat                             [deg]
-% 
-% CONTRIBUITORS:
-% Pier Francesco A. Bachini
-% Stefano Belleti
-% Chiara Giardini
-% Carolina Gómez Sánchez
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
 [~, Y] = ode113(@(t,y) ode_2bp_perturbed( t, y, mu_E, Re, J2, deg2rad(om_E) / 3600, A_M, cD), t_vect, y0, options);
@@ -53,3 +59,4 @@ end
 lon = lon - ones(length(lon),1)*180;
 
 end
+

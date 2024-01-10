@@ -23,12 +23,15 @@ function [rr, vv] = kep2car(varargin)
 % -----------------------------------------------------------------
 % rr            [3xn]   position vector                 [km]
 % vv            [3xn]   velocity vector                 [km/s]
-% 
-% CONTRIBUITORS:
-% Pier Francesco A. Bachini
-% Stefano Belleti
-% Chiara Giardini
-% Carolina Gómez Sánchez
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 
 if nargin == 1 && length(varargin{1}) == 7
@@ -64,3 +67,4 @@ vv = Rot_matrix * v_PF';
 vv = vv';
 
 end
+
