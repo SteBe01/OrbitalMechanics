@@ -363,7 +363,7 @@ hold off
 grid on
 title('True Anomaly Evolution Propagation Method Difference');
 legend('Difference','Filtered','Location', 'Best');
-xlabel('Orbits'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[-]');
+xlabel('time [T]'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[-]');
 
 
 %% Real celestial body
