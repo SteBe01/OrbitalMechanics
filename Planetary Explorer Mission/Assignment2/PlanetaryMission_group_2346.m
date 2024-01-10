@@ -14,13 +14,13 @@
 % line 218 - Evolution of Keplerian Elements (Gaussian method) and filtered
 % line 293 - Difference Certesian and Gauss
 % line 368 - Real celestial body
-% line 417 - Plot Perturbation New Body
-% line 448 - Perturbations - Cartesian coordinates
-% line 464 - Perturbations - Cartesian's planetary equations
-% line 478 - Perturbations - Gauss's planetary equations
-% line 497 - All plots together
-% line 592 - Differences Real Data and Gauss
-% line 667 - Test animation 
+% line 412 - Plot Perturbation New Body
+% line 443 - Perturbations - Cartesian coordinates
+% line 461 - Perturbations - Cartesian's planetary equations
+% line 473 - Perturbations - Gauss's planetary equations
+% line 492 - All plots together
+% line 587 - Differences Real Data and Gauss
+% line 662 - Test animation 
 
 restoredefaultpath
 addpath("Functions\")
@@ -367,12 +367,7 @@ xlabel('Orbits'); ylabel('|\theta_c_a_r_t - \theta_g_a_u_s_s|/ \theta_g_a_u_s_s[
 
 %% Real celestial body
 
-restoredefaultpath
-addpath("Functions\")
-addpath("Functions_custom\")
-
 clear, clc
-close all
 
 A = importdata("EXPRESS-MD2.csv");
 
