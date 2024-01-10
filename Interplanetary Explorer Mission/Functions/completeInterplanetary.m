@@ -50,7 +50,6 @@ if code1 <= 10
 else
     [departure.kep, ~] = ephNEO(t1, code1);  
 end
-
 if code2 <= 10
     [flyby.kep, ~] = uplanet(t2, code2);
 else

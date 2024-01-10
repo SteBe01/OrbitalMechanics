@@ -17,7 +17,7 @@ toggle_titles = 1;
 
 restoredefaultpath
 addpath(genpath("Functions\"))
-addpath(genpath("Functions_custom\"))
+addpath(genpath("Functions_webeep\"))
 
 % our solution
 load("dvmin.mat")
@@ -74,7 +74,9 @@ contour(dep_time_vect, arr_time_vect, dv', 2:0.15:8, HandleVisibility="off")
 if toggle_titles
     title("Contour plot: departure - flyby")
 end
-colorbar, grid on, hold on
+c = colorbar;
+c.Label.String = '[km/s]';
+grid on, hold on
 xlabel("Departure [mjd2000]")
 ylabel("Flyby [mjd2000]")
 
@@ -131,7 +133,9 @@ contour(dep_time_vect, arr_time_vect, dv', 4:0.5:20, HandleVisibility="off")
 if toggle_titles
     title("Contour plot: flyby - arrival")
 end
-colorbar, grid on, hold on, axis equal
+c = colorbar;
+c.Label.String = '[km/s]';
+grid on, hold on, axis equal
 xlabel("Flyby [mjd2000]")
 ylabel("Arrival [mjd2000]")
 
