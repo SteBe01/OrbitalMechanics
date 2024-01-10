@@ -8,7 +8,7 @@ close all
 
 restoredefaultpath
 addpath(genpath("..\\Functions\"))
-addpath(genpath("..\\Functions_custom\"))
+addpath(genpath("..\\Functions_webeep\"))
 
 departure.planetId = 6;
 flyby.planetId = 5;

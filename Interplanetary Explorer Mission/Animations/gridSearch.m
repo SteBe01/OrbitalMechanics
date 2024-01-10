@@ -11,8 +11,8 @@ close all
 % Latest Arrival: 00:00:00 01/01/2058
 
 restoredefaultpath
-addpath(genpath("..\Functions\"))
-addpath(genpath("..\Functions_custom\"))
+addpath(genpath("..\\Functions\"))
+addpath(genpath("..\\Functions_webeep\"))
 
 mission.departure_Id = 6;
 mission.flyby_Id = 5;

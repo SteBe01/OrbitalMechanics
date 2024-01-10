@@ -9,8 +9,8 @@ close all
 windowType = 1;
 
 restoredefaultpath
-addpath(genpath("..\Functions_custom\"))
-addpath(genpath("..\\Functions"))
+addpath(genpath("..\\Functions\"))
+addpath(genpath("..\\Functions_webeep\"))
 
 xcust(1) = 1.289338494887906e+04;
 xcust(2) = 1.670686199971615e+04;
