@@ -9,10 +9,18 @@ function [solution] = multiStart_function(mission)
 % ----------------------------------------------------------------
 % mission       [-]       mission data          [struct]
 %
-% -----------------------------------------------------------------
 % Output arguments:
-% 
+% -----------------------------------------------------------------
 % solution      [-]       mission solution      [struct]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 tic
 
@@ -78,7 +86,7 @@ dvTot = dv1 + dv2 + dv3;
 time_elapsed = toc;
 disp("Time elapsed: " + time_elapsed + " s")
 
-solution.dv_fmin = fcust;
+solution.dvMin = fcust;
 solution.tspan = xcust;
 
 end

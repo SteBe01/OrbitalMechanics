@@ -15,6 +15,15 @@ function [rp, flag] = rpsolver(v1, v2, planetId)
 % -----------------------------------------------------------------
 % rp            [1x1]       perigee radius          [km]
 % flag          [1x1]       exit flag               [km]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 
 mu = astroConstants(planetId + 10);

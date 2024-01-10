@@ -19,6 +19,15 @@ function [dv] = completeInterplanetaryGS(t1, t2, t3, code1, code2, code3)
 % Output arguments:
 % 
 % dv            [1x1]       total dv                        [km/s]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 tof1 = (t2 - t1) * 24 * 60 * 60;
 tof2 = (t3 - t2) * 24 * 60 * 60;

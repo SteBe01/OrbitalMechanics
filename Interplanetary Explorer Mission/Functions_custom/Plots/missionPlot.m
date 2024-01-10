@@ -18,6 +18,15 @@ function [image, lgd] = missionPlot(departure_time, flyby_time, arrival_time, de
 % -----------------------------------------------------------------
 % image                 [1x1]   handler for the image   [-]
 % lgd                   [1x1]   handler for the legend  [-]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 orbitType = 0;
 

@@ -19,6 +19,15 @@ function [data, image, lgd] = flybyPlot(departure_time, flyby_time, arrival_time
 % data                  [-]     all data available      [-]
 % image                 [1x1]   handler for the image   [-]
 % lgd                   [1x1]   handler for the legend  [-]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 orbitType = 0;
 
@@ -44,7 +53,6 @@ end
 ksun = astroConstants(4);
 mu_planet = astroConstants(flyby_Id + 10);
 
-% a_vect = 1e6.*[57.91 108.2 149.6 227.9 778.6 1433 2872 4495 5906]; % From Curtis
 if flyby_Id <= 9
     m_planet = astroConstants(flyby_Id + 10) / astroConstants(1);
     m_sun = astroConstants(4) / astroConstants(1);
@@ -194,6 +202,7 @@ else
     lgd = legend("Hyperbola -Inf", "Hyperbola +Inf", "Asyptote -Inf", "Asyptote +Inf", "Hyperbola axis", PlanetNames(flyby_Id));
 end
 xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+title("Flyby hyperbola")
 
 % time of flight sphere of influence
 deltaT1 = tof_soi(a_plus, e_plus, r_soi, mu_planet);

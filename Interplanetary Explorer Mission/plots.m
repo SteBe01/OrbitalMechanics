@@ -1,15 +1,15 @@
 %% data
 
+% This script contains code used to create plots.
+% Run the "data" section (this one) first and then run each section
+% independently.
+
 clc, clear
 close all
 
 restoredefaultpath
 addpath(genpath("Functions\"))
 addpath(genpath("Functions_custom\"))
-
-set(0, 'defaultTextInterpreter', 'latex');
-set(0, 'defaultLineLineWidth', 2);
-set(0, 'DefaultAxesFontSize', 12);
 
 % data - goup 2346
 % Departure: Saturn
@@ -24,7 +24,7 @@ set(0, 'DefaultAxesFontSize', 12);
 clc
 close all
 
-time_instant = [2028 01 01 0 0 0];          % TBD
+time_instant = [2028 01 01 0 0 0];
 departure.planetId = 6;
 flyby.planetId = 5;
 arrival.bodyId = 79;
@@ -34,7 +34,6 @@ time_instant_mjd200 = date2mjd2000(time_instant);
 [departure.kep, ksun] = uplanet(time_instant_mjd200, departure.planetId);
 [flyby.kep, ~] = uplanet(time_instant_mjd200, flyby.planetId);
 [arrival.kep, ~, ~] = ephNEO(time_instant_mjd200, arrival.bodyId);
-
 
 % Set options for the ODE solver
 options = odeset( 'RelTol', 1e-13, 'AbsTol', 1e-14 );
@@ -63,7 +62,6 @@ arrival.T_orb = 2*pi*sqrt( arrival.kep(1)^3/ksun ); % Orbital period [1/s]
 tspan= linspace( 0, arrival.T_orb, 200 );
 [ ~, arrival.Y ] = ode113( @(t,y) ode_2bp(t,y,ksun), tspan, arrival.y0, options );
 
-
 % plots
 figure
 axis equal, grid on, hold on
@@ -75,7 +73,6 @@ scatter3(departure.r0(1), departure.r0(2), departure.r0(3), "blu", "filled")
 scatter3(flyby.r0(1), flyby.r0(2), flyby.r0(3), "green", "filled")
 scatter3(arrival.r0(1), arrival.r0(2), arrival.r0(3), "red", "filled")
 scatter3(0, 0, 0, "yellow", "filled")
-
 
 legend("Departure (Saturn)", "Fly-By (Jupiter)", "Arrival (Asteroid N.79)", "Sun", Location="best")
 
@@ -90,186 +87,12 @@ zlabel("z [km]")
 view(30,30)
 
 
-%% contour plots (with or without dv min position and with or without time window): departure - flyby and flyby - arrival
-
-clc, clear
-close all
-
-% ------------------------------------------------
-toggle_timeWindow = 1;
-toggle_finalSolution = 1;
-toggle_titles = 1;
-% ------------------------------------------------
-
-xcust(1) = 1.289338494887906e+04;
-xcust(2) = 1.670686199971615e+04;
-xcust(3) = 1.754357184719549e+04;
-
-dep_time = [2028 01 01 0 0 0];
-arr_time = [2058 01 01 0 0 0];
-
-departure.planetId = 6;
-flyby.planetId = 5;
-arrival.bodyId = 79;
-
-dep_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
-arr_time_vect = linspace(date2mjd2000(dep_time), date2mjd2000(arr_time), 500);
-
-% contour plots - departure, fly by
-orbitType = 0;
-dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
-dv_2 = dv_1;
-tof_vect = dv_1;
-for i = 1:length(dep_time_vect)
-    for j = 1:length(arr_time_vect)
-        tof = (arr_time_vect(j) - dep_time_vect(i)) * 24 * 60 * 60; % seconds
-
-        if tof <= 1e5
-            dv_1(i, j) = NaN;
-            dv_2(i, j) = NaN;
-            continue
-        end
-        tof_vect(i, j) = tof;
-
-        [departure.kep, ksun] = uplanet(dep_time_vect(i), departure.planetId);
-        [flyby.kep, ~] = uplanet(arr_time_vect(j), flyby.planetId);
-
-        [departure.r0, departure.v0] = kep2car([departure.kep ksun]);
-        [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
-
-        [A, P, E, ERROR, VI, VF, TPAR, THETA] = lambertMR(departure.r0, flyby.r0, tof, ksun, orbitType, 0);
-        if A < 0
-            dv_1(i, j) = NaN;
-            dv_2(i, j) = NaN;
-            continue
-        end
-
-        dv_1(i, j) = norm(VI - departure.v0);
-        dv_2(i, j) = norm(flyby.v0 - VF);
-    end
-end
-
-% dv = dv_1 + dv_2;
-dv = dv_1; % without flyby dv
-
-plot1 = figure();
-contour(dep_time_vect, arr_time_vect, dv', 2:0.15:8, HandleVisibility="off")
-if toggle_titles
-    title("Contour plot: departure - flyby")
-end
-colorbar, grid on, hold on
-xlabel("Departure [mjd2000]")
-ylabel("Flyby [mjd2000]")
-
-if toggle_finalSolution
-    [pos1, pos2] = find(dv == min(min(dv)));
-    plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1.7, MarkerSize=8)
-    plot(xcust(1), xcust(2), 'or', LineWidth=1.7, MarkerSize=6)
-
-    if ~toggle_timeWindow
-        legend("Contour plot min", "Mission min", Location="southeast")
-    end
-end
-% surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
-
-% contour plots - fly by, arrival
-orbitType = 0;
-dv_1 = zeros(length(dep_time_vect), length(arr_time_vect));
-dv_2 = dv_1;
-tof_vect = dv_1;
-for i = 1:length(dep_time_vect)
-    for j = 1:length(arr_time_vect)
-        tof = (arr_time_vect(j) - dep_time_vect(i)) * 24 * 60 * 60; % seconds
-
-        if tof <= 1e5
-            dv_1(i, j) = NaN;
-            dv_2(i, j) = NaN;
-            continue
-        end
-        tof_vect(i, j) = tof;
-
-        [flyby.kep, ksun] = uplanet(dep_time_vect(i), flyby.planetId);
-        [arrival.kep, ~] = ephNEO(arr_time_vect(j), arrival.bodyId);
-
-        [flyby.r0, flyby.v0] = kep2car([flyby.kep ksun]);
-        [arrival.r0, arrival.v0] = kep2car([arrival.kep ksun]);
-
-        [A, P, E, ERROR, VI, VF, TPAR, THETA] = lambertMR(flyby.r0, arrival.r0, tof, ksun, orbitType, 0);
-        if A < 0
-            dv_1(i, j) = NaN;
-            dv_2(i, j) = NaN;
-            continue
-        end
-
-        dv_1(i, j) = norm(VI - flyby.v0);
-        dv_2(i, j) = norm(arrival.v0 - VF);
-    end
-end
-
-% dv = dv_1 + dv_2;
-dv = dv_2; % without flyby dv
-
-plot2 = figure();
-contour(dep_time_vect, arr_time_vect, dv', 4:0.5:20, HandleVisibility="off")
-if toggle_titles
-    title("Contour plot: flyby - arrival")
-end
-colorbar, grid on, hold on, axis equal
-xlabel("Flyby [mjd2000]")
-ylabel("Arrival [mjd2000]")
-
-if toggle_finalSolution
-    [pos1, pos2] = find(dv == min(min(dv)));
-    plot(dep_time_vect(pos1), arr_time_vect(pos2), 'xr', LineWidth=1.7, MarkerSize=8)
-    plot(xcust(2), xcust(3), 'or', LineWidth=1.7, MarkerSize=6)
-
-    if ~toggle_timeWindow
-        legend("Contour plot min", "Mission min", Location="southeast")
-    end
-end
-% surface(dep_time_vect, arr_time_vect, dv', EdgeColor="none")
-
-if toggle_timeWindow
-    mission.dep_time_lb = date2mjd2000([2030 12 09 0 0 0]);
-    mission.dep_time_ub = date2mjd2000([2039 02 25 0 0 0]);
-    mission.flyby_time_lb = date2mjd2000([2042 12 26 0 0 0]);
-    mission.flyby_time_ub = date2mjd2000([2048 09 25 0 0 0]);
-    mission.arr_time_lb = date2mjd2000([2045 06 13 0 0 0]);
-    mission.arr_time_ub = date2mjd2000([2058 01 01 0 0 0]);
-    
-    figure(plot1)
-    plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_lb], 'r', LineWidth=2, HandleVisibility='off');
-    plot([mission.dep_time_lb mission.dep_time_ub], [mission.flyby_time_ub mission.flyby_time_ub], 'r', LineWidth=2, HandleVisibility='off');
-    plot([mission.dep_time_lb mission.dep_time_lb], [mission.flyby_time_lb mission.flyby_time_ub], 'r', LineWidth=2, HandleVisibility='off');
-    if toggle_finalSolution
-        plot([mission.dep_time_ub mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_ub], 'r', LineWidth=2);
-        legend("Contour plot min", "Mission min", "Time window", Location="southeast")
-    else
-        plot([mission.dep_time_ub mission.dep_time_ub], [mission.flyby_time_lb mission.flyby_time_ub], 'r', LineWidth=2, HandleVisibility='off');
-    end
-    
-    figure(plot2)
-    plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_lb], 'r', LineWidth=2, HandleVisibility='off');
-    plot([mission.flyby_time_lb mission.flyby_time_ub], [mission.arr_time_ub mission.arr_time_ub], 'r', LineWidth=2, HandleVisibility='off');
-    plot([mission.flyby_time_lb mission.flyby_time_lb], [mission.arr_time_lb mission.arr_time_ub], 'r', LineWidth=2, HandleVisibility='off');
-    if toggle_finalSolution
-        plot([mission.flyby_time_ub mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_ub], 'r', LineWidth=2);
-        legend("Contour plot min", "Mission min", "Time window", Location="southeast")
-    else
-        plot([mission.flyby_time_ub mission.flyby_time_ub], [mission.arr_time_lb mission.arr_time_ub], 'r', LineWidth=2, HandleVisibility='off');
-    end
-end
-
-fontsize(plot1, 15, "points")
-fontsize(plot2, 15, "points")
-
-
 %% mission plot
 
 clc, clear
 close all
 
-load("Global Search\dvmin.mat")
+load("dvmin.mat")
 
 departure.planetId = 6;
 flyby.planetId = 5;
@@ -285,7 +108,7 @@ fontsize(lgd, 10, "points");
 clc, clear
 close all
 
-load("Global Search\dvmin.mat")
+load("dvmin.mat")
 flybyTime = 1e7;
 
 departure.planetId = 6;

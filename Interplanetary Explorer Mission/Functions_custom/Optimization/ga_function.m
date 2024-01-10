@@ -9,10 +9,18 @@ function [solution] = ga_function(mission)
 % ----------------------------------------------------------------
 % mission       [-]       mission data          [struct]
 %
-% -----------------------------------------------------------------
 % Output arguments:
-% 
+% -----------------------------------------------------------------
 % solution      [-]       mission solution      [struct]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 lb = [date2mjd2000(mission.dep_time_lb) date2mjd2000(mission.flyby_time_lb) date2mjd2000(mission.arr_time_lb)]';
 ub = [date2mjd2000(mission.dep_time_ub) date2mjd2000(mission.flyby_time_ub) date2mjd2000(mission.arr_time_ub)]';
@@ -43,7 +51,7 @@ for i = 1:mission.options.n_iter
     % writematrix([readmatrix("GaResults.csv"); windowChoice, dv_fmin, tspan', dv1, dv2, dv3, rp], "GaResults.csv")
 end
 
-solution.dv_fmin = dv_fmin;
+solution.dvMin = dv_fmin;
 solution.tspan = tspan;
 
 end

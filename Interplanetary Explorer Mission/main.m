@@ -1,8 +1,12 @@
 %% data
 
-% This program is the main script of our Interplanetary Mission, by
-% specifing the simChoice it can use three different optimization
-% techniques (1: Grid Search, 2: Genetic Algorithm and 3: Multi Start)
+% This program is the main script of our Interplanetary Mission.
+% By specifing the simChoice (line 14) it can use three different
+% optimization techniques (1: Grid Search, 2: Genetic Algorithm and
+% 3: Multi Start).
+% It runs automatically and prints all the important data relative to the
+% mission. Multiple plots will be opened and an animation will play (only
+% with "Grid Search").
 
 clc, clear
 close all
@@ -52,7 +56,7 @@ elseif simChoice == 2
     disp('"Genetic Algorithm" optimization started...')
 
     % ga options
-    mission.options.n_iter = 1;
+    mission.options.n_iter = 5;
 
     [results] = ga_function(mission);
 elseif simChoice == 3

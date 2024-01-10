@@ -22,6 +22,15 @@ function [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(t1, t2, t3, cod
 % dv3           [1x1]       third dv                        [km/s]
 % rp            [1x1]       perigee radius of hyperbola     [km]
 % exitValue     [1x1]       0 or 1, function success        [-]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 tof1 = (t2 - t1) * 24 * 60 * 60;
 tof2 = (t3 - t2) * 24 * 60 * 60;

@@ -12,6 +12,15 @@ function [] = windowDisplay(mission)
 % Output arguments:
 % -----------------------------------------------------------------
 % N/A
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 mission.dep_time_lb = date2mjd2000(mission.dep_time_lb);
 mission.dep_time_ub = date2mjd2000(mission.dep_time_ub);

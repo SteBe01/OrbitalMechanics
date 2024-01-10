@@ -16,6 +16,15 @@ function [] = porkchop_start(dep_time, arr_time, dep_planetId, flyby_planetId, a
 % Output arguments:
 % -----------------------------------------------------------------
 % N/A
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 figure
 

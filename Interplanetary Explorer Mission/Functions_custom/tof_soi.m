@@ -15,6 +15,15 @@ function [deltaT] = tof_soi(a, e, rsoi, mu)
 % Output arguments:
 % -----------------------------------------------------------------
 % deltaT        [1x1]       delta time                      [s]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 t0 = 0;
 

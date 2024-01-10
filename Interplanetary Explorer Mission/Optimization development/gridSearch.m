@@ -1,4 +1,7 @@
-%% Grid Search with lookup
+%% Grid Search with smaller windows
+
+% This script was used to create the "Grid Search", later implemented
+% as a function and moved to the main script
 
 clc, clear
 close all
@@ -6,8 +9,7 @@ close all
 windowType = 1;
 
 restoredefaultpath
-addpath("Functions\")
-addpath("..\Functions_custom\")
+addpath(genpath("..\Functions_custom\"))
 addpath(genpath("..\\Functions"))
 
 xcust(1) = 1.289338494887906e+04;
@@ -151,18 +153,18 @@ for totWindows = 1:length(departureTime)
     end
 
     subplot(1, 2, 1)
-    a1 = plot([departureTime{totWindows}.lb departureTime{totWindows}.ub], [flybyTime{totWindows}.lb flybyTime{totWindows}.lb], 'r');
+    a1 = plot([departureTime{totWindows}.lb departureTime{totWindows}.ub], [flybyTime{totWindows}.lb flybyTime{totWindows}.lb], 'r', LineWidth=1);
     hold on
-    a2 = plot([departureTime{totWindows}.lb departureTime{totWindows}.ub], [flybyTime{totWindows}.ub flybyTime{totWindows}.ub], 'r');
-    a3 = plot([departureTime{totWindows}.lb departureTime{totWindows}.lb], [flybyTime{totWindows}.lb flybyTime{totWindows}.ub], 'r');
-    a4 = plot([departureTime{totWindows}.ub departureTime{totWindows}.ub], [flybyTime{totWindows}.lb flybyTime{totWindows}.ub], 'r');
+    a2 = plot([departureTime{totWindows}.lb departureTime{totWindows}.ub], [flybyTime{totWindows}.ub flybyTime{totWindows}.ub], 'r', LineWidth=1);
+    a3 = plot([departureTime{totWindows}.lb departureTime{totWindows}.lb], [flybyTime{totWindows}.lb flybyTime{totWindows}.ub], 'r', LineWidth=1);
+    a4 = plot([departureTime{totWindows}.ub departureTime{totWindows}.ub], [flybyTime{totWindows}.lb flybyTime{totWindows}.ub], 'r', LineWidth=1);
     a5 = plot(tspan(1), tspan(2), 'xr', LineWidth=1);
     subplot(1, 2, 2)
-    b1 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.ub], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.lb], 'r');
+    b1 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.ub], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.lb], 'r', LineWidth=1);
     hold on
-    b2 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.ub], [arrivalTime{totWindows}.ub arrivalTime{totWindows}.ub], 'r');
-    b3 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.lb], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r');
-    b4 = plot([flybyTime{totWindows}.ub flybyTime{totWindows}.ub], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r');
+    b2 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.ub], [arrivalTime{totWindows}.ub arrivalTime{totWindows}.ub], 'r', LineWidth=1);
+    b3 = plot([flybyTime{totWindows}.lb flybyTime{totWindows}.lb], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r', LineWidth=1);
+    b4 = plot([flybyTime{totWindows}.ub flybyTime{totWindows}.ub], [arrivalTime{totWindows}.lb arrivalTime{totWindows}.ub], 'r', LineWidth=1);
     b5 = plot(tspan(2), tspan(3), 'xr', LineWidth=1);
     sgtitle("Delta velocity = " + dv_fmin + " km/s")
     drawnow

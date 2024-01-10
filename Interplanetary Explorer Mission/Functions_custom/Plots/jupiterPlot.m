@@ -8,6 +8,15 @@ function s = jupiterPlot
 % Output arguments:
 % ---------------------------------------------------------------------
 % s             [1x1]   Jupiter - obj                [surface/-]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 % Earth settings
 [x1,y1,z1] = sphere(50);

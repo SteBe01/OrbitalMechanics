@@ -19,6 +19,15 @@ function [a, e, i, OM, om, theta] = car2kep(rr, vv, mu)
 % OM            [1x1]   RAAN                            [rad]
 % om            [1x1]   pericenter anomaly              [rad]
 % theta         [1x1]   true anomaly                    [rad]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 I = [1 0 0];
 J = [0 1 0];

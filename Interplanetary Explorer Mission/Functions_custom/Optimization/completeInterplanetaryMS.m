@@ -15,10 +15,18 @@ function [dv] = completeInterplanetaryMS(t1, t2, t3, code1, code2, code3)
 % code2         [1x1]       flyby body Id                   [-]
 % code3         [1x1]       arrival body Id                 [-]
 %
-% -----------------------------------------------------------------
 % Output arguments:
-% 
+% -----------------------------------------------------------------
 % dv            [1x1]       total dv                        [km/s]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 if t1 < date2mjd2000([2028 01 01 0 0 0]) || t3 > date2mjd2000([2058 01 01 0 0 0])
     dv = 1e7;

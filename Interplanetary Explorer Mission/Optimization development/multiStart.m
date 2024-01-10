@@ -1,12 +1,14 @@
 %% Multi Start
 
+% This script was used to create the "Multi Start", later implemented
+% as a function and moved to the main script
+
 clear, clc
 close all
 
 restoredefaultpath
 addpath(genpath("..\\Functions\"))
-addpath("..\\Functions_custom\")
-addpath("Functions\")
+addpath(genpath("..\\Functions_custom\"))
 
 departure.planetId = 6;
 flyby.planetId = 5;

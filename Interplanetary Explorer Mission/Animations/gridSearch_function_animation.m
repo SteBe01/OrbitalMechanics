@@ -1,26 +1,18 @@
-function [solutions] = gridSearch_function(mission)
+function [solutions] = gridSearch_function_animation(mission)
 
 % Core function for grid search optimization
 %
 % Usage
-% [solutions] = gridSearch_function(mission)
+% [solutions] = gridSearch_function_animation(mission)
 %
 % Input arguments:
 % ----------------------------------------------------------------
 % mission       [-]       mission data          [struct]
 %
-% Output arguments:
 % -----------------------------------------------------------------
+% Output arguments:
+% 
 % solution      [-]       mission solution      [struct]
-%
-% CONTRIBUTORS:
-%   Pier Francesco A. Bachini
-%   Stefano Belletti
-%   Chiara Giardini
-%   Carolina Gómez Sánchez
-%
-% VERSION:
-%   2024-01-10 latest
 
 dep_time = [2028 01 01 0 0 0];
 arr_time = [2058 01 01 0 0 0];
@@ -168,6 +160,9 @@ for totWindows = 1:length(departureTime)
     sgtitle("Delta velocity = " + dv_fmin + " km/s")
     drawnow
 
+    set(gcf,'WindowState','maximized')
+    exportPng(totWindows)
+
     solutions_dvMin(totWindows) = dv_fmin;
     solutions_tspan(totWindows, :) = tspan;
 end
@@ -175,6 +170,13 @@ end
 [solutions.dvMin, min_dv_index] = min(solutions_dvMin);
 solutions.tspan = solutions_tspan(min_dv_index, :);
 
+
+
+function exportPng(index)
+    filename = '.\GridSearch\GridSearch';
+    name=append(filename, "_", num2str(index), ".png");
+    exportgraphics(gcf,name,'Resolution',200)
+end
 
 function [min, pos1, pos2, pos3] = findMin3(dv)
     min = max(max(max(dv)));

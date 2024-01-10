@@ -1,12 +1,14 @@
 %% Genetic Alogorithm
 
+% This script was used to create the "Genetic Algorithm", later implemented
+% as a function and moved to the main script
+
 clear, clc
 close all
 
 restoredefaultpath
 addpath(genpath("..\\Functions\"))
-addpath("..\\Functions_custom\")
-addpath("Functions\")
+addpath(genpath("..\\Functions_custom\"))
 
 departure.planetId = 6;
 flyby.planetId = 5;
@@ -52,8 +54,6 @@ for i = 1:n_iter
     [tspan, dv_fmin] = fmincon(@(tspan) completeInterplanetaryGA(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId), [sol(1), sol(2), sol(3)]', [], [], [], [], lb, ub, [], opts);
 
     [dv1, dv2, dv3, rp, exitValue] = completeInterplanetary(tspan(1), tspan(2), tspan(3), departure.planetId, flyby.planetId, arrival.bodyId);
-    
-    writematrix([readmatrix("GaResults.csv"); windowChoice, dv_fmin, tspan', dv1, dv2, dv3, rp], "GaResults.csv")
 end
 
 disp("Finished!")

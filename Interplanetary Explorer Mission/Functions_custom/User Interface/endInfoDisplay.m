@@ -13,6 +13,15 @@ function [] = endInfoDisplay(data, results)
 % Output arguments:
 % -----------------------------------------------------------------
 % N/A
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 date1 = mjd20002date(results.tspan(1));
 date2 = mjd20002date(results.tspan(2));

@@ -15,6 +15,15 @@ function [v_rot] = rodrigues_rotation(v, delta, u)
 % Output arguments:
 % -----------------------------------------------------------------
 % v_rot             [3x1]   Rotated vector                  [km/s]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 v_rot=v*cos(delta)+cross(u,v)*sin(delta)+u*dot(u,v)*(1-cos(delta));
 

@@ -9,12 +9,20 @@ function [departure, flyby, arrival] = loadWindows(type)
 % ----------------------------------------------------------------
 % type          [1x1]   1 (final window(s)) or 2        [struct]
 %
-% -----------------------------------------------------------------
 % Output arguments:
-% 
+% -----------------------------------------------------------------
 % departure     [-]     departure window                [struct]
 % flyby         [-]     flyby window                    [struct]
 % arrival       [-]     arriva window                   [struct]
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 switch type
     case 1

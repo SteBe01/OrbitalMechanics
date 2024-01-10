@@ -12,6 +12,15 @@ function [] = startInfoDisplay(mission)
 % Output arguments:
 % -----------------------------------------------------------------
 % N/A
+%
+% CONTRIBUTORS:
+%   Pier Francesco A. Bachini
+%   Stefano Belletti
+%   Chiara Giardini
+%   Carolina Gómez Sánchez
+%
+% VERSION:
+%   2024-01-10 latest
 
 disp("Mission details: ")
 fprintf("Departure Id: " + mission.departure_Id + ", flyby Id: " + mission.flyby_Id + " and Arrival Id: " + mission.arrival_Id)
